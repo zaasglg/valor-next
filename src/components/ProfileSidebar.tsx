@@ -8,7 +8,7 @@ interface ProfileSidebarProps {
     userId?: string;
 }
 
-export default function ProfileSidebar({ balance = "202995.00COP", userId = "12770156" }: ProfileSidebarProps) {
+export default function ProfileSidebar({ balance = "0.00COP", userId = "12770156" }: ProfileSidebarProps) {
     const pathname = usePathname();
 
     const navItems = [
@@ -95,7 +95,7 @@ export default function ProfileSidebar({ balance = "202995.00COP", userId = "127
             <div className="grid grid-cols-2 gap-2 mb-2 relative z-10">
                 <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
                     <span className="text-xs">Saldo:</span>
-                    <span className="font-black text-base">{balance}</span>
+                    <span className="font-black text-base">0.00 COP</span>
                 </div>
                 <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
                     <span className="text-xs">ID de usuario:</span>

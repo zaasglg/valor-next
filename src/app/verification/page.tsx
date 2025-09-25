@@ -43,12 +43,12 @@ export default function VerificationPage() {
                         </div>
                         <div>
                             <label className="block text-[#b3b3c3] mb-2">Ciudad</label>
-                            <Input defaultValue="Туркестан" className="text-lg" />
+                            <Input defaultValue="" className="text-lg" />
                         </div>
                     </div>
                     <div className="mb-6">
                         <label className="block text-[#b3b3c3] mb-2">Dirección</label>
-                        <Input defaultValue="Саттарханова59" className="text-lg" />
+                        <Input defaultValue="" className="text-lg" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <div>
@@ -60,7 +60,7 @@ export default function VerificationPage() {
                         </div>
                         <div>
                             <label className="block text-[#b3b3c3] mb-2">Correo electrónico</label>
-                            <Input defaultValue="taptap440st@gmail.com" className="text-lg bg-[#f5f5f7] shadow-md" readOnly />
+                            <Input defaultValue="" className="text-lg bg-[#f5f5f7] shadow-md" readOnly />
                         </div>
                     </div>
                     <div className="flex justify-end">

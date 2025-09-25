@@ -3,14 +3,44 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useState } from "react"
+import { authService } from "@/lib/auth"
 
 interface LoginDialogProps {
   children: React.ReactNode
 }
 
 export function LoginDialog({ children }: LoginDialogProps) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setError('Todos los campos son obligatorios');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      await authService.login(email, password);
+      setIsOpen(false);
+      setEmail('');
+      setPassword('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
@@ -44,14 +74,23 @@ export function LoginDialog({ children }: LoginDialogProps) {
 
         {/* Основная форма */}
         <div className="px-8 pt-7 pb-7 bg-[#f3f4f7]">
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4 mb-8">
+              {error && (
+                <div className="col-span-2 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                  {error}
+                </div>
+              )}
+              
               <div>
                 <label className="block text-lg font-medium text-[#23223a] mb-2">Correo electrónico / Teléfono</label>
                 <Input
                   type="email"
                   placeholder="Correo electrónico o teléfono"
                   className="bg-white shadow-lg"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </div>
               <div>
@@ -61,8 +100,10 @@ export function LoginDialog({ children }: LoginDialogProps) {
                     type="password"
                     placeholder="Contraseña"
                     className="bg-white shadow-lg"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
                   />
-                  {/* Иконка скрытия пароля */}
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#a3a3b3] cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="#a3a3b3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12s3.6-7 9-7 9 7 9 7-3.6 7-9 7-9-7-9-7Zm9 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" /><path stroke="#a3a3b3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m3 3 18 18" /></svg>
                   </span>
@@ -71,10 +112,11 @@ export function LoginDialog({ children }: LoginDialogProps) {
 
               <div>
                 <Button
-                  className="w-full bg-[#f4ad3d] hover:bg-[#e6a13a] text-white font-bold py-3 rounded-lg shadow-[0_6px_0_0_#d89a2c] active:shadow-none active:translate-y-1 transition-all duration-100 border-0"
+                  className="w-full bg-[#f4ad3d] hover:bg-[#e6a13a] text-white font-bold py-3 rounded-lg shadow-[0_6px_0_0_#d89a2c] active:shadow-none active:translate-y-1 transition-all duration-100 border-0 disabled:opacity-50"
                   type="submit"
+                  disabled={isLoading}
                 >
-                  Acceso
+                  {isLoading ? 'Iniciando sesión...' : 'Acceso'}
                 </Button>
               </div>
             </div>

@@ -18,11 +18,11 @@ export default function ProfilePage() {
                     <form className="grid grid-cols-4 gap-x-3 gap-y-6">
                         <div className="flex flex-col gap-2">
                             <label className="text-sm text-[#a3a3b3] font-semibold">Nombre</label>
-                            <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg" defaultValue="Caesar" />
+                            <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg" defaultValue="" />
                         </div>
                         <div className="flex flex-col gap-2">
                             <label className="text-sm text-[#a3a3b3] font-semibold">Apellido</label>
-                            <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg" defaultValue="Gomez" />
+                            <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg" defaultValue="" />
                         </div>
                         <div className="flex flex-col gap-2">
                             <label className="text-sm text-[#a3a3b3] font-semibold">Cumpleaños</label>
@@ -45,22 +45,22 @@ export default function ProfilePage() {
                         </div>
                         <div className="flex flex-col gap-2 col-span-1">
                             <label className="text-sm text-[#a3a3b3] font-semibold">Ciudad</label>
-                            <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg" defaultValue="Туркестан" />
+                            <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg" defaultValue="" />
                         </div>
                         <div className="flex flex-col gap-2 col-span-2">
                             <label className="text-sm text-[#a3a3b3] font-semibold">Dirección</label>
-                            <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg" defaultValue="Саттарханова59" />
+                            <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg" defaultValue="" />
                         </div>
                         <div className="flex flex-col gap-2 col-span-2">
                             <label className="text-sm text-[#a3a3b3] font-semibold">Número de teléfono</label>
                             <div className="flex gap-2">
                                 <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg w-20" defaultValue="+57" />
-                                <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg flex-1" defaultValue="(123) 3423-423" />
+                                <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg flex-1" defaultValue="(777) 777-777" />
                             </div>
                         </div>
                         <div className="flex flex-col gap-2 col-span-2">
                             <label className="text-sm text-[#a3a3b3] font-semibold">Correo electrónico</label>
-                            <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg w-full" defaultValue="taptap440st@gmail.com" />
+                            <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-4 py-3 text-lg w-full" defaultValue="" />
                         </div>
                         <div className="flex gap-4 col-span-2 mt-4">
                             <button

@@ -8,7 +8,7 @@ export default function DetalizationPage() {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="mb-8">
-                        <h1 className="text-5xl font-black text-[#23223a] leading-tight">Historial de transacciones:<br /><span className="text-[#ffb32c]">depósitos</span></h1>
+                        <h1 className="text-3xl font-black text-[#23223a] leading-tight">Historial de transacciones:<br /><span className="text-[#ffb32c]">depósitos</span></h1>
                     </div>
                     {/* Tabs */}
                     <div className="flex mb-6 bg-gray-200 rounded-3xl p-1">
@@ -29,55 +29,7 @@ export default function DetalizationPage() {
                             </tr>
                         </thead>
                         <tbody className="text-[#23223a] text-base font-medium">
-                            <tr className="border-b last:border-b-0">
-                                <td className="py-3 px-6">19.09.2025 14:08</td>
-                                <td className="py-3 px-6">Nº569310231</td>
-                                <td className="py-3 px-6 font-bold">50000.00 COP</td>
-                                <td className="py-3 px-6">NEQUI</td>
-                                <td className="py-3 px-6"><span className="bg-green-500 text-white rounded-lg px-4 py-1 text-sm font-bold">Completed</span></td>
-                            </tr>
-                            <tr className="border-b last:border-b-0">
-                                <td className="py-3 px-6">19.09.2025 14:06</td>
-                                <td className="py-3 px-6">Nº140916680</td>
-                                <td className="py-3 px-6 font-bold">50000.00 COP</td>
-                                <td className="py-3 px-6">NEQUI</td>
-                                <td className="py-3 px-6"><span className="bg-green-500 text-white rounded-lg px-4 py-1 text-sm font-bold">Completed</span></td>
-                            </tr>
-                            <tr className="border-b last:border-b-0">
-                                <td className="py-3 px-6">19.09.2025 14:01</td>
-                                <td className="py-3 px-6">Nº199501902</td>
-                                <td className="py-3 px-6 font-bold">50000.00 COP</td>
-                                <td className="py-3 px-6">NEQUI</td>
-                                <td className="py-3 px-6"><span className="bg-green-500 text-white rounded-lg px-4 py-1 text-sm font-bold">Completed</span></td>
-                            </tr>
-                            <tr className="border-b last:border-b-0">
-                                <td className="py-3 px-6">13.09.2025 11:42</td>
-                                <td className="py-3 px-6">Nº352294468</td>
-                                <td className="py-3 px-6 font-bold">100000.00 COP</td>
-                                <td className="py-3 px-6">Banco Belo</td>
-                                <td className="py-3 px-6"><span className="bg-green-500 text-white rounded-lg px-4 py-1 text-sm font-bold">Completed</span></td>
-                            </tr>
-                            <tr className="border-b last:border-b-0">
-                                <td className="py-3 px-6">10.09.2025 09:03</td>
-                                <td className="py-3 px-6">Nº641702360</td>
-                                <td className="py-3 px-6 font-bold">50000.00 COP</td>
-                                <td className="py-3 px-6">Banco Belo</td>
-                                <td className="py-3 px-6"><span className="bg-green-500 text-white rounded-lg px-4 py-1 text-sm font-bold">Completed</span></td>
-                            </tr>
-                            <tr className="border-b last:border-b-0">
-                                <td className="py-3 px-6">10.09.2025 08:58</td>
-                                <td className="py-3 px-6">Nº912059034</td>
-                                <td className="py-3 px-6 font-bold">50000.00 COP</td>
-                                <td className="py-3 px-6">Banco Belo</td>
-                                <td className="py-3 px-6"><span className="bg-green-500 text-white rounded-lg px-4 py-1 text-sm font-bold">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td className="py-3 px-6">10.09.2025 08:42</td>
-                                <td className="py-3 px-6">Nº870028897</td>
-                                <td className="py-3 px-6 font-bold">50000.00 COP</td>
-                                <td className="py-3 px-6">Banco Belo</td>
-                                <td className="py-3 px-6"><span className="bg-green-500 text-white rounded-lg px-4 py-1 text-sm font-bold">Completed</span></td>
-                            </tr>
+
                         </tbody>
                     </table>
                 </div>

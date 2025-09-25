@@ -10,14 +10,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { authService } from "@/lib/auth"
 
 interface RegisterDialogProps {
   children: React.ReactNode
 }
 
 export function RegisterDialog({ children }: RegisterDialogProps) {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [country, setCountry] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password || !country) {
+      setError('Todos los campos son obligatorios');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      await authService.register(email, password, country);
+      setIsOpen(false);
+      setEmail('');
+      setPassword('');
+      setCountry('');
+      router.push('/profile');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al registrarse');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
@@ -40,20 +75,40 @@ export function RegisterDialog({ children }: RegisterDialogProps) {
           </picture>
         </div>
 
-        <div className="p-6 grid grid-cols-2 gap-5">
+        <form onSubmit={handleSubmit} className="p-6 grid grid-cols-2 gap-5">
+          {error && (
+            <div className="col-span-2 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
+          
           <div>
             <label className="block text-sm font-medium mb-2">Correo electrónico</label>
-            <Input type="email" placeholder="Correo electrónico" className="bg-white shadow-lg" />
+            <Input 
+              type="email" 
+              placeholder="Correo electrónico" 
+              className="bg-white shadow-lg" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-2">Contraseña</label>
-            <Input type="password" placeholder="Contraseña" className="bg-white shadow-lg" />
+            <Input 
+              type="password" 
+              placeholder="Contraseña" 
+              className="bg-white shadow-lg" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-2">País</label>
-            <Select>
+            <Select value={country} onValueChange={setCountry}>
               <SelectTrigger className="w-full bg-white shadow-lg">
                 <SelectValue placeholder="Selecciona tu país" />
               </SelectTrigger>
@@ -81,18 +136,18 @@ export function RegisterDialog({ children }: RegisterDialogProps) {
                 <SelectItem value="Venezuela">Venezuela</SelectItem>
               </SelectContent>
             </Select>
-
           </div>
 
           <div className="flex items-end">
             <Button
-              className="w-full bg-green-600 hover:bg-green-700 py-3 shadow-lg active:shadow-inner active:translate-y-0.5 transition-all duration-100 border-b-4 border-green-800"
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-green-600 hover:bg-green-700 py-3 shadow-lg active:shadow-inner active:translate-y-0.5 transition-all duration-100 border-b-4 border-green-800 disabled:opacity-50"
             >
-              Abrir cuenta
+              {isLoading ? 'Creando cuenta...' : 'Abrir cuenta'}
             </Button>
           </div>
-
-        </div>
+        </form>
 
         <div className="my-10">
           <p className="text-xs text-center text-gray-600">
