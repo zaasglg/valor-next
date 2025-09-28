@@ -81,13 +81,13 @@ export function RegisterDialog({ children }: RegisterDialogProps) {
               {error}
             </div>
           )}
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">Correo electrónico</label>
-            <Input 
-              type="email" 
-              placeholder="Correo electrónico" 
-              className="bg-white shadow-lg" 
+            <Input
+              type="email"
+              placeholder="Correo electrónico"
+              className="bg-white shadow-lg"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -96,10 +96,10 @@ export function RegisterDialog({ children }: RegisterDialogProps) {
 
           <div>
             <label className="block text-sm font-medium mb-2">Contraseña</label>
-            <Input 
-              type="password" 
-              placeholder="Contraseña" 
-              className="bg-white shadow-lg" 
+            <Input
+              type="password"
+              placeholder="Contraseña"
+              className="bg-white shadow-lg"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

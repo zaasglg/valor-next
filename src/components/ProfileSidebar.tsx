@@ -2,14 +2,52 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 interface ProfileSidebarProps {
     balance?: string;
     userId?: string;
 }
 
-export default function ProfileSidebar({ balance = "0.00COP", userId = "12770156" }: ProfileSidebarProps) {
+export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileSidebarProps) {
     const pathname = usePathname();
+    const [userInfo, setUserInfo] = useState({ user_id: userId, deposit: balance, currency: 'COP' });
+
+    const formatCurrency = (amount: number, currency: string = 'COP') => {
+        return `${amount.toFixed(2)} ${currency}`;
+    };
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                console.log('No access token found');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/info', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('User info response:', data);
+                    const currency = data.currency || 'COP';
+                    setUserInfo({
+                        user_id: data.user_id || data.id || userId,
+                        deposit: data.deposit !== undefined ? formatCurrency(data.deposit, currency) : balance,
+                        currency: currency
+                    });
+                } else {
+                    console.error('API response error:', response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
+        };
+
+        fetchUserInfo();
+    }, [userId, balance]);
 
     const navItems = [
         {
@@ -95,11 +133,11 @@ export default function ProfileSidebar({ balance = "0.00COP", userId = "12770156
             <div className="grid grid-cols-2 gap-2 mb-2 relative z-10">
                 <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
                     <span className="text-xs">Saldo:</span>
-                    <span className="font-black text-base">0.00 COP</span>
+                    <span className="font-black text-base">{userInfo.deposit}</span>
                 </div>
                 <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
                     <span className="text-xs">ID de usuario:</span>
-                    <span className="font-black text-base">{userId}</span>
+                    <span className="font-black text-base">{userInfo.user_id}</span>
                 </div>
             </div>
 

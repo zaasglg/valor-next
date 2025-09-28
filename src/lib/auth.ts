@@ -1,92 +1,74 @@
-interface User {
-  id: string;
-  email: string;
-  country: string;
-}
-
-interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-}
-
-class AuthService {
-  private state: AuthState = {
-    user: null,
-    isAuthenticated: false
-  };
-
-  private listeners: ((state: AuthState) => void)[] = [];
-
-  register(email: string, password: string, country: string): Promise<User> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (this.getUserByEmail(email)) {
-          reject(new Error('El usuario ya existe'));
-          return;
-        }
-
-        const user: User = {
-          id: Date.now().toString(),
-          email,
-          country
-        };
-
-        this.saveUser(user, password);
-        this.state = { user, isAuthenticated: true };
-        this.notifyListeners();
-        resolve(user);
-      }, 1000);
+export const authService = {
+  async register(email: string, password: string, country: string) {
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        country,
+      }),
     });
-  }
 
-  login(email: string, password: string): Promise<User> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const user = this.getUserByEmail(email);
-        const savedPassword = localStorage.getItem(`password_${email}`);
-        
-        if (!user || savedPassword !== password) {
-          reject(new Error('Credenciales inválidas'));
-          return;
-        }
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Error en el registro');
+    }
 
-        this.state = { user, isAuthenticated: true };
-        this.notifyListeners();
-        resolve(user);
-      }, 1000);
+    const data = await response.json();
+
+    // Сохраняем токены
+    if (data.access) {
+      localStorage.setItem('access_token', data.access);
+    }
+    if (data.refresh) {
+      localStorage.setItem('refresh_token', data.refresh);
+    }
+    if (data.user_id) {
+      localStorage.setItem('user_id', data.user_id);
+    }
+
+    // Trigger storage event for header update
+    window.dispatchEvent(new Event('storage'));
+
+    return data;
+  },
+
+  async login(email: string, password: string) {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
     });
-  }
 
-  logout() {
-    this.state = { user: null, isAuthenticated: false };
-    this.notifyListeners();
-  }
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Error al iniciar sesión');
+    }
 
-  getState(): AuthState {
-    return this.state;
-  }
+    const data = await response.json();
 
-  subscribe(listener: (state: AuthState) => void) {
-    this.listeners.push(listener);
-    return () => {
-      this.listeners = this.listeners.filter(l => l !== listener);
-    };
-  }
+    // Сохраняем токены
+    if (data.access) {
+      localStorage.setItem('access_token', data.access);
+    }
+    if (data.refresh) {
+      localStorage.setItem('refresh_token', data.refresh);
+    }
+    if (data.user_id) {
+      localStorage.setItem('user_id', data.user_id);
+    }
 
-  private saveUser(user: User, password: string) {
-    localStorage.setItem(`user_${user.email}`, JSON.stringify(user));
-    localStorage.setItem(`password_${user.email}`, password);
-  }
+    // Trigger storage event for header update
+    window.dispatchEvent(new Event('storage'));
 
-  private getUserByEmail(email: string): User | null {
-    const userData = localStorage.getItem(`user_${email}`);
-    return userData ? JSON.parse(userData) : null;
-  }
-
-  private notifyListeners() {
-    this.listeners.forEach(listener => listener(this.state));
-  }
-}
-
-export const authService = new AuthService();
-export type { User, AuthState };
+    return data;
+  },
+};

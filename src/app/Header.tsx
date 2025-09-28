@@ -1,14 +1,63 @@
-import React from 'react';
+"use client";
+
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { LoginDialog } from '@/components/LoginDialog';
 import { RegisterDialog } from '@/components/RegisterDialog';
 import Link from 'next/link';
+import { CirclePlus, EllipsisVertical, UserRound } from 'lucide-react';
 
 const Header: React.FC = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isClient, setIsClient] = useState(false);
+    const [userInfo, setUserInfo] = useState({ user_id: '', deposit: '0.00', currency: 'COP' });
+
+    const formatCurrency = (amount: number, currency: string = 'COP') => {
+        return `${amount.toFixed(2)} ${currency}`;
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        setIsAuthenticated(!!token);
+
+        if (token) {
+            const fetchUserInfo = async () => {
+                try {
+                    const response = await fetch('/api/user/info', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        const currency = data.currency || 'COP';
+                        setUserInfo({
+                            user_id: data.user_id || '',
+                            deposit: data.deposit !== undefined ? formatCurrency(data.deposit, currency) : formatCurrency(0, currency),
+                            currency: currency
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching user info:', error);
+                }
+            };
+            fetchUserInfo();
+        }
+
+        const handleStorageChange = () => {
+            const token = localStorage.getItem('access_token');
+            setIsAuthenticated(!!token);
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
+
     return (
-        <header className="w-full flex items-center justify-between px-8 py-3 bg-white">
+        <header className="w-full flex items-center justify-between px-8 py-3 bg-white sticky border-b border-gray-200">
             {/* Logo */}
-            <div className="flex items-end">
+            <Link href="/" className="flex items-end cursor-pointer">
                 <span className="block">
                     <svg width="86" height="38" viewBox="0 0 86 38" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M26.8604 14L15.9672 38H10.8946L0 14H4.75714C5.15118 15.1223 5.56293 16.1889 6.04816 17.1273L4.39301 17.7863L5.87067 19.3898L7.112 20.7368L5.68103 21.7971L7.30731 23.0023L9.15314 24.3701L8.98206 24.6713L8.56128 25.4121L8.98206 26.153L12.1559 31.7408L13.4602 34.0372L14.7645 31.7408L17.9384 26.153L18.3591 25.4121L17.9384 24.6713L17.7673 24.3702L19.6132 23.0023L21.2393 21.7971L19.8084 20.7367L21.0497 19.3897L22.5274 17.7862L20.8221 17.1072C21.303 16.1738 21.7117 15.1143 22.103 14H26.8604ZM31.8937 18L39.4288 34H35.2305L33.8812 31H26.554L25.1982 34H21L28.4892 18H31.8937ZM32.082 27L30.2828 23H30.1694L28.3617 27H32.082ZM67.0224 21.7737C67.6744 22.9709 68 24.3746 68 25.9894C68 27.5876 67.6744 28.9897 67.0224 30.1915C66.3712 31.3947 65.4459 32.3309 64.2474 32.9973C63.0488 33.6653 61.6254 34 59.9773 34C58.3445 34 56.9328 33.6653 55.7411 32.9973C54.5503 32.3309 53.6288 31.3947 52.9776 30.1915C52.3256 28.9897 52 27.5876 52 25.9894C52 24.3746 52.3218 22.9709 52.9661 21.7737C53.6104 20.5782 54.5318 19.6509 55.7303 18.9905C56.929 18.3302 58.3445 18 59.9773 18C61.6254 18 63.0488 18.3302 64.2474 18.9905C65.4459 19.6509 66.3712 20.5782 67.0224 21.7737ZM64 25.9908C64 25.1498 63.853 24.4317 63.5578 23.8326C63.2636 23.2348 62.8181 22.7796 62.2205 22.467C61.6237 22.1556 60.8746 22 59.9752 22C58.6337 22 57.6358 22.3466 56.9818 23.0399C56.327 23.7344 56 24.7181 56 25.9908C56 26.8306 56.147 27.55 56.4413 28.1478C56.7364 28.7456 57.1735 29.2047 57.7543 29.5226C58.3353 29.8404 59.0757 30 59.9752 30C61.3168 30 62.3229 29.6469 62.9938 28.9404C63.6646 28.2341 64 27.2505 64 25.9908ZM45 30V18H41V34H53L50 30H45ZM79.608 28.8883L84 34H79.0641L74.738 29.0164L74 29V34H70V18H77.5576C77.7058 18 77.8341 18.0208 77.9769 18.0264C78.1492 18.0101 78.3234 18 78.5 18C81.5375 18 84 20.4624 84 23.5C84 26.158 82.1144 28.3756 79.608 28.8883ZM80 23.5C80 22.6716 79.3284 22 78.5 22H74V25H78.5C79.3284 25 80 24.3284 80 23.5Z" fill="#302FA0"></path>
@@ -16,10 +65,10 @@ const Header: React.FC = () => {
                     </svg>
                 </span>
                 <span className="ml-2 px-1.5 py-0.5 rounded bg-[#F9B24B] text-white font-bold text-xs leading-none tracking-widest">CASINO</span>
-            </div>
+            </Link>
             {/* Navigation */}
-            <nav className="flex-1 flex items-center justify-center gap-8">
-                <a href="#" className="relative flex items-center gap-2 text-[#202040] font-medium text-sm group">
+            <nav className="h-full flex-1 flex items-center justify-center gap-8">
+                <Link href="/" className="h-full relative flex items-center gap-2 text-[#202040] font-medium text-sm group">
                     <span className="block">
                         <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4.78021 8L9.5929 20L0 8H4.78021ZM12.4072 20L22 8H17.2198L12.4072 20ZM11 8H6.21985L11 20L15.7802 8H11ZM7.53589 0H4.97864L0 7H4.78015L7.53589 0ZM11 7H15.7802L13.1313 0H8.86871L6.21985 7H11ZM22 7L17.0214 0H14.4641L17.2198 7H22Z" fill="#0F9658"></path>
@@ -27,8 +76,8 @@ const Header: React.FC = () => {
                     </span>
                     Inicio
                     {/* Pseudo-element replacement */}
-                    <div className="absolute -bottom-0.5 left-0 w-full h-1 bg-[#0a893d] rounded-t opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out"></div>
-                </a>
+                    <div className="absolute bottom-0 left-0 w-full h-1 bg-[#0a893d] rounded-t opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out"></div>
+                </Link>
 
                 <a href="#" className="flex items-center gap-2 font-medium text-sm">
                     <span className="flex items-center gap-2">
@@ -73,21 +122,43 @@ const Header: React.FC = () => {
             </nav>
             {/* Balance & 3d And Pressed Buttons */}
             <div className="flex items-center gap-3 min-w-[220px] justify-end">
-                {/* <div className="text-right mr-2">
-                    <div className="text-xs text-[#202040] font-medium">Saldo</div>
-                    <div className="text-xs font-bold text-[#202040]">0.00CRC</div>
-                </div> */}
+                {isAuthenticated && (
+                    <div className="text-right mr-2">
+                        <div className="text-xs text-[#202040] font-medium">Saldo</div>
+                        <div className="text-sm font-bold text-[#202040]">{userInfo.deposit}</div>
+                    </div>
+                )}
 
-                <LoginDialog>
-                    <button className="bg-gradient-to-b cursor-pointer from-green-500 to-green-700 active:from-green-700 active:to-green-900 text-white font-bold py-2 px-4 rounded-md shadow-lg border-b-2 border-green-800 active:border-green-900 active:translate-y-0.5 active:shadow-md transition-colors duration-75 flex items-center gap-1.5 text-sm">
-                        Iniciar sesión
-                    </button>
-                </LoginDialog>
-                <RegisterDialog>
-                    <button className="bg-gradient-to-b cursor-pointer from-[#F9B24B] to-[#e09a2a] active:from-[#d18a1a] active:to-[#c2791a] text-white font-bold py-2 px-4 rounded-md shadow-lg border-b-2 border-[#c2791a] active:border-[#b3681a] active:translate-y-0.5 active:shadow-md transition-colors duration-75 flex items-center gap-1.5 text-sm">
-                        Registrarse
-                    </button>
-                </RegisterDialog>
+                {isAuthenticated ? (
+                    <>
+                        <Link href="/deposit">
+                            <button className="bg-gradient-to-b cursor-pointer from-green-500 to-green-700 active:from-green-700 active:to-green-900 text-white font-bold py-2 px-4 rounded-md shadow-lg border-b-2 border-green-800 active:border-green-900 active:translate-y-0.5 active:shadow-md transition-colors duration-75 flex items-center gap-1.5 text-sm h-[40px]">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 0C3.14014 0 0 3.14014 0 7C0 10.8599 3.14014 14 7 14C10.8599 14 14 10.8599 14 7C14 3.14014 10.8599 0 7 0ZM7 12C4.24316 12 2 9.75684 2 7C2 4.24316 4.24316 2 7 2C9.75684 2 12 4.24316 12 7C12 9.75684 9.75684 12 7 12ZM10 7C10 7.55225 9.55225 8 9 8H8V9C8 9.55225 7.55225 10 7 10C6.44775 10 6 9.55225 6 9V8H5C4.44775 8 4 7.55225 4 7C4 6.44775 4.44775 6 5 6H6V5C6 4.44775 6.44775 4 7 4C7.55225 4 8 4.44775 8 5V6H9C9.55225 6 10 6.44775 10 7Z" fill="white"></path></svg>
+                                Recargar en 1 clic
+                            </button>
+                        </Link>
+                        <Link href="/profile">
+                            <button className="bg-gradient-to-b cursor-pointer from-[#F9B24B] to-[#e09a2a] active:from-[#d18a1a] active:to-[#c2791a] text-white font-bold py-2 px-4 rounded-md shadow-lg border-b-2 border-[#c2791a] active:border-[#b3681a] active:translate-y-0.5 active:shadow-md transition-colors duration-75 flex items-center gap-1.5 text-sm h-[40px]">
+                                <UserRound />
+                                Cuenta
+                                <EllipsisVertical size={17} />
+                            </button>
+                        </Link>
+                    </>
+                ) : (
+                    <>
+                        <LoginDialog>
+                            <button className="bg-gradient-to-b cursor-pointer from-green-500 to-green-700 active:from-green-700 active:to-green-900 text-white font-bold py-2 px-4 rounded-md shadow-lg border-b-2 border-green-800 active:border-green-900 active:translate-y-0.5 active:shadow-md transition-colors duration-75 flex items-center gap-1.5 text-sm">
+                                Iniciar sesión
+                            </button>
+                        </LoginDialog>
+                        <RegisterDialog>
+                            <button className="bg-gradient-to-b cursor-pointer from-[#F9B24B] to-[#e09a2a] active:from-[#d18a1a] active:to-[#c2791a] text-white font-bold py-2 px-4 rounded-md shadow-lg border-b-2 border-[#c2791a] active:border-[#b3681a] active:translate-y-0.5 active:shadow-md transition-colors duration-75 flex items-center gap-1.5 text-sm">
+                                Registrarse
+                            </button>
+                        </RegisterDialog>
+                    </>
+                )}
             </div>
         </header>
     );

@@ -1,10 +1,40 @@
 
 
+"use client"
+
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProfileSidebar from "../../components/ProfileSidebar";
+import { Check } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function WithdrawalPage() {
+    const [balance, setBalance] = useState<string>('0.00');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchBalance = async () => {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    setBalance(data.balance || '0.00');
+                }
+            } catch (error) {
+                console.error('Error fetching balance:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBalance();
+    }, []);
 
     return (
         <div className="min-h-screen bg-[#f5f6fa] flex flex-row items-start gap-6 p-4">
@@ -12,25 +42,25 @@ export default function WithdrawalPage() {
             <main className="flex-1 p-8 bg-white rounded-2xl">
                 <h1 className="text-5xl font-black text-[#23223a] mb-8">Retiro de fondos</h1>
                 {/* Метод вывода */}
-                <section className="bg-white rounded-2xl shadow-md p-8 mb-8 border max-w-5xl mx-auto">
+                <section className="bg-white rounded-2xl shadow-md p-8 mb-8 border">
                     <h2 className="text-2xl font-bold text-[#23223a] mb-6">Elige el método de retiro</h2>
                     <div className="flex gap-4">
-                        <button className="border-2 border-[#3b3bb3] rounded-xl p-3 flex flex-col items-center w-24 h-32 bg-white focus:outline-none focus:ring-2 focus:ring-[#3b3bb3] relative">
-                            <span className="absolute left-1.5 top-1.5 w-4 h-4 bg-[#3b3bb3] rounded-full flex items-center justify-center">
-                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="white" /><path d="M5 8.5L7 10.5L11 6.5" stroke="#3b3bb3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                            </span>
+                        <button className="border-2 border-[#3b3bb3] rounded-xl p-3 flex flex-col items-center w-24 h-28 bg-white focus:outline-none focus:ring-2 focus:ring-[#3b3bb3] relative">
+                            <div className="absolute left-0 top-0 w-6 h-6 bg-[#3b3bb3] rounded-tl-lg rounded-br-xl flex items-center justify-center">
+                                <Check size={8} color="white" />
+                            </div>
                             <img src="https://static.valor.bet/withdrawal-methods/kGj8XKRlpkjZcEwRfNXZK3jXW0juYtqbH21QBnHV.svg" alt="" className="w-10 h-10 mt-2" />
-                            <span className="mt-2 text-[#3b3bb3] font-bold text-[8px] leading-2 text-center">TRANSFERENCIA BANCARIA</span>
+                            <span className="mt-auto text-[#3b3bb3] font-bold text-[8px] leading-2 text-center">TRANSFERENCIA BANCARIA</span>
                         </button>
                     </div>
                 </section>
                 {/* Детали вывода */}
-                <section className="bg-white rounded-2xl shadow-md p-8 mb-8 border max-w-5xl mx-auto">
+                <section className="bg-white rounded-2xl shadow-md p-8 mb-8 border">
                     <h2 className="text-3xl font-bold text-[#23223a] mb-2">Detalles de retiro</h2>
-                    <div className="mb-6 text-lg text-[#23223a] font-semibold">Listo para retirar efectivo: <span className="font-black">202995.00COP</span></div>
+                    <div className="mb-6 text-lg text-[#23223a] font-semibold">Listo para retirar efectivo: <span className="font-black">{loading ? 'Cargando...' : `${balance} COP`}</span></div>
                     <form className="grid grid-cols-3 gap-6">
                         <div className="flex flex-col col-span-1">
-                            <label htmlFor="withdraw-amount" className="text-base font-semibold text-[#8888A6] mb-1">Importe (Máx: )</label>
+                            <label htmlFor="withdraw-amount" className="text-base font-semibold text-[#8888A6] mb-1">Importe (Máx: {balance} COP)</label>
                             <Input id="withdraw-amount" type="number" placeholder="14600 COP" defaultValue="14600" className="mb-0" />
                         </div>
                         <div className="flex flex-col col-span-1">

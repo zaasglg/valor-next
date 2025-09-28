@@ -1,7 +1,48 @@
+"use client"
+
 import { Input } from "@/components/ui/input";
 import ProfileSidebar from "../../components/ProfileSidebar";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
+import { Clock, Copy } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function DepositPage() {
+    const router = useRouter();
+    const [selectedMethod, setSelectedMethod] = useState('NEQUI');
+    const [selectedAmount, setSelectedAmount] = useState(100000);
+    const [customAmount, setCustomAmount] = useState('100000');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [showWarning, setShowWarning] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [showPayment, setShowPayment] = useState(false);
+
+    const paymentMethods = [
+        { id: 'NEQUI', name: 'NEQUI', image: '/images/deposit/Nequi.jpg' },
+        { id: 'BTC', name: 'BTC', image: '/images/deposit/btc.jpg' },
+        { id: 'ETH', name: 'ETH', image: '/images/deposit/eth.png' },
+        { id: 'USDT', name: 'USDT', image: '/images/deposit/btc.jpg' }
+    ];
+
+    const predefinedAmounts = [50000, 100000, 200000, 300000];
+
+    const handleDeposit = () => {
+        const amount = parseInt(customAmount);
+        if (amount < 20000) {
+            setShowWarning(true);
+            return;
+        }
+        const depositData = {
+            method: selectedMethod,
+            amount: customAmount,
+            firstName,
+            lastName
+        };
+        console.log('Deposit data:', depositData);
+        setShowSuccess(true);
+    };
     return (
         <div className="min-h-screen bg-[#f5f6fa] flex flex-row items-start gap-6 p-4">
             <ProfileSidebar />
@@ -10,49 +51,78 @@ export default function DepositPage() {
                 <section className="bg-white rounded-2xl shadow-md p-8 mb-8 border">
                     <h2 className="text-2xl font-bold text-[#23223a] mb-6">Elige el método de depósito</h2>
                     <div className="flex gap-2 flex-wrap">
-                        {/* Пример карточек методов депозита */}
-                        <button className="border-1 border-green-600 rounded-xl p-2 flex flex-col items-center w-26 h-32 bg-white focus:outline-none focus:ring-2 focus:ring-green-600">
-                            <img src="/images/deposit/Nequi.jpg" alt="NEQUI" className="mb-2 h-16" />
-                            <span className="text-gray-500 text-xs">NEQUI</span>
-                        </button>
-
-                        <button className="border border-gray-300 rounded-xl p-2 flex flex-col items-center w-26 h-32 bg-white">
-                            <img src="/images/deposit/btc.jpg" alt="BTC" className="mb-2 h-16" />
-                            <span className="text-gray-500 text-xs">BTC</span>
-                        </button>
-                        <button className="border border-gray-300 rounded-xl p-2 flex flex-col items-center w-26 h-32 bg-white">
-                            <img src="/images/deposit/eth.png" alt="BTC" className="mb-2 h-16" />
-                            <span className="text-gray-500 text-xs">ETH</span>
-                        </button>
-                        <button className="border border-gray-300 rounded-xl p-2 flex flex-col items-center w-26 h-32 bg-white">
-                            <img src="/images/deposit/btc.jpg" alt="BTC" className="mb-2 h-16" />
-                            <span className="text-gray-500 text-xs">BTC</span>
-                        </button>
+                        {paymentMethods.map((method) => (
+                            <button
+                                key={method.id}
+                                onClick={() => setSelectedMethod(method.id)}
+                                className={`border-2 rounded-xl p-4 flex flex-col items-center w-32 h-40 bg-white focus:outline-none focus:ring-2 transition-all ${selectedMethod === method.id
+                                    ? 'border-green-600 focus:ring-green-600'
+                                    : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                            >
+                                <img src={method.image} alt={method.name} className="mb-2 h-16" />
+                                <span className="text-gray-500 text-xs">{method.name}</span>
+                            </button>
+                        ))}
                     </div>
                 </section>
                 <section className="bg-white rounded-2xl shadow-md p-8 mb-8 border grid grid-cols-2 gap-10">
                     <div>
                         <h2 className="text-2xl font-bold text-[#23223a] mb-6">¡Elige tu bono!</h2>
                         <div className="grid grid-cols-2 gap-2 mb-8">
-                            <button className="border-2 border-green-600 rounded-xl p-6 text-lg font-bold text-green-700 bg-white focus:outline-none focus:ring-2 focus:ring-green-600">Recargar: 50000 COP</button>
-                            <button className="border-2 border-green-600 rounded-xl p-6 text-lg font-bold text-white bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600">Recargar: 100000 COP</button>
-                            <button className="border-2 border-green-600 rounded-xl p-6 text-lg font-bold text-green-700 bg-white focus:outline-none focus:ring-2 focus:ring-green-600">Recargar: 200000 COP</button>
-                            <button className="border-2 border-green-600 rounded-xl p-6 text-lg font-bold text-green-700 bg-white focus:outline-none focus:ring-2 focus:ring-green-600">Recargar: 300000 COP</button>
+                            {predefinedAmounts.map((amount) => (
+                                <button
+                                    key={amount}
+                                    onClick={() => {
+                                        setSelectedAmount(amount);
+                                        setCustomAmount(amount.toString());
+                                    }}
+                                    className={`border-2 border-green-600 rounded-xl p-12 h-32 text-xl font-bold focus:outline-none focus:ring-2 focus:ring-green-600 transition-all flex items-center justify-start text-left ${selectedAmount === amount
+                                        ? 'text-white bg-green-700'
+                                        : 'text-green-700 bg-white hover:bg-green-50'
+                                        }`}
+                                >
+                                    Recargar: {amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} COP
+                                </button>
+                            ))}
                         </div>
                     </div>
                     <div
                         className="flex flex-col relative"
                     >
                         <label htmlFor="deposit-amount" className="text-2xl font-bold text-[#23223a] mb-6">Monto de depósito</label>
-                        <Input id="deposit-amount" type="number" placeholder="100000" defaultValue="100000" />
+                        <Input
+                            id="deposit-amount"
+                            type="number"
+                            placeholder="100000"
+                            value={customAmount}
+                            onChange={(e) => {
+                                setCustomAmount(e.target.value);
+                                setSelectedAmount(0);
+                            }}
+                        />
 
                         <div className="mt-10 bg-cover bg-[#3f1c80] px-5 py-10 rounded-2xl" style={{
                             backgroundImage: "url('images/deposit.svg')"
                         }}>
                             <label htmlFor="first-name" className="text-sm text-white" >Nombre de pila</label>
-                            <Input id="first-name" type="text" className="mb-2 border-gray-700 mt-2" placeholder="Nombre de pila" />
+                            <Input
+                                id="first-name"
+                                type="text"
+                                className="mb-2 border-gray-700 mt-2"
+                                placeholder="Nombre de pila"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                            />
                             <label htmlFor="last-name" className="text-sm text-white">Apellido</label>
-                            <Input id="last-name" type="text" placeholder="Apellido" className="border-gray-700 mt-2" />
+                            <Input
+                                id="last-name"
+                                type="text"
+                                placeholder="Apellido"
+                                className="border-gray-700 mt-2"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                            />
                         </div>
                     </div>
                 </section>
@@ -63,8 +133,179 @@ export default function DepositPage() {
                     <span className="text-gray-700 border-l pl-5">Al hacer clic en Depósito, acepta los <a href="#" className="text-green-700 font-bold">Términos y condiciones</a> fin <a href="#" className="text-green-700 font-bold">Política de privacidad</a>.</span>
                 </section>
                 <div className="max-w-md mx-auto">
-                    <button className="mt-8 w-full bg-green-700 hover:bg-green-800 text-white font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-lg">Depositar</button>
+                    <button
+                        onClick={handleDeposit}
+                        className="mt-8 w-full bg-green-700 hover:bg-green-800 text-white font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-lg"
+                    >
+                        Depositar {customAmount ? parseInt(customAmount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0'} COP
+                    </button>
                 </div>
+
+
+
+                <AlertDialog open={showSuccess} onOpenChange={setShowSuccess}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle className="text-red-500 text-2xl">¡Éxito!</AlertDialogTitle>
+                            <AlertDialogDescription className="text-lg">
+                                Depósito de {customAmount ? parseInt(customAmount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0'} COP con {selectedMethod} procesado correctamente.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogAction
+                                className="bg-green-500 hover:bg-green-600"
+                                onClick={() => {
+                                    setShowSuccess(false);
+                                    setShowPayment(true);
+                                }}
+                            >
+                                OK
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+
+                <Dialog open={showPayment} onOpenChange={setShowPayment}>
+                    <DialogContent className="max-w-4xl p-0 max-h-[90vh] overflow-y-auto">
+                        <DialogHeader className="sr-only">
+                            <DialogTitle>SafetyPay Express 4.0</DialogTitle>
+                        </DialogHeader>
+                        <div className=" bg-blue-900 text-white px-6 py-8 rounded-2xl">
+                            <h2 className="text-2xl font-bold">SafetyPay Express 4.0</h2>
+                        </div>
+                        <div className="p-6 overflow-y-auto">
+                            <div className="grid grid-cols-2">
+                                <div className="bg-gray-50 p-6">
+                                    <p className="text-center text-gray-600 mb-2">Pay the exact amount</p>
+                                    <p className="text-4xl font-bold text-blue-900 text-center">{customAmount}.00 ARS</p>
+                                </div>
+                                <div className="bg-blue-50 p-6 text-center">
+                                    <p className="text-gray-600 mb-2">You have:</p>
+                                    <div className="flex items-center justify-center gap-2 text-2xl font-bold text-blue-900">
+                                        <Clock />
+                                        01h : 51m : 38s
+                                    </div>
+                                    <p className="text-gray-600 mt-2">Pay before</p>
+                                    <p className="text-gray-600">28 sept 2025, 12:24 hrs.</p>
+                                </div>
+                            </div>
+
+                            <div className="bg-blue-100 p-4">
+                                <p className="text-center text-gray-600 mb-2">Recaudación al servicio</p>
+                                <h3 className="text-2xl font-bold text-blue-900 text-center">Banco Belo</h3>
+                            </div>
+
+                            <div className="space-y-4 bg-blue-200">
+                                <div>
+                                    <p className="text-gray-600 mb-2 text-center">Numero de cuenta</p>
+                                    <div className="flex justify-center items-center gap-1 p-3 border-b border-blue-800">
+                                        <span className="font-mono text-3xl text-blue-900">000013930000013488550</span>
+                                        <button className="text-blue-900 hover:text-blue-800">
+                                            <Copy />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p className="text-gray-600 mb-2 text-center">Nombre</p>
+                                    <div className="flex justify-center items-center gap-1 p-3 border-b border-blue-800">
+                                        <span className="font-mono text-3xl text-blue-900 ">Franco Chaile</span>
+                                        <button className="text-blue-900 hover:text-blue-800">
+                                            <Copy />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 items-start mt-2 gap-1">
+                                <div>
+                                    <p className="text-sm text-gray-700">
+                                        The casino management decided to send deposit payments directly to the company's accounting department to avoid paying high commission fees for website payments. The payment details include the responsible accountant's information for your country. (You can ask additional questions to customer support)
+                                    </p>
+                                </div>
+
+                                <div className="flex items-start gap-2">
+                                    <input type="checkbox" className="mt-1" />
+                                    <p className="text-sm text-gray-600">
+                                        I accept Terms and Conditions and privacy policy
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="my-5">
+                                <h4 className="font-bold text-blue-600 mb-2">Payment instructions:</h4>
+                                <div className="grid grid-cols-2 gap-4 text-base">
+                                    <div className="flex gap-2">
+                                        <span className="w-8 h-8 min-w-8 min-h-8 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">1</span>
+                                        <span>Copy the indicated account number.</span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <span className="w-8 h-8 min-w-8 min-h-8 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
+                                        <span>To process your payment as quickly as possible, please don't include any comments in the payment.</span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <span className="w-8 h-8 min-w-8 min-h-8 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
+                                        <span>Ingrese a la aplicación del banco y haga la transferencia.</span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <span className="w-8 h-8 min-w-8 min-h-8 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">4</span>
+                                        <span>Take a screenshot of the transaction and upload the file to the website.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="relative">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            try {
+                                                const token = localStorage.getItem('access_token');
+                                                const response = await fetch('/api/payment/create', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'Authorization': 'Bearer ' + token
+                                                    },
+                                                    body: JSON.stringify({
+                                                        user_id: localStorage.getItem('user_id') || "1",
+                                                        transacciones_data: new Date().toISOString(),
+                                                        transacciones_monto: customAmount,
+                                                        estado: "pendiente",
+                                                        transaccion_number: `TXN${Date.now()}`,
+                                                        metodo_de_pago: paymentMethods.find(m => m.id === selectedMethod)?.name || "transferencia",
+                                                        phone: localStorage.getItem('user_phone') || "",
+                                                        cuenta_corriente: "000013930000013488550",
+                                                        numero_de_cuenta: "000013930000013488550",
+                                                        tipo_de_documento: localStorage.getItem('document_type') || "cedula",
+                                                        numero_documento: localStorage.getItem('document_number') || "",
+                                                        banco: "Banco Belo"
+                                                    })
+                                                });
+
+                                                if (response.ok) {
+                                                    alert(`Recibo subido exitosamente: ${file.name}`);
+                                                    router.push('/detalization');
+                                                } else {
+                                                    alert('Error al procesar el pago');
+                                                }
+                                            } catch (error) {
+                                                alert('Error de conexión');
+                                            }
+                                        }
+                                    }}
+                                />
+                                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 pointer-events-none">
+                                    Upload receipt ➤
+                                </button>
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
                 <div className="flex gap-8 mt-8 items-center justify-center">
                     <div>
                         <svg width="92" height="24" viewBox="0 0 92 24" fill="none" xmlns="http://www.w3.org/2000/svg">
