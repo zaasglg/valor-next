@@ -158,18 +158,6 @@ export default function ProfilePage() {
                             >
                                 Actualizar datos
                             </button>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    localStorage.removeItem('access_token');
-                                    localStorage.removeItem('refresh_token');
-                                    localStorage.removeItem('user_id');
-                                    window.location.href = '/';
-                                }}
-                                className="flex-1 bg-[#bdbdbd] text-white font-bold py-2 rounded-md shadow-[0_4px_0_0_#a3a3a3] active:shadow-none active:translate-y-0.5 transition-all duration-100 border-0 text-base"
-                            >
-                                Cerrar sesión
-                            </button>
                         </div>
                     </form>
                 </section>
