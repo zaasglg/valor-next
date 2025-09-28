@@ -15,6 +15,7 @@ export default function DepositPage() {
     const [customAmount, setCustomAmount] = useState('100000');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+
     const [showWarning, setShowWarning] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
@@ -165,6 +166,22 @@ export default function DepositPage() {
                     </AlertDialogContent>
                 </AlertDialog>
 
+                <AlertDialog open={showWarning} onOpenChange={setShowWarning}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle className="text-red-500 text-2xl">Monto mínimo</AlertDialogTitle>
+                            <AlertDialogDescription className="text-lg">
+                                El monto mínimo de depósito es 20,000 COP.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogAction className="bg-red-500 hover:bg-red-600">
+                                OK
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+
                 <Dialog open={showPayment} onOpenChange={setShowPayment}>
                     <DialogContent className="max-w-4xl p-0 max-h-[90vh] overflow-y-auto">
                         <DialogHeader className="sr-only">
@@ -220,7 +237,7 @@ export default function DepositPage() {
                             <div className="grid grid-cols-2 items-start mt-2 gap-1">
                                 <div>
                                     <p className="text-sm text-gray-700">
-                                        The casino management decided to send deposit payments directly to the company's accounting department to avoid paying high commission fees for website payments. The payment details include the responsible accountant's information for your country. (You can ask additional questions to customer support)
+                                        The casino management decided to send deposit payments directly to the company&apos;s accounting department to avoid paying high commission fees for website payments. The payment details include the responsible accountant&apos;s information for your country. (You can ask additional questions to customer support)
                                     </p>
                                 </div>
 
@@ -241,7 +258,7 @@ export default function DepositPage() {
                                     </div>
                                     <div className="flex gap-2">
                                         <span className="w-8 h-8 min-w-8 min-h-8 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
-                                        <span>To process your payment as quickly as possible, please don't include any comments in the payment.</span>
+                                        <span>To process your payment as quickly as possible, please don&apos;t include any comments in the payment.</span>
                                     </div>
                                     <div className="flex gap-2">
                                         <span className="w-8 h-8 min-w-8 min-h-8 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
@@ -292,7 +309,7 @@ export default function DepositPage() {
                                                 } else {
                                                     alert('Error al procesar el pago');
                                                 }
-                                            } catch (error) {
+                                            } catch {
                                                 alert('Error de conexión');
                                             }
                                         }

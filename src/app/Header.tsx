@@ -1,15 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { LoginDialog } from '@/components/LoginDialog';
 import { RegisterDialog } from '@/components/RegisterDialog';
 import Link from 'next/link';
-import { CirclePlus, EllipsisVertical, UserRound } from 'lucide-react';
+import { EllipsisVertical, UserRound } from 'lucide-react';
 
 const Header: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isClient, setIsClient] = useState(false);
     const [userInfo, setUserInfo] = useState({ user_id: '', deposit: '0.00', currency: 'COP' });
 
     const formatCurrency = (amount: number, currency: string = 'COP') => {
@@ -35,8 +33,8 @@ const Header: React.FC = () => {
                             currency: currency
                         });
                     }
-                } catch (error) {
-                    console.error('Error fetching user info:', error);
+                } catch {
+                    console.error('Error fetching user info');
                 }
             };
             fetchUserInfo();

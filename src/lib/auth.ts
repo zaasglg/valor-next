@@ -1,4 +1,42 @@
-export const authService = {
+export interface AuthState {
+  user: null | { user_id: string; email: string };
+  isAuthenticated: boolean;
+}
+
+class AuthService {
+  private state: AuthState = {
+    user: null,
+    isAuthenticated: false
+  };
+  private listeners: ((state: AuthState) => void)[] = [];
+
+  getState(): AuthState {
+    return this.state;
+  }
+
+  subscribe(listener: (state: AuthState) => void) {
+    this.listeners.push(listener);
+    return () => {
+      const index = this.listeners.indexOf(listener);
+      if (index > -1) {
+        this.listeners.splice(index, 1);
+      }
+    };
+  }
+
+  private notify() {
+    this.listeners.forEach(listener => listener(this.state));
+  }
+
+  logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_id');
+    this.state = { user: null, isAuthenticated: false };
+    this.notify();
+    window.dispatchEvent(new Event('storage'));
+  }
+
   async register(email: string, password: string, country: string) {
     const response = await fetch('/api/register', {
       method: 'POST',
@@ -30,11 +68,12 @@ export const authService = {
       localStorage.setItem('user_id', data.user_id);
     }
 
-    // Trigger storage event for header update
+    this.state = { user: data, isAuthenticated: true };
+    this.notify();
     window.dispatchEvent(new Event('storage'));
 
     return data;
-  },
+  }
 
   async login(email: string, password: string) {
     const response = await fetch('/api/login', {
@@ -66,9 +105,12 @@ export const authService = {
       localStorage.setItem('user_id', data.user_id);
     }
 
-    // Trigger storage event for header update
+    this.state = { user: data, isAuthenticated: true };
+    this.notify();
     window.dispatchEvent(new Event('storage'));
 
     return data;
-  },
-};
+  }
+}
+
+export const authService = new AuthService();
