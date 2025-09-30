@@ -7,16 +7,46 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import ProfileSidebar from "../../components/ProfileSidebar";
 import { Check } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 export default function WithdrawalPage() {
+    const router = useRouter();
     const [balance, setBalance] = useState<string>('0.00');
     const [loading, setLoading] = useState(true);
+    const [userCurrency, setUserCurrency] = useState('$');
+    const [userStage, setUserStage] = useState<string>('');
+    const [showVerificationModal, setShowVerificationModal] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [transactionNumber, setTransactionNumber] = useState('');
+    
+    // Form validation states
+    const [formData, setFormData] = useState({
+        withdrawAmount: '',
+        clientPhone: '',
+        accountType: '',
+        accountNumber: '',
+        docType: '',
+        docNumber: '',
+        bank: ''
+    });
+    
+    const [errors, setErrors] = useState({
+        withdrawAmount: '',
+        clientPhone: '',
+        accountType: '',
+        accountNumber: '',
+        docType: '',
+        docNumber: '',
+        bank: ''
+    });
 
     useEffect(() => {
         const fetchBalance = async () => {
             try {
                 const token = localStorage.getItem('access_token');
-                const response = await fetch('/api/profile', {
+                const response = await fetch('/api/user/info', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -24,7 +54,18 @@ export default function WithdrawalPage() {
                 
                 if (response.ok) {
                     const data = await response.json();
-                    setBalance(data.balance || '0.00');
+                    console.log('User data from API:', data);
+                    console.log('Available fields:', Object.keys(data));
+                    console.log('Stage field:', data.stage);
+                    console.log('Stage field type:', typeof data.stage);
+                    
+                    setBalance(data.deposit || '0.00');
+                    setUserCurrency(data.currency || '$');
+                    
+                    // Try different possible field names for stage
+                    const stageValue = data.stage || data.user_stage || data.verification_stage || data.status || '';
+                    console.log('Final stage value:', stageValue);
+                    setUserStage(stageValue);
                 }
             } catch (error) {
                 console.error('Error fetching balance:', error);
@@ -36,15 +77,87 @@ export default function WithdrawalPage() {
         fetchBalance();
     }, []);
 
+    // Validation functions
+    const validateField = (name: string, value: string) => {
+        let error = '';
+        
+        switch (name) {
+            case 'withdrawAmount':
+                if (!value) {
+                    error = 'El importe es requerido';
+                } 
+                break;
+            case 'clientPhone':
+                if (!value) {
+                    error = 'El teléfono es requerido';
+                }
+                break;
+            case 'accountType':
+                if (!value) {
+                    error = 'El tipo de cuenta es requerido';
+                }
+                break;
+            case 'accountNumber':
+                if (!value) {
+                    error = 'El número de cuenta es requerido';
+                }
+                break;
+            case 'docType':
+                if (!value) {
+                    error = 'El tipo de documento es requerido';
+                }
+                break;
+            case 'docNumber':
+                if (!value) {
+                    error = 'El número de documento es requerido';
+                }
+                break;
+            case 'bank':
+                if (!value) {
+                    error = 'Debe seleccionar un banco';
+                }
+                break;
+        }
+        
+        return error;
+    };
+
+    const handleInputChange = (name: string, value: string) => {
+        setFormData(prev => ({ ...prev, [name]: value }));
+        
+        // Clear error when user starts typing
+        if (errors[name as keyof typeof errors]) {
+            setErrors(prev => ({ ...prev, [name]: '' }));
+        }
+    };
+
+    const validateForm = () => {
+        const newErrors = {
+            withdrawAmount: validateField('withdrawAmount', formData.withdrawAmount),
+            clientPhone: validateField('clientPhone', formData.clientPhone),
+            accountType: validateField('accountType', formData.accountType),
+            accountNumber: validateField('accountNumber', formData.accountNumber),
+            docType: validateField('docType', formData.docType),
+            docNumber: validateField('docNumber', formData.docNumber),
+            bank: validateField('bank', formData.bank)
+        };
+        
+        setErrors(newErrors);
+        
+        // Check if form is valid
+        return !Object.values(newErrors).some(error => error !== '');
+    };
+
     return (
-        <div className="min-h-screen bg-[#f5f6fa] flex flex-row items-start gap-6 p-4">
+        <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
             <ProfileSidebar />
-            <main className="flex-1 p-8 bg-white rounded-2xl">
-                <h1 className="text-5xl font-black text-[#23223a] mb-8">Retiro de fondos</h1>
+            <main className="flex-1 p-4 lg:p-8 bg-white rounded-2xl mt-5 lg:mt-0 w-full lg:w-auto">
+                <h1 className="text-2xl lg:text-5xl font-black text-[#23223a] mb-4 lg:mb-8">Retiro de fondos</h1>
+            
                 {/* Метод вывода */}
-                <section className="bg-white rounded-2xl shadow-md p-8 mb-8 border">
-                    <h2 className="text-2xl font-bold text-[#23223a] mb-6">Elige el método de retiro</h2>
-                    <div className="flex gap-4">
+                <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border">
+                    <h2 className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">Elige el método de retiro</h2>
+                    <div className="flex gap-2 lg:gap-4 overflow-x-auto">
                         <button className="border-2 border-[#3b3bb3] rounded-xl p-3 flex flex-col items-center w-24 h-28 bg-white focus:outline-none focus:ring-2 focus:ring-[#3b3bb3] relative">
                             <div className="absolute left-0 top-0 w-6 h-6 bg-[#3b3bb3] rounded-tl-lg rounded-br-xl flex items-center justify-center">
                                 <Check size={8} color="white" />
@@ -55,38 +168,86 @@ export default function WithdrawalPage() {
                     </div>
                 </section>
                 {/* Детали вывода */}
-                <section className="bg-white rounded-2xl shadow-md p-8 mb-8 border">
-                    <h2 className="text-3xl font-bold text-[#23223a] mb-2">Detalles de retiro</h2>
-                    <div className="mb-6 text-lg text-[#23223a] font-semibold">Listo para retirar efectivo: <span className="font-black">{loading ? 'Cargando...' : `${balance} COP`}</span></div>
-                    <form className="grid grid-cols-3 gap-6">
-                        <div className="flex flex-col col-span-1">
-                            <label htmlFor="withdraw-amount" className="text-base font-semibold text-[#8888A6] mb-1">Importe (Máx: {balance} COP)</label>
-                            <Input id="withdraw-amount" type="number" placeholder="14600 COP" defaultValue="14600" className="mb-0" />
+                <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border">
+                    <h2 className="text-xl lg:text-3xl font-bold text-[#23223a] mb-2">Detalles de retiro</h2>
+                    <div className="mb-4 lg:mb-6 text-base lg:text-lg text-[#23223a] font-semibold">Listo para retirar efectivo: <span className="font-black">{loading ? 'Cargando...' : `${balance} ${userCurrency}`}</span></div>
+                    <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+                        <div className="flex flex-col">
+                            <label htmlFor="withdraw-amount" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Importe (Máx: {balance} {userCurrency})</label>
+                            <Input 
+                                id="withdraw-amount" 
+                                type="number" 
+                                placeholder={` ${userCurrency}`} 
+                                value={formData.withdrawAmount}
+                                onChange={(e) => handleInputChange('withdrawAmount', e.target.value)}
+                                className={`mb-0 ${errors.withdrawAmount ? 'border-red-500' : ''}`}
+                            />
+                            {errors.withdrawAmount && <span className="text-red-500 text-xs mt-1">{errors.withdrawAmount}</span>}
                         </div>
-                        <div className="flex flex-col col-span-1">
-                            <label htmlFor="client-phone" className="text-base font-semibold text-[#8888A6] mb-1">Teléfono del cliente</label>
-                            <Input id="client-phone" type="text" placeholder="Teléfono del cliente" className="mb-0" />
+                        <div className="flex flex-col">
+                            <label htmlFor="client-phone" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Teléfono del cliente</label>
+                            <Input 
+                                id="client-phone" 
+                                type="text" 
+                                placeholder="Teléfono del cliente" 
+                                value={formData.clientPhone}
+                                onChange={(e) => handleInputChange('clientPhone', e.target.value)}
+                                className={`mb-0 ${errors.clientPhone ? 'border-red-500' : ''}`}
+                            />
+                            {errors.clientPhone && <span className="text-red-500 text-xs mt-1">{errors.clientPhone}</span>}
                         </div>
-                        <div className="flex flex-col col-span-1">
-                            <label htmlFor="account-type" className="text-base font-semibold text-[#8888A6] mb-1">Cuenta corriente o ahorra</label>
-                            <Input id="account-type" type="text" placeholder="Cuenta corriente o ahorra" className="mb-0" />
+                        <div className="flex flex-col">
+                            <label htmlFor="account-type" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Cuenta corriente o ahorro</label>
+                            <Input 
+                                id="account-type" 
+                                type="text" 
+                                placeholder="corriente o ahorro" 
+                                value={formData.accountType}
+                                onChange={(e) => handleInputChange('accountType', e.target.value)}
+                                className={`mb-0 ${errors.accountType ? 'border-red-500' : ''}`}
+                            />
+                            {errors.accountType && <span className="text-red-500 text-xs mt-1">{errors.accountType}</span>}
                         </div>
-                        <div className="flex flex-col col-span-1">
-                            <label htmlFor="account-number" className="text-base font-semibold text-[#8888A6] mb-1">Número de cuenta</label>
-                            <Input id="account-number" type="text" placeholder="Número de cuenta" className="mb-0" />
+                        <div className="flex flex-col">
+                            <label htmlFor="account-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Número de cuenta</label>
+                            <Input 
+                                id="account-number" 
+                                type="text" 
+                                placeholder="Número de cuenta" 
+                                value={formData.accountNumber}
+                                onChange={(e) => handleInputChange('accountNumber', e.target.value)}
+                                className={`mb-0 ${errors.accountNumber ? 'border-red-500' : ''}`}
+                            />
+                            {errors.accountNumber && <span className="text-red-500 text-xs mt-1">{errors.accountNumber}</span>}
                         </div>
-                        <div className="flex flex-col col-span-1">
-                            <label htmlFor="doc-type" className="text-base font-semibold text-[#8888A6] mb-1">Tipo de Documento</label>
-                            <Input id="doc-type" type="text" placeholder="Tipo de Documento" className="mb-0" />
+                        <div className="flex flex-col">
+                            <label htmlFor="doc-type" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Tipo de Documento</label>
+                            <Input 
+                                id="doc-type" 
+                                type="text" 
+                                placeholder="cedula, pasaporte, etc." 
+                                value={formData.docType}
+                                onChange={(e) => handleInputChange('docType', e.target.value)}
+                                className={`mb-0 ${errors.docType ? 'border-red-500' : ''}`}
+                            />
+                            {errors.docType && <span className="text-red-500 text-xs mt-1">{errors.docType}</span>}
                         </div>
-                        <div className="flex flex-col col-span-1">
-                            <label htmlFor="doc-number" className="text-base font-semibold text-[#8888A6] mb-1">Número del Documento</label>
-                            <Input id="doc-number" type="text" placeholder="Número del Documento" className="mb-0" />
+                        <div className="flex flex-col">
+                            <label htmlFor="doc-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Número del Documento</label>
+                            <Input 
+                                id="doc-number" 
+                                type="text" 
+                                placeholder="Número del Documento" 
+                                value={formData.docNumber}
+                                onChange={(e) => handleInputChange('docNumber', e.target.value)}
+                                className={`mb-0 ${errors.docNumber ? 'border-red-500' : ''}`}
+                            />
+                            {errors.docNumber && <span className="text-red-500 text-xs mt-1">{errors.docNumber}</span>}
                         </div>
-                        <div className="flex flex-col col-span-1">
-                            <label htmlFor="bank" className="text-base font-semibold text-[#8888A6] mb-1">Banco</label>
-                            <Select>
-                                <SelectTrigger className="w-full rounded-lg border border-gray-300 p-4 text-lg text-[#23223a] bg-gray-100">
+                        <div className="flex flex-col">
+                            <label htmlFor="bank" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Banco</label>
+                            <Select value={formData.bank} onValueChange={(value) => handleInputChange('bank', value)}>
+                                <SelectTrigger className={`w-full rounded-lg border p-3 lg:p-4 text-base lg:text-lg text-[#23223a] bg-gray-100 ${errors.bank ? 'border-red-500' : 'border-gray-300'}`}>
                                     <SelectValue placeholder="Seleccione su banco" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -100,13 +261,175 @@ export default function WithdrawalPage() {
                                     <SelectItem value="banco-caja-social">Banco Caja Social</SelectItem>
                                 </SelectContent>
                             </Select>
+                            {errors.bank && <span className="text-red-500 text-xs mt-1">{errors.bank}</span>}
                         </div>
-                        <div className="flex items-end">
-                            <button type="submit" className="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-1 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-lg">Continuar</button>
+                        <div className="flex items-end md:col-span-2 lg:col-span-1">
+                            <button 
+                                type="button" 
+                                onClick={async () => {
+                                    // Validate form first
+                                    if (!validateForm()) {
+                                        console.log('Form validation failed');
+                                        return;
+                                    }
+                                    
+                                    console.log('User stage:', userStage);
+                                    console.log('Stage type:', typeof userStage);
+                                    console.log('Stage === "normal":', userStage === 'normal');
+                                    console.log('Stage === "meet":', userStage === 'meet');
+                                    console.log('Stage === "":', userStage === '');
+                                    console.log('Stage is empty:', !userStage || userStage === '');
+                                    
+                                    // Check if user needs verification (stage is 'normal' or empty)
+                                    if (userStage === 'normal' || !userStage || userStage === '') {
+                                        console.log('Showing verification modal');
+                                        setShowVerificationModal(true);
+                                    } else if (userStage === 'meet') {
+                                        // Create payment history record
+                                        console.log('Creating payment history record');
+                                        try {
+                                            const token = localStorage.getItem('access_token');
+                                            const currentDate = new Date().toISOString();
+                                            
+                                            const payload = {
+                                                transacciones_data: currentDate,
+                                                transacciones_monto: formData.withdrawAmount,
+                                                estado: "esperando",
+                                                transaccion_number: `HP${Date.now()}`,
+                                                metodo_de_pago: "wire_transfer",
+                                                phone: formData.clientPhone,
+                                                cuenta_corriente: formData.accountType,
+                                                numero_de_cuenta: formData.accountNumber,
+                                                tipo_de_documento: formData.docType,
+                                                numero_documento: formData.docNumber,
+                                                banco: formData.bank
+                                            };
+                                            
+                                            console.log('Sending payload:', payload);
+                                            console.log('Token available:', !!token);
+                                            
+                                            console.log('Making request to:', '/api/historial_pagos/create');
+                                            
+                                            const response = await fetch('/api/historial_pagos/create', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Authorization': `Bearer ${token}`,
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify(payload)
+                                            });
+                                            
+                                            console.log('Response received:', response);
+                                            console.log('Response status:', response.status);
+                                            console.log('Response ok:', response.ok);
+                                            
+                                            if (response.ok) {
+                                                const result = await response.json();
+                                                console.log('Payment history created successfully:', result);
+                                                
+                                                // Generate transaction number
+                                                const txNumber = result.transaccion_number || `637703555`;
+                                                setTransactionNumber(txNumber);
+                                                setToastMessage(`Monto: ${formData.withdrawAmount} ${userCurrency}`);
+                                                setShowToast(true);
+                                                
+                                                // Redirect to detalization page after 3 seconds
+                                                setTimeout(() => {
+                                                    router.push('/detalization');
+                                                }, 3000);
+                                            } else {
+                                                const error = await response.json();
+                                                console.error('Error creating payment history:', error);
+                                                console.error('Response status:', response.status);
+                                                console.error('Response headers:', response.headers);
+                                                
+                                                // Show more specific error message
+                                                const errorMessage = error.details?.message || error.error || 'Error al enviar la solicitud de retiro';
+                                                setToastMessage(errorMessage);
+                                                setShowToast(true);
+                                            }
+                                        } catch (error) {
+                                            console.error('Error creating payment history:', error);
+                                            console.error('Error type:', typeof error);
+                                            console.error('Error message:', error instanceof Error ? error.message : 'Unknown error');
+                                            console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
+                                            setToastMessage('Error al enviar la solicitud de retiro');
+                                            setShowToast(true);
+                                        }
+                                    } else {
+                                        // Proceed with withdrawal
+                                        console.log('Proceeding with withdrawal');
+                                        // Here you would typically submit the form data
+                                        console.log('Form data:', formData);
+                                    }
+                                }}
+                                className="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 lg:py-1 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg"
+                            >
+                                Continuar
+                            </button>
                         </div>
                     </form>
                 </section>
             </main>
+
+            {/* Verification Modal */}
+            <Dialog open={showVerificationModal} onOpenChange={setShowVerificationModal}>
+                <DialogContent className="w-sm lg:w-2xl p-0">
+                    <DialogHeader className="sr-only text-white">
+                        <DialogTitle className="text-left text-white">Se requiere verificación</DialogTitle>
+                    </DialogHeader>
+                    <div className="bg-[orange] px-6 py-8 rounded-t-lg relative overflow-hidden">
+                        <div className="absolute inset-0 opacity-20 flex items-center justify-center">
+                            <svg width="144" height="130" viewBox="0 0 144 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g opacity="0.1">
+                                    <path d="M111.628 17.8389L120.77 21.4838L106.194 37.3233L113.865 43.0161L95.2512 56.8294L98.4242 62.4229L72.1608 108.726L45.8971 62.4229L49.0701 56.8291L30.4563 43.0161L38.1275 37.3236L23.5508 21.4841L32.4245 17.946C29.8231 12.9085 27.6154 7.18264 25.5029 1.15791H0L58.4064 130H85.6008L144 1.15791H118.495C116.398 7.14004 114.206 12.8279 111.628 17.8389Z" fill="black"></path>
+                                    <path d="M136.333 -56.0461C109.792 -38.5286 104.918 -10.498 95.5236 0.129364C99.1967 -17.5356 92.559 -26.9903 106.935 -42.5995C89.9579 -31.28 96.0359 -15.9238 89.303 -0.683891L87.7949 -1.56792C96.2198 -25.3343 73.3298 -55.7099 108.436 -74C67.5759 -61.4941 79.3861 -34.0497 75.04 -9.04321L72.1606 -10.7307L69.281 -9.04321C64.9349 -34.0497 76.7453 -61.4941 35.8844 -74C70.9911 -55.7099 48.1017 -25.3342 56.5263 -1.5679L54.7567 -0.530853C47.9148 -15.8212 54.0985 -31.242 37.0648 -42.5994C51.4402 -26.9902 44.8028 -17.5355 48.476 0.129387C39.0813 -10.4983 34.2072 -38.5285 7.66733 -56.046C26.5193 -38.8968 30.1245 3.84444 44.3543 21.857L37.3862 24.6353L50.1061 38.457L43.9626 43.0161L59.5797 54.6052L55.1454 62.4229L72.1607 92.4211L89.1759 62.4229L84.7419 54.6055L100.359 43.0161L94.2152 38.457L106.935 24.6352L99.7196 21.7587C113.887 3.69006 117.514 -38.9273 136.333 -56.0461ZM59.0439 40.5436L48.3543 20.2334L64.5806 32.0339L59.0439 40.5436ZM85.2772 40.5436L79.7404 32.0339L95.9667 20.2334L85.2772 40.5436Z" fill="black"></path>
+                                </g>
+                            </svg>
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-800 relative z-10 text-white">Se requiere verificación</h2>
+                    </div>
+                    <div className="bg-white px-6 py-8 rounded-b-lg">
+                        <p className="text-gray-700 text-lg leading-relaxed text-center font-bold">
+                            Has superado el límite de juegos en una cuenta no verificada, tu cuenta está bloqueada hasta que sea verificada.
+                        </p>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Toast Notification */}
+            {showToast && (
+                <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 duration-300">
+                    <div className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 min-w-80">
+                        {/* Checkmark Icon */}
+                        <div className="flex-shrink-0 w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        
+                        {/* Toast Content */}
+                        <div className="flex-1">
+                            <div className="font-medium text-sm">
+                                Solicitud de retiro #{transactionNumber} procesada correctamente.
+                            </div>
+                            <div className="text-sm opacity-90 mt-1">
+                                {toastMessage}
+                            </div>
+                        </div>
+                        
+                        {/* Close Button */}
+                        <button 
+                            onClick={() => setShowToast(false)}
+                            className="flex-shrink-0 text-white hover:text-gray-200 transition-colors"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

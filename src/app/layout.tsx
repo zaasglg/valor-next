@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Mulish } from "next/font/google";
 import "./globals.css";
 import Header from "./Header";
 import Footer from "./Footer";
+import { DialogProvider } from "@/components/DialogProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,9 +36,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${mulish.variable} antialiased bg-[#f1f3f6]`}
       >
-        <Header />
-        {children}
-        <Footer />
+        <DialogProvider>
+          <Header />
+          {children}
+          <Footer />
+        </DialogProvider>
       </body>
     </html>
   );

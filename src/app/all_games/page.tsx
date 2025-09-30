@@ -1,128 +1,350 @@
+"use client"
+
 import Image from "next/image";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+} from "@/components/ui/carousel"
+import { LoginDialog } from "@/components/LoginDialog";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
 
 const categories = [
-    { name: "Roulette", count: 4 },
-    { name: "Baccarat", count: 5 },
-    { name: "Crash", count: 6 },
-    { name: "Blackjack", count: 3 },
-    { name: "instant win", count: 1 },
-    { name: "Slots", count: 609 },
-    { name: "Live", count: 6 },
-    { name: "Valor Games", count: 26 },
-    { name: "All Games", count: 717, checked: true },
+    { name: "Casino", count: 0 },
+    { name: "En Vivo", count: 0 },
+    { name: "Todos los Juegos", count: 0, checked: true },
 ];
 
 const providers = [
-    { name: "Playson", count: 3 },
+    { name: "PragmaticPlay", count: 0 },
 ];
 
+
 const games = [
-    { title: "10", img: "/images/games/10.png", provider: "Provider" },
-    { title: "11", img: "/images/games/11.png", provider: "Provider" },
-    { title: "12", img: "/images/games/12.png", provider: "Provider" },
-    { title: "13", img: "/images/games/13.png", provider: "Provider" },
-    { title: "14", img: "/images/games/14.png", provider: "Provider" },
-    { title: "15", img: "/images/games/15.png", provider: "Provider" },
-    { title: "16", img: "/images/games/16.png", provider: "Provider" },
-    { title: "17", img: "/images/games/17.png", provider: "Provider" },
-    { title: "18", img: "/images/games/18.png", provider: "Provider" },
-    { title: "19", img: "/images/games/19.png", provider: "Provider" },
-    { title: "20", img: "/images/games/20.png", provider: "Provider" },
-    { title: "21", img: "/images/games/21.png", provider: "Provider" },
-    { title: "22", img: "/images/games/22.png", provider: "Provider" },
-    { title: "23", img: "/images/games/23.png", provider: "Provider" },
-    { title: "24", img: "/images/games/24.png", provider: "Provider" },
-    { title: "25", img: "/images/games/25.png", provider: "Provider" },
-    { title: "26", img: "/images/games/26.png", provider: "Provider" },
-    { title: "27", img: "/images/games/27.png", provider: "Provider" },
-    { title: "28", img: "/images/games/28.png", provider: "Provider" },
-    { title: "29", img: "/images/games/29.png", provider: "Provider" },
-    { title: "30", img: "/images/games/30.png", provider: "Provider" },
-    { title: "31", img: "/images/games/31.png", provider: "Provider" },
-    { title: "32", img: "/images/games/32.png", provider: "Provider" },
-    { title: "33", img: "/images/games/33.png", provider: "Provider" },
-    { title: "34", img: "/images/games/34.png", provider: "Provider" },
-    { title: "35", img: "/images/games/35.png", provider: "Provider" },
+    { img: "/images/aviator.avif", provider: "PragmaticPlay", category: "Casino" },
+    { img: "/images/diver.jpeg", provider: "PragmaticPlay", category: "Casino" },
+    { img: "/images/wheel.jpeg", provider: "PragmaticPlay", category: "Casino" },
+    { img: "/images/mines.jpeg", provider: "PragmaticPlay", category: "Casino" },
+    { img: "/images/plinko.png", provider: "PragmaticPlay", category: "Casino" },
+    { img: "/images/crash.jpeg", provider: "PragmaticPlay", category: "Casino" },
+    { img: "/images/chicken_road.png", provider: "PragmaticPlay", category: "Casino" },
+    { img: "/images/plinko_1000.png", provider: "PragmaticPlay", category: "Casino" },
+    { img: "/images/blackjack.jpeg", provider: "PragmaticPlay", category: "En Vivo" },
+    { img: "/images/powerup.jpeg", provider: "PragmaticPlay", category: "En Vivo" },
+    { img: "/images/blackjack-2.jpeg", provider: "PragmaticPlay", category: "En Vivo" },
+    { img: "/images/backjac-5.jpeg", provider: "PragmaticPlay", category: "En Vivo" },
+    { img: "/images/32-cards.jpeg", provider: "PragmaticPlay", category: "En Vivo" },
+    { img: "/images/one-day.jpeg", provider: "PragmaticPlay", category: "En Vivo" },
+    { img: "/images/backjack-salon.jpeg", provider: "PragmaticPlay", category: "En Vivo" },
+    { img: "/images/backjack-4.jpeg", provider: "PragmaticPlay", category: "En Vivo" },
 ];
 
 export default function AllGamesPage() {
+    const router = useRouter();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>(['Todos los Juegos']);
+    const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+useEffect(() => {
+  const token = localStorage.getItem('access_token');
+  setIsAuthenticated(!!token);
+}, []);
+
+const handleCarouselClick = () => {
+  if (isAuthenticated) {
+    router.push('/deposit');
+  }
+};
+
+    const handleGameClick = () => {
+        if (isAuthenticated) {
+            // Aquí se puede agregar lógica para iniciar el juego
+            console.log('Iniciando juego');
+            // Por ejemplo, abrir el juego en una nueva ventana o redirigir a la página del juego
+            // window.open('/game', '_blank');
+            // O redirigir a la página de depósito
+            router.push('/deposit');
+        }
+        // Para usuarios no autenticados, LoginDialog se mostrará a través del wrapper
+    };
+
+    const handleCategoryChange = (categoryName: string) => {
+        if (categoryName === 'Todos los Juegos') {
+            setSelectedCategories(['Todos los Juegos']);
+        } else {
+            setSelectedCategories(prev => {
+                const newCategories = prev.filter(cat => cat !== 'Todos los Juegos');
+                if (newCategories.includes(categoryName)) {
+                    return newCategories.filter(cat => cat !== categoryName);
+                } else {
+                    return [...newCategories, categoryName];
+                }
+            });
+        }
+        // Cerrar menú móvil después de seleccionar categoría
+        setIsMobileMenuOpen(false);
+    };
+
+    const handleProviderChange = (providerName: string) => {
+        setSelectedProviders(prev => {
+            if (prev.includes(providerName)) {
+                return prev.filter(prov => prov !== providerName);
+            } else {
+                return [...prev, providerName];
+            }
+        });
+        // Cerrar menú móvil después de seleccionar proveedor
+        setIsMobileMenuOpen(false);
+    };
+
+    // Conteo de juegos por categorías
+    const getCategoryCount = (categoryName: string) => {
+        if (categoryName === 'Todos los Juegos') {
+            return games.length;
+        }
+        return games.filter(game => game.category === categoryName).length;
+    };
+
+    // Conteo de juegos por proveedores
+    const getProviderCount = (providerName: string) => {
+        return games.filter(game => game.provider === providerName).length;
+    };
+
+    // Filtrado de juegos
+    const filteredGames = games.filter(game => {
+        // Si se selecciona la categoría "Todos los Juegos", mostramos todos los juegos
+        if (selectedCategories.includes('Todos los Juegos')) {
+            return true;
+        }
+        
+        // Filtrado por categorías
+        const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(game.category);
+        
+        // Filtrado por proveedores
+        const providerMatch = selectedProviders.length === 0 || selectedProviders.includes(game.provider);
+        
+        return categoryMatch && providerMatch;
+    });
+
     return (
         <div className="flex min-h-screen bg-[#fafbfc]">
-            {/* Sidebar */}
-            <aside className="w-[270px] p-8 bg-white border-r border-[#ecebfa] flex flex-col gap-8">
+            {/* Mobile Menu Button */}
+            <button 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
+            {/* Barra lateral */}
+            <aside className={`fixed lg:relative inset-y-0 left-0 z-40 w-[270px] p-4 lg:p-8 bg-white border-r border-[#ecebfa] flex flex-col gap-4 lg:gap-8 transform transition-transform duration-300 ease-in-out ${
+                isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+            }`}>
+                {/* Mobile Close Button */}
+                <button 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="lg:hidden self-end mb-2 p-2 rounded-lg hover:bg-gray-100"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                
                 <div>
-                    <h2 className="font-bold text-[#23223a] text-lg mb-4">Categorías</h2>
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="font-bold text-[#23223a] text-lg">Categorías</h2>
+                        <button 
+                            onClick={() => setSelectedCategories(['Todos los Juegos'])}
+                            className="text-sm text-[#b3b3c3] hover:text-[#23223a] transition-colors"
+                        >
+                            Limpiar
+                        </button>
+                    </div>
                     <ul className="flex flex-col gap-2">
                         {categories.map((cat) => (
                             <li key={cat.name} className="flex items-center justify-between">
                                 <label className="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" checked={!!cat.checked} readOnly className="accent-[#23223a] w-5 h-5" />
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedCategories.includes(cat.name)} 
+                                        onChange={() => handleCategoryChange(cat.name)}
+                                        className="accent-[#23223a] w-5 h-5" 
+                                    />
                                     <span className="text-[#23223a] text-base">{cat.name}</span>
                                 </label>
-                                <span className="text-[#b3b3c3] text-base font-bold">{cat.count}</span>
+                                <span className="text-[#b3b3c3] text-base font-bold">{getCategoryCount(cat.name)}</span>
                             </li>
                         ))}
                     </ul>
                 </div>
                 <div>
-                    <h2 className="font-bold text-[#23223a] text-lg mb-4">Proveedores</h2>
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="font-bold text-[#23223a] text-lg">Proveedores</h2>
+                        <button 
+                            onClick={() => setSelectedProviders([])}
+                            className="text-sm text-[#b3b3c3] hover:text-[#23223a] transition-colors"
+                        >
+                            Limpiar
+                        </button>
+                    </div>
                     <ul className="flex flex-col gap-2">
                         {providers.map((prov) => (
                             <li key={prov.name} className="flex items-center justify-between">
-                                <span className="text-[#b3b3c3] text-base">{prov.name}</span>
-                                <span className="text-[#b3b3c3] text-base font-bold">{prov.count}</span>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedProviders.includes(prov.name)} 
+                                        onChange={() => handleProviderChange(prov.name)}
+                                        className="accent-[#23223a] w-5 h-5" 
+                                    />
+                                    <span className="text-[#23223a] text-base">{prov.name}</span>
+                                </label>
+                                <span className="text-[#b3b3c3] text-base font-bold">{getProviderCount(prov.name)}</span>
                             </li>
                         ))}
                     </ul>
                 </div>
             </aside>
-            {/* Main content */}
-            <main className="flex-1 p-8">
-                {/* Top banners */}
-                <div className="flex gap-6 mb-8">
-                    <div className="rounded-2xl overflow-hidden shadow-lg w-[480px] bg-green-700 flex items-center justify-center relative bg-[url(/images/Bbv2-xdH.jpg)] bg-cover h-80">
+            {/* Mobile Overlay */}
+            {isMobileMenuOpen && (
+                <div 
+                    className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                />
+            )}
+
+            {/* Contenido principal */}
+            <main className="flex-1 p-4 lg:p-8 pt-16 lg:pt-8">
+                {/* Banners superiores */}
+                <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 mb-6 lg:mb-8">
+                    <div className="overflow-hidden w-full lg:w-[480px] bg-green-700 rounded-2xl flex items-center justify-center relative bg-[url(/images/Bbv2-xdH.jpg)] bg-cover h-48 lg:h-80">
                         <div className="absolute inset-0 flex flex-col items-center justify-end z-10 pb-10">
-                            <div className="flex items-end gap-2 w-full px-5">
+                            <div className="flex items-end gap-1 lg:gap-2 w-full px-2 lg:px-5">
                                 <div className="flex-1 flex justify-center">
-                                    <Image src="/images/aviator.avif" alt="Aviator" width={120} height={120} className="w-full h-auto max-w-[120px] rounded-2xl border-4 border-white" />
+                                    <Image src="/images/aviator.avif" alt="Aviador" width={120} height={120} className="w-full h-auto max-w-[60px] lg:max-w-[120px] rounded-2xl border-2 lg:border-4 border-white" />
                                 </div>
                                 <div className="flex-1 flex justify-center">
-                                    <Image src="/images/diver.jpeg" alt="Diver" width={90} height={90} className="w-full h-auto max-w-[120px] rounded-2xl border-4 border-white" />
+                                    <Image src="/images/diver.jpeg" alt="Buzo" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] rounded-2xl border-2 lg:border-4 border-white" />
                                 </div>
                                 <div className="flex-1 flex justify-center">
-                                    <Image src="/images/plinko.png" alt="Wheel" width={90} height={90} className="w-full h-auto max-w-[120px] rounded-2xl border-4 border-white" />
+                                    <Image src="/images/plinko.png" alt="Rueda" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] rounded-2xl border-2 lg:border-4 border-white" />
                                 </div>
                                 <div className="flex-1 flex justify-center">
-                                    <Image src="/images/mines.jpeg" alt="Mines" width={90} height={90} className="w-full h-auto max-w-[120px] rounded-2xl border-4 border-white" />
+                                    <Image src="/images/mines.jpeg" alt="Minas" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] rounded-2xl border-2 lg:border-4 border-white" />
                                 </div>
                                 <div className="flex-1 flex justify-center">
-                                    <Image src="/images/chicken_road.png" alt="Chicken Road" width={90} height={90} className="w-full h-auto max-w-[120px] rounded-2xl border-4 border-white" />
+                                    <Image src="/images/chicken_road.png" alt="Camino del Pollo" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] rounded-2xl border-2 lg:border-4 border-white" />
                                 </div>
                                 <div className="flex-1 flex justify-center">
-                                    <Image src="/images/plinko_1000.png" alt="Aztec Plinko" width={90} height={90} className="w-full h-auto max-w-[120px] rounded-2xl border-4 border-white" />
+                                    <Image src="/images/plinko_1000.png" alt="Plinko Azteca" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] rounded-2xl border-2 lg:border-4 border-white" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="flex-1 rounded-2xl overflow-hidden shadow-lg h-[220px] relative">
-                        <Image src="/images/2-banner.png" alt="Aviator Banner" fill className="object-cover" />
-                        <div className="absolute left-8 top-8 z-10">
-                            <Image src="/icons/aviator_1.svg" alt="Aviator" width={80} height={80} />
-                            <button className="mt-4 px-6 py-2 bg-[#ff2d55] text-white font-bold rounded-lg shadow">Hemen Oyna</button>
-                        </div>
-                        <div className="absolute right-8 top-1/2 -translate-y-1/2 flex gap-4 z-10">
-                            <button className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow text-2xl">←</button>
-                            <button className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow text-2xl">→</button>
-                        </div>
+                     <div className="flex-1 w-full lg:w-[480px] h-48 lg:h-80 relative">
+                    <Carousel opts={{ align: "start", loop: true, slidesToScroll: 1 }}>
+                             <CarouselContent className="flex">
+                             <CarouselItem className="basis-full">
+                {isAuthenticated ? (
+                                <div className="">
+                  <Image
+                    src="/images/1-banner.jpg"
+                                        alt="imagen del banner"
+                                        className="rounded-lg w-full object-cover cursor-pointer"
+                    width={1200}
+                    height={400}
+                    loading="lazy"
+                    priority={false}
+                    onClick={handleCarouselClick}
+                  />
+                                </div>
+                ) : (
+                  <LoginDialog>
+                                    <div className="h-full">
+                    <Image
+                      src="/images/1-banner.jpg"
+                                            alt="imagen del banner"
+                                            className="rounded-lg w-full h-full object-cover cursor-pointer"
+                      width={1200}
+                      height={400}
+                      loading="lazy"
+                      priority={false}
+                    />
+                                    </div>
+                  </LoginDialog>
+                )}
+              </CarouselItem>
+                             <CarouselItem className="basis-full h-full">
+                {isAuthenticated ? (
+                                 <div className="h-full">
+                  <Image
+                    src="/images/2-banner.jpg"
+                                         alt="imagen del banner"
+                                         className="rounded-lg w-full h-full object-cover cursor-pointer"
+                    width={1200}
+                    height={400}
+                    loading="lazy"
+                    priority={false}
+                    onClick={handleCarouselClick}
+                  />
+                                 </div>
+                ) : (
+                  <LoginDialog>
+                                     <div className="h-full">
+                    <Image
+                      src="/images/2-banner.jpg"
+                                             alt="imagen del banner"
+                                             className="rounded-lg w-full h-full object-cover cursor-pointer"
+                      width={1200}
+                      height={400}
+                      loading="lazy"
+                      priority={false}
+                    />
+                                     </div>
+                  </LoginDialog>
+                )}
+              </CarouselItem>
+                             
+            </CarouselContent>
+            {/* <CarouselPrevious />
+            <CarouselNext /> */}
+          </Carousel>
                     </div>
                 </div>
-                {/* All Games */}
-                <h1 className="text-3xl font-bold text-[#23223a] mb-8">All Games</h1>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                    {games.map((game) => (
-                        <div key={game.title} className="rounded-2xl overflow-hidden shadow-lg bg-white flex flex-col items-center">
-                            <div className="relative w-full h-60">
-                                <Image src={game.img} alt={game.title} fill className="object-cover rounded-xl" />
+                {/* Todos los Juegos */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between my-6 lg:my-8 gap-2">
+                    <h1 className="text-2xl lg:text-3xl font-bold text-[#23223a]">Todos los Juegos</h1>
+                    <span className="text-[#b3b3c3] text-base lg:text-lg">
+                        {filteredGames.length} {filteredGames.length === 1 ? 'juego' : 'juegos'}
+                    </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 lg:gap-3">
+                    {filteredGames.map((game, index) => (
+                        <div key={index} className="rounded-2xl overflow-hidden shadow-lg bg-white flex flex-col items-center">
+                            <div className="relative w-full h-40 sm:h-48 lg:h-60">
+                                {isAuthenticated ? (
+                                    <Image 
+                                        src={game.img} 
+                                        alt="Juego" 
+                                        fill 
+                                        className="object-cover rounded-xl cursor-pointer" 
+                                        onClick={handleGameClick}
+                                    />
+                                ) : (
+                                    <LoginDialog>
+                                        <Image 
+                                            src={game.img} 
+                                            alt="Juego" 
+                                            fill 
+                                            className="object-cover rounded-xl cursor-pointer" 
+                                        />
+                                    </LoginDialog>
+                                )}
                             </div>
                         </div>
                     ))}

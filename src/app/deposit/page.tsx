@@ -4,8 +4,8 @@ import { Input } from "@/components/ui/input";
 import ProfileSidebar from "../../components/ProfileSidebar";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useState } from "react";
-import { Clock, Copy } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Clock, Copy, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function DepositPage() {
@@ -19,6 +19,12 @@ export default function DepositPage() {
     const [showWarning, setShowWarning] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
+    
+    // Bonus states
+    const [firstBonusUsed, setFirstBonusUsed] = useState(false);
+    const [selectedBonusAmount, setSelectedBonusAmount] = useState<typeof bonusAmounts[0] | null>(null);
+    const [showBonusSection, setShowBonusSection] = useState(false);
+    const [userCurrency, setUserCurrency] = useState('$');
 
     const paymentMethods = [
         { id: 'NEQUI', name: 'NEQUI', image: '/images/deposit/Nequi.jpg' },
@@ -28,29 +34,88 @@ export default function DepositPage() {
     ];
 
     const predefinedAmounts = [50000, 100000, 200000, 300000];
+    
+    const bonusAmounts = [
+        { amount: 20000, percentage: 25, label: `20000 ${userCurrency} + 25%` },
+        { amount: 50000, percentage: 50, label: `50000 ${userCurrency} +50%` },
+        { amount: 100000, percentage: 75, label: `100000 ${userCurrency} +75%` },
+        { amount: 250000, percentage: 100, label: `250000 ${userCurrency} +100%` }
+    ];
+
+    // Fetch user info to check first_bonus_used
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) return;
+
+                console.log('Fetching user info');
+
+                const response = await fetch('/api/user/info/', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (response.ok) {
+                    const userData = await response.json();
+                    setFirstBonusUsed(userData.first_bonus_used || false);
+                    setShowBonusSection(!userData.first_bonus_used);
+                    setUserCurrency(userData.currency || '$');
+                }
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
+        };
+
+        fetchUserInfo();
+    }, []);
 
     const handleDeposit = () => {
-        const amount = parseInt(customAmount);
+        let amount = parseInt(customAmount);
+        
+        // If bonus section is shown and user selected a bonus amount, use that amount
+        if (showBonusSection && selectedBonusAmount) {
+            amount = selectedBonusAmount.amount;
+            setCustomAmount(amount.toString());
+        }
+        
         if (amount < 20000) {
             setShowWarning(true);
             return;
         }
+        
+        // Calculate bonus amount if bonus is selected
+        let bonusAmount = 0;
+        if (showBonusSection && selectedBonusAmount && selectedBonusAmount.percentage > 0) {
+            bonusAmount = Math.floor((amount * selectedBonusAmount.percentage) / 100);
+        }
+        
+        const totalAmount = amount + bonusAmount;
+        
         const depositData = {
             method: selectedMethod,
-            amount: customAmount,
+            amount: amount.toString(),
+            bonusPercentage: selectedBonusAmount?.percentage || 0,
+            bonusAmount: bonusAmount,
+            totalAmount: totalAmount,
             firstName,
-            lastName
+            lastName,
+            isFirstBonus: showBonusSection
         };
         console.log('Deposit data:', depositData);
         setShowSuccess(true);
     };
     return (
-        <div className="min-h-screen bg-[#f5f6fa] flex flex-row items-start gap-6 p-4">
+        <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
             <ProfileSidebar />
-            <main className="flex-1 p-8 bg-white rounded-2xl">
-                <h1 className="text-4xl font-black text-[#23223a] mb-8">Recargar</h1>
-                <section className="bg-white rounded-2xl shadow-md p-8 mb-8 border">
-                    <h2 className="text-2xl font-bold text-[#23223a] mb-6">Elige el método de depósito</h2>
+            <main className="flex-1 p-4 lg:p-8 bg-white rounded-2xl mt-6 lg:mt-0">
+                <h1 className="text-2xl lg:text-4xl font-black text-[#23223a] mb-4 lg:mb-8">Recargar</h1>
+                <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border">
+                    <h2 className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">Elige el método de depósito</h2>
                     <div className="flex gap-2 flex-wrap">
                         {paymentMethods.map((method) => (
                             <button
@@ -67,10 +132,48 @@ export default function DepositPage() {
                         ))}
                     </div>
                 </section>
-                <section className="bg-white rounded-2xl shadow-md p-8 mb-8 border grid grid-cols-2 gap-10">
+                <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-10">
                     <div>
-                        <h2 className="text-2xl font-bold text-[#23223a] mb-6">¡Elige tu bono!</h2>
-                        <div className="grid grid-cols-2 gap-2 mb-8">
+                        <h2 className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">
+                            {showBonusSection ? '¡Elige tu bono!' : '¡Elige tu monto!'}
+                        </h2>
+                        
+                        {showBonusSection ? (
+                            <div className="mb-4 lg:mb-8">
+                                <div className="grid grid-cols-2 gap-2 mb-4">
+                                    {bonusAmounts.map((bonus) => (
+                                        <button
+                                            key={bonus.amount}
+                                            onClick={() => setSelectedBonusAmount(bonus)}
+                                            className={`border-2 rounded-xl p-4 h-32 text-lg font-bold focus:outline-none focus:ring-2 transition-all flex items-center justify-center relative ${
+                                                selectedBonusAmount?.amount === bonus.amount
+                                                    ? 'text-white bg-green-700 border-green-700 overflow-hidden'
+                                                    : 'text-green-700 bg-white border-green-600 hover:bg-green-50'
+                                            }`}
+                                            style={selectedBonusAmount?.amount === bonus.amount ? {
+                                                backgroundImage: "url('/images/deposit.svg')",
+                                                backgroundSize: 'cover',
+                                                backgroundPosition: 'center',
+                                                backgroundRepeat: 'no-repeat'
+                                            } : {}}
+                                        >
+                                            {selectedBonusAmount?.amount === bonus.amount && (
+                                                <div className="absolute top-2 left-2">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="white"/>
+                                                    </svg>
+                                                </div>
+                                            )}
+                                            <div className="text-center">
+                                                <div className="font-bold">Recargar:</div>
+                                                <div className="text-sm">{bonus.label}</div>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4 lg:mb-8">
                             {predefinedAmounts.map((amount) => (
                                 <button
                                     key={amount}
@@ -78,20 +181,27 @@ export default function DepositPage() {
                                         setSelectedAmount(amount);
                                         setCustomAmount(amount.toString());
                                     }}
-                                    className={`border-2 border-green-600 rounded-xl p-12 h-32 text-xl font-bold focus:outline-none focus:ring-2 focus:ring-green-600 transition-all flex items-center justify-start text-left ${selectedAmount === amount
-                                        ? 'text-white bg-green-700'
+                                    className={`border-2 border-green-600 rounded-xl p-5 h-32 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-green-600 transition-all flex items-center justify-start text-left ${selectedAmount === amount
+                                        ? 'text-white bg-green-700 relative overflow-hidden'
                                         : 'text-green-700 bg-white hover:bg-green-50'
                                         }`}
+                                    style={selectedAmount === amount ? {
+                                        backgroundImage: "url('/images/deposit.svg')",
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        backgroundRepeat: 'no-repeat'
+                                    } : {}}
                                 >
-                                    Recargar: {amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} COP
+                                    Recargar: {amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} {userCurrency}
                                 </button>
                             ))}
                         </div>
+                        )}
                     </div>
                     <div
                         className="flex flex-col relative"
                     >
-                        <label htmlFor="deposit-amount" className="text-2xl font-bold text-[#23223a] mb-6">Monto de depósito</label>
+                        <label htmlFor="deposit-amount" className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">Monto de depósito</label>
                         <Input
                             id="deposit-amount"
                             type="number"
@@ -110,7 +220,7 @@ export default function DepositPage() {
                             <Input
                                 id="first-name"
                                 type="text"
-                                className="mb-2 border-gray-700 mt-2"
+                                className="mb-2 border-gray-700 mt-2 placeholder:text-white text-white"
                                 placeholder="Nombre de pila"
                                 value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
@@ -120,25 +230,29 @@ export default function DepositPage() {
                                 id="last-name"
                                 type="text"
                                 placeholder="Apellido"
-                                className="border-gray-700 mt-2"
+                                className="border-gray-700 mt-2 placeholder:text-white text-white"
                                 value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
                             />
                         </div>
                     </div>
                 </section>
-                <section className="flex items-center gap-4 mt-8 max-w-md mx-auto">
-                    <svg width="24" height="30" viewBox="0 0 14 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <section className="flex flex-col lg:flex-row items-start lg:items-center gap-4 mt-4 lg:mt-8 px-4 lg:px-0 lg:max-w-md lg:mx-auto">
+                    <svg width="24" height="30" viewBox="0 0 14 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
                         <path d="M12 8.11035V5C12 2.24316 9.75684 0 7 0C4.24316 0 2 2.24316 2 5V8.11035C0.764771 9.37317 0 11.0981 0 13C0 16.8599 3.14014 20 7 20C10.8599 20 14 16.8599 14 13C14 11.0981 13.2352 9.37317 12 8.11035ZM7 2C8.6543 2 10 3.3457 10 5V6.685C9.08923 6.25049 8.07452 6 7 6C5.92548 6 4.91077 6.25049 4 6.685V5C4 3.3457 5.3457 2 7 2ZM7 18C4.24316 18 2 15.7568 2 13C2 10.2432 4.24316 8 7 8C9.75684 8 12 10.2432 12 13C12 15.7568 9.75684 18 7 18ZM8 12V14C8 14.5522 7.55225 15 7 15C6.44775 15 6 14.5522 6 14V12C6 11.4478 6.44775 11 7 11C7.55225 11 8 11.4478 8 12Z" fill="#0A893D"></path>
                     </svg>
-                    <span className="text-gray-700 border-l pl-5">Al hacer clic en Depósito, acepta los <a href="#" className="text-green-700 font-bold">Términos y condiciones</a> fin <a href="#" className="text-green-700 font-bold">Política de privacidad</a>.</span>
+                    <span className="text-gray-700 lg:border-l lg:pl-5 text-sm lg:text-base">Al hacer clic en Depósito, acepta los <a href="#" className="text-green-700 font-bold">Términos y condiciones</a> fin <a href="#" className="text-green-700 font-bold">Política de privacidad</a>.</span>
                 </section>
-                <div className="max-w-md mx-auto">
+                <div className="px-4 lg:px-0 lg:max-w-md lg:mx-auto">
+                    
                     <button
                         onClick={handleDeposit}
-                        className="mt-8 w-full bg-green-700 hover:bg-green-800 text-white font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-lg"
+                        className="mt-4 lg:mt-8 w-full bg-green-700 hover:bg-green-800 text-white font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg"
                     >
-                        Depositar {customAmount ? parseInt(customAmount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0'} COP
+                        {showBonusSection && selectedBonusAmount 
+                            ? `Depositar ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}`
+                            : `Depositar ${customAmount ? parseInt(customAmount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0'} ${userCurrency}`
+                        }
                     </button>
                 </div>
 
@@ -281,25 +395,20 @@ export default function DepositPage() {
                                         if (file) {
                                             try {
                                                 const token = localStorage.getItem('access_token');
-                                                const response = await fetch('/api/payment/create', {
+                                                const response = await fetch('/api/transactions/create/', {
                                                     method: 'POST',
                                                     headers: {
                                                         'Content-Type': 'application/json',
                                                         'Authorization': 'Bearer ' + token
                                                     },
                                                     body: JSON.stringify({
-                                                        user_id: localStorage.getItem('user_id') || "1",
                                                         transacciones_data: new Date().toISOString(),
                                                         transacciones_monto: customAmount,
-                                                        estado: "pendiente",
+                                                        estado: "esperando",
                                                         transaccion_number: `TXN${Date.now()}`,
-                                                        metodo_de_pago: paymentMethods.find(m => m.id === selectedMethod)?.name || "transferencia",
-                                                        phone: localStorage.getItem('user_phone') || "",
-                                                        cuenta_corriente: "000013930000013488550",
-                                                        numero_de_cuenta: "000013930000013488550",
-                                                        tipo_de_documento: localStorage.getItem('document_type') || "cedula",
-                                                        numero_documento: localStorage.getItem('document_number') || "",
-                                                        banco: "Banco Belo"
+                                                        metodo_de_pago: paymentMethods.find(m => m.id === selectedMethod)?.name || "bank_transfer",
+                                                        amount_usd: customAmount,
+                                                        currency: userCurrency
                                                     })
                                                 });
 

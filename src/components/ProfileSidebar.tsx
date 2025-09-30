@@ -11,9 +11,9 @@ interface ProfileSidebarProps {
 
 export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileSidebarProps) {
     const pathname = usePathname();
-    const [userInfo, setUserInfo] = useState({ user_id: userId, deposit: balance, currency: 'COP' });
+    const [userInfo, setUserInfo] = useState({ user_id: userId, deposit: balance, currency: '$' });
 
-    const formatCurrency = (amount: number, currency: string = 'COP') => {
+    const formatCurrency = (amount: number, currency: string = '$') => {
         return `${amount.toFixed(2)} ${currency}`;
     };
 
@@ -32,7 +32,8 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
                 if (response.ok) {
                     const data = await response.json();
                     console.log('User info response:', data);
-                    const currency = data.currency || 'COP';
+                    // Используем currency из country_info, если он есть, иначе fallback на currency из user/info
+                    const currency = data.country_info?.currency || data.currency || '$';
                     setUserInfo({
                         user_id: data.user_id || data.id || userId,
                         deposit: data.deposit !== undefined ? formatCurrency(data.deposit, currency) : balance,
@@ -118,7 +119,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
     };
 
     return (
-        <aside className="relative w-[320px] bg-gradient-to-br from-[#ffb32c] to-[#ff9800] rounded-2xl p-6 flex flex-col gap-6 shadow-lg overflow-hidden">
+        <aside className="relative w-full lg:w-[320px] bg-gradient-to-br from-[#ffb32c] to-[#ff9800] rounded-2xl p-6 flex flex-col gap-6 shadow-lg overflow-hidden">
             {/* Decorative background SVG */}
             <svg
                 className="absolute left-0 top-0 w-full h-full pointer-events-none select-none z-0"
