@@ -16,7 +16,7 @@ const translations = {
   es: {
     // Header
     'header.balance': 'Saldo',
-    'header.deposit': 'Recargar en 1 clic',
+    'header.deposit': 'Depositlar em 1 clique',
     'header.login': 'Iniciar sesión',
     'header.register': 'Registrarse',
     'header.games': 'Juegos',

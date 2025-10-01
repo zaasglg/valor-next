@@ -15,7 +15,7 @@ export default function WithdrawalPage() {
     const router = useRouter();
     const [balance, setBalance] = useState<string>('0.00');
     const [loading, setLoading] = useState(true);
-    const [userCurrency, setUserCurrency] = useState('$');
+    const [userCurrency, setUserCurrency] = useState('COP');
     const [userStage, setUserStage] = useState<string>('');
     const [showVerificationModal, setShowVerificationModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
@@ -62,7 +62,15 @@ export default function WithdrawalPage() {
                     console.log('Stage field type:', typeof data.stage);
                     
                     setBalance(data.deposit || '0.00');
-                    setUserCurrency(data.currency || '$');
+                    
+                    // Debug currency field
+                    console.log('Currency field from API:', data.currency);
+                    console.log('Currency field type:', typeof data.currency);
+                    
+                    // Set currency with better fallback logic
+                    const currency = data.currency || data.user_currency || 'COP';
+                    console.log('Setting currency to:', currency);
+                    setUserCurrency(currency);
                     
                     // Try different possible field names for stage
                     const stageValue = data.stage || data.user_stage || data.verification_stage || data.status || '';
@@ -71,9 +79,6 @@ export default function WithdrawalPage() {
                     
                     // Check if user needs warning (stage normal and balance under $3000)
                     const balanceValue = parseFloat(data.deposit || '0.00');
-                    if (stageValue === 'normal' && balanceValue < 3000) {
-                        setShowWarningToast(true);
-                    }
                 }
             } catch (error) {
                 console.error('Error fetching balance:', error);
@@ -192,7 +197,7 @@ export default function WithdrawalPage() {
                             <Input 
                                 id="withdraw-amount" 
                                 type="number" 
-                                placeholder={` ${userCurrency}`} 
+                                placeholder={"150,000 COP"} 
                                 value={formData.withdrawAmount}
                                 onChange={(e) => handleInputChange('withdrawAmount', e.target.value)}
                                 className={`mb-0 ${errors.withdrawAmount ? 'border-red-500' : ''}`}
@@ -299,6 +304,10 @@ export default function WithdrawalPage() {
                                     if (userStage === 'verif' || !userStage || userStage === '') {
                                         console.log('Showing verification modal');
                                         setShowVerificationModal(true);
+                                    } else if (userStage === 'normal') {
+                                        // Show warning toast for normal stage users
+                                        console.log('Showing warning toast for normal stage');
+                                        setShowWarningToast(true);
                                     } else if (userStage === 'meet') {
                                         // Create payment history record
                                         console.log('Creating payment history record');

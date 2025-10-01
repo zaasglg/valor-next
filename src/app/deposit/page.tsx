@@ -28,6 +28,7 @@ export default function DepositPage() {
     const [userCurrency, setUserCurrency] = useState('$');
     const [userCountry, setUserCountry] = useState('default');
     const [isLoading, setIsLoading] = useState(true);
+    const [isManualInput, setIsManualInput] = useState(false);
 
     const paymentMethods = [
         { id: 'NEQUI', name: 'NEQUI', image: '/images/deposit/Nequi.jpg' },
@@ -46,7 +47,7 @@ export default function DepositPage() {
         'Paraguay': [100000, 200000, 300000, 500000],
         'Guatemala': [100, 150, 250, 400],
         'Chile': [12000, 14000, 20000, 25000],
-        'Colombia': [50000, 100000, 200000, 300000],
+        'Colombia': [60000, 75000, 150000, 300000],
         'Mexico': [250, 300, 400, 500],
         'Honduras': [350, 700, 1500, 3000],
         'Dominican Republic': [800, 1500, 3000, 6000],
@@ -78,7 +79,7 @@ export default function DepositPage() {
     
     // Bonus amounts based on country (using first 4 amounts from predefined amounts)
     const bonusAmounts = predefinedAmounts.slice(0, 4).map((amount, index) => {
-        const percentages = [25, 50, 75, 100];
+        const percentages = [0, 25, 50, 100];
         return {
             amount: amount,
             percentage: percentages[index],
@@ -131,13 +132,13 @@ export default function DepositPage() {
         fetchUserInfo();
     }, []);
 
-    // Set initial selected amount when predefinedAmounts changes
+    // Set initial selected amount when predefinedAmounts changes (only if customAmount is empty and not manually input)
     useEffect(() => {
-        if (predefinedAmounts.length > 0 && selectedAmount === 0) {
+        if (predefinedAmounts.length > 0 && selectedAmount === 0 && !customAmount && !isManualInput) {
             setSelectedAmount(predefinedAmounts[0]);
             setCustomAmount(predefinedAmounts[0].toString());
         }
-    }, [predefinedAmounts, selectedAmount]);
+    }, [predefinedAmounts, selectedAmount, customAmount, isManualInput]);
 
     const handleDeposit = () => {
         let amount = parseInt(customAmount);
@@ -148,7 +149,7 @@ export default function DepositPage() {
             setCustomAmount(amount.toString());
         }
         
-        if (amount < 20000) {
+        if (amount < 50000) {
             setShowWarning(true);
             return;
         }
@@ -176,16 +177,16 @@ export default function DepositPage() {
     };
     return (
         <AuthGuard>
-            <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
-                <ProfileSidebar />
-                <main className="flex-1 p-4 lg:p-8 bg-white rounded-2xl mt-6 lg:mt-0">
+        <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
+            <ProfileSidebar />
+            <main className="flex-1 p-4 lg:p-8 bg-white rounded-2xl mt-6 lg:mt-0">
                 {isLoading ? (
                     <div className="flex items-center justify-center min-h-[400px]">
                         <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
                     </div>
                 ) : (
                     <>
-                        <h1 className="text-2xl lg:text-4xl font-black text-[#23223a] mb-4 lg:mb-8">Recargar</h1>
+                <h1 className="text-2xl lg:text-4xl font-black text-[#23223a] mb-4 lg:mb-8">Recargar</h1>
                 <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border">
                     <h2 className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">Elige el método de depósito</h2>
                     <div className="flex gap-2 flex-wrap">
@@ -238,7 +239,10 @@ export default function DepositPage() {
                                             )}
                                             <div className="text-center">
                                                 <div className="font-black text-xl">Recargar:</div>
-                                                <div className="text-lg">{bonus.label}</div>
+                                                <div className="text-lg">
+                                                    {bonus.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} {displayCurrency}
+                                                    {bonus.percentage > 0 && ` +${bonus.percentage}%`}
+                                                </div>
                                             </div>
                                         </button>
                                     ))}
@@ -252,6 +256,7 @@ export default function DepositPage() {
                                     onClick={() => {
                                         setSelectedAmount(amount);
                                         setCustomAmount(amount.toString());
+                                        setIsManualInput(false);
                                     }}
                                     className={`border-2 border-green-600 rounded-xl p-5 h-32 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-green-600 transition-all flex items-center justify-start text-left ${selectedAmount === amount
                                         ? 'text-white bg-green-700 relative overflow-hidden'
@@ -274,16 +279,29 @@ export default function DepositPage() {
                         className="flex flex-col relative"
                     >
                         <label htmlFor="deposit-amount" className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">Monto de depósito</label>
+                        <div className="relative">
                         <Input
                             id="deposit-amount"
                             type="number"
-                            placeholder="100000"
+                                placeholder={`Ingresa tu monto (ej: 100000)`}
                             value={customAmount}
                             onChange={(e) => {
-                                setCustomAmount(e.target.value);
+                                    const value = e.target.value;
+                                    setCustomAmount(value);
                                 setSelectedAmount(0);
-                            }}
-                        />
+                                    setIsManualInput(true);
+                                }}
+                                className="pr-16"
+                                min="1"
+                                step="1"
+                            />
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-medium">
+                                {displayCurrency}
+                            </div>
+                        </div>
+                        <div className="mt-2 text-sm text-gray-600">
+                            Monto mínimo: 50,000 {displayCurrency}
+                        </div>
 
                         <div className="mt-10 bg-cover bg-[#3f1c80] px-5 py-10 rounded-2xl" style={{
                             backgroundImage: "url('images/deposit.svg')"
@@ -322,7 +340,7 @@ export default function DepositPage() {
                         className="mt-4 lg:mt-8 w-full bg-green-700 hover:bg-green-800 text-white font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg"
                     >
                         {showBonusSection && selectedBonusAmount 
-                            ? `Depositar ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}`
+                            ? `Depositar ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}${selectedBonusAmount.percentage > 0 ? ` +${selectedBonusAmount.percentage}%` : ''}`
                             : `Depositar ${customAmount ? parseInt(customAmount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0'} ${userCurrency}`
                         }
                     </button>
@@ -357,7 +375,7 @@ export default function DepositPage() {
                         <AlertDialogHeader>
                             <AlertDialogTitle className="text-red-500 text-2xl">Monto mínimo</AlertDialogTitle>
                             <AlertDialogDescription className="text-lg">
-                                El monto mínimo de depósito es 20,000 COP.
+                                El monto mínimo de depósito es 50,000 COP.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -540,7 +558,7 @@ export default function DepositPage() {
                     </>
                 )}
             </main>
-            </div>
+        </div>
         </AuthGuard>
     );
 }

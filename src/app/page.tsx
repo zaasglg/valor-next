@@ -7,6 +7,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel"
 import { LoginDialog } from "@/components/LoginDialog";
+import { RegisterDialog } from "@/components/RegisterDialog";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -14,16 +15,36 @@ import Link from "next/link";
 export default function Home() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
+    const hasVisited = localStorage.getItem('has_visited');
+    
     setIsAuthenticated(!!token);
+    
+    // Если пользователь не авторизован и это его первый визит, показываем модальное окно регистрации
+    if (!token && !hasVisited) {
+      setShowRegisterModal(true);
+      localStorage.setItem('has_visited', 'true');
+    }
   }, []);
 
   const handleCarouselClick = () => {
     if (isAuthenticated) {
       router.push('/deposit');
     }
+  };
+
+  const handleLoginClick = () => {
+    setShowRegisterModal(false);
+    setShowLoginModal(true);
+  };
+
+  const handleRegisterClick = () => {
+    setShowLoginModal(false);
+    setShowRegisterModal(true);
   };
 
   return (
@@ -196,6 +217,20 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Модальное окно регистрации */}
+      <RegisterDialog 
+        isOpen={showRegisterModal} 
+        onOpenChange={setShowRegisterModal}
+        onLoginClick={handleLoginClick}
+      />
+
+      {/* Модальное окно входа */}
+      <LoginDialog 
+        isOpen={showLoginModal} 
+        onOpenChange={setShowLoginModal}
+        onRegisterClick={handleRegisterClick}
+      />
     </div>
   );
 }
