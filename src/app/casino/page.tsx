@@ -61,20 +61,24 @@ export default function CasinoPage() {
                             <div className="rounded-2xl overflow-hidden shadow-lg bg-white flex flex-col items-center">
                             <div className="relative w-full h-40 sm:h-48 lg:h-60">
                                 {isAuthenticated ? (
-                                    <Image 
-                                        src={game.img} 
-                                        alt="Juego" 
-                                        fill 
-                                        className="object-cover rounded-xl cursor-pointer" 
-                                    />
-                                ) : (
-                                    <LoginDialog>
+                                    <a href="/game">
                                         <Image 
                                             src={game.img} 
                                             alt="Juego" 
                                             fill 
                                             className="object-cover rounded-xl cursor-pointer" 
                                         />
+                                    </a>
+                                ) : (
+                                    <LoginDialog>
+                                        <a href="/game" tabIndex={-1} aria-disabled="true">
+                                            <Image 
+                                                src={game.img} 
+                                                alt="Juego" 
+                                                fill 
+                                                className="object-cover rounded-xl cursor-pointer" 
+                                            />
+                                        </a>
                                     </LoginDialog>
                                 )}
                             </div>

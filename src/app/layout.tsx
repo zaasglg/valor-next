@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "./Header";
 import Footer from "./Footer";
 import { DialogProvider } from "@/components/DialogProvider";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,11 +37,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${mulish.variable} antialiased bg-[#f1f3f6]`}
       >
-        <DialogProvider>
-          <Header />
-          {children}
-          <Footer />
-        </DialogProvider>
+        <LanguageProvider>
+          <DialogProvider>
+            <Header />
+            {children}
+            <Footer />
+          </DialogProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

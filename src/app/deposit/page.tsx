@@ -7,12 +7,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useState, useEffect } from "react";
 import { Clock, Copy, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
+import AuthGuard from "@/components/AuthGuard";
 
 export default function DepositPage() {
     const router = useRouter();
     const [selectedMethod, setSelectedMethod] = useState('NEQUI');
-    const [selectedAmount, setSelectedAmount] = useState(100000);
-    const [customAmount, setCustomAmount] = useState('100000');
+    const [selectedAmount, setSelectedAmount] = useState(0);
+    const [customAmount, setCustomAmount] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
 
@@ -25,6 +26,8 @@ export default function DepositPage() {
     const [selectedBonusAmount, setSelectedBonusAmount] = useState<typeof bonusAmounts[0] | null>(null);
     const [showBonusSection, setShowBonusSection] = useState(false);
     const [userCurrency, setUserCurrency] = useState('$');
+    const [userCountry, setUserCountry] = useState('default');
+    const [isLoading, setIsLoading] = useState(true);
 
     const paymentMethods = [
         { id: 'NEQUI', name: 'NEQUI', image: '/images/deposit/Nequi.jpg' },
@@ -33,14 +36,55 @@ export default function DepositPage() {
         { id: 'USDT', name: 'USDT', image: '/images/deposit/btc.jpg' }
     ];
 
-    const predefinedAmounts = [50000, 100000, 200000, 300000];
+    // Deposit amounts by country
+    const depositAmountsByCountry = {
+        'Argentina': [20000, 50000, 100000, 250000],
+        'Bolivia': [200, 500, 1000, 2500],
+        'Venezuela': [1500, 3000, 5000, 100000],
+        'Peru': [50, 100, 200, 500],
+        'Costa Rica': [10000, 25000, 50000, 100000],
+        'Paraguay': [100000, 200000, 300000, 500000],
+        'Guatemala': [100, 150, 250, 400],
+        'Chile': [12000, 14000, 20000, 25000],
+        'Colombia': [50000, 100000, 200000, 300000],
+        'Mexico': [250, 300, 400, 500],
+        'Honduras': [350, 700, 1500, 3000],
+        'Dominican Republic': [800, 1500, 3000, 6000],
+        'default': [10, 25, 50, 100]
+    };
+
+    // Currency mapping by country
+    const currencyByCountry = {
+        'Argentina': 'ARS',
+        'Bolivia': 'BOB',
+        'Venezuela': 'VES',
+        'Peru': 'PEN',
+        'Costa Rica': 'CRC',
+        'Paraguay': 'PYG',
+        'Guatemala': 'GTQ',
+        'Chile': 'CLP',
+        'Colombia': 'COP',
+        'Mexico': 'MXN',
+        'Honduras': 'HNL',
+        'Dominican Republic': 'DOP',
+        'default': '$'
+    };
+
+    // Get predefined amounts based on user's country
+    const predefinedAmounts = depositAmountsByCountry[userCountry as keyof typeof depositAmountsByCountry] || depositAmountsByCountry.default;
     
-    const bonusAmounts = [
-        { amount: 20000, percentage: 25, label: `20000 ${userCurrency} + 25%` },
-        { amount: 50000, percentage: 50, label: `50000 ${userCurrency} +50%` },
-        { amount: 100000, percentage: 75, label: `100000 ${userCurrency} +75%` },
-        { amount: 250000, percentage: 100, label: `250000 ${userCurrency} +100%` }
-    ];
+    // Get currency for display (fallback to country currency if userCurrency is not set)
+    const displayCurrency = userCurrency || currencyByCountry[userCountry as keyof typeof currencyByCountry] || '$';
+    
+    // Bonus amounts based on country (using first 4 amounts from predefined amounts)
+    const bonusAmounts = predefinedAmounts.slice(0, 4).map((amount, index) => {
+        const percentages = [25, 50, 75, 100];
+        return {
+            amount: amount,
+            percentage: percentages[index],
+            label: `${amount} ${displayCurrency} +${percentages[index]}%`
+        };
+    });
 
     // Fetch user info to check first_bonus_used
     useEffect(() => {
@@ -62,17 +106,38 @@ export default function DepositPage() {
 
                 if (response.ok) {
                     const userData = await response.json();
+                    console.log('User data from API:', userData);
+                    
                     setFirstBonusUsed(userData.first_bonus_used || false);
                     setShowBonusSection(!userData.first_bonus_used);
-                    setUserCurrency(userData.currency || '$');
+                    
+                    // Set user country for deposit amounts
+                    const country = userData.country_info?.country || userData.country || 'default';
+                    setUserCountry(country);
+                    console.log('User country:', country);
+                    
+                    // Set currency based on country or API data
+                    const currency = userData.country_info?.currency || userData.currency || currencyByCountry[country as keyof typeof currencyByCountry] || '$';
+                    setUserCurrency(currency);
+                    console.log('User currency:', currency);
                 }
             } catch (error) {
                 console.error('Error fetching user info:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchUserInfo();
     }, []);
+
+    // Set initial selected amount when predefinedAmounts changes
+    useEffect(() => {
+        if (predefinedAmounts.length > 0 && selectedAmount === 0) {
+            setSelectedAmount(predefinedAmounts[0]);
+            setCustomAmount(predefinedAmounts[0].toString());
+        }
+    }, [predefinedAmounts, selectedAmount]);
 
     const handleDeposit = () => {
         let amount = parseInt(customAmount);
@@ -110,10 +175,17 @@ export default function DepositPage() {
         setShowSuccess(true);
     };
     return (
-        <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
-            <ProfileSidebar />
-            <main className="flex-1 p-4 lg:p-8 bg-white rounded-2xl mt-6 lg:mt-0">
-                <h1 className="text-2xl lg:text-4xl font-black text-[#23223a] mb-4 lg:mb-8">Recargar</h1>
+        <AuthGuard>
+            <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
+                <ProfileSidebar />
+                <main className="flex-1 p-4 lg:p-8 bg-white rounded-2xl mt-6 lg:mt-0">
+                {isLoading ? (
+                    <div className="flex items-center justify-center min-h-[400px]">
+                        <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+                    </div>
+                ) : (
+                    <>
+                        <h1 className="text-2xl lg:text-4xl font-black text-[#23223a] mb-4 lg:mb-8">Recargar</h1>
                 <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border">
                     <h2 className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">Elige el método de depósito</h2>
                     <div className="flex gap-2 flex-wrap">
@@ -121,7 +193,7 @@ export default function DepositPage() {
                             <button
                                 key={method.id}
                                 onClick={() => setSelectedMethod(method.id)}
-                                className={`border-2 rounded-xl p-4 flex flex-col items-center w-32 h-40 bg-white focus:outline-none focus:ring-2 transition-all ${selectedMethod === method.id
+                                className={`border-2 rounded-xl p-2 flex flex-col justify-center items-center w-28 h-36 bg-white focus:outline-none focus:ring-2 transition-all ${selectedMethod === method.id
                                     ? 'border-green-600 focus:ring-green-600'
                                     : 'border-gray-300 hover:border-gray-400'
                                     }`}
@@ -145,7 +217,7 @@ export default function DepositPage() {
                                         <button
                                             key={bonus.amount}
                                             onClick={() => setSelectedBonusAmount(bonus)}
-                                            className={`border-2 rounded-xl p-4 h-32 text-lg font-bold focus:outline-none focus:ring-2 transition-all flex items-center justify-center relative ${
+                                            className={`border-2 font-black rounded-xl p-4 h-32 text-lg focus:outline-none focus:ring-2 transition-all flex items-center justify-center relative ${
                                                 selectedBonusAmount?.amount === bonus.amount
                                                     ? 'text-white bg-green-700 border-green-700 overflow-hidden'
                                                     : 'text-green-700 bg-white border-green-600 hover:bg-green-50'
@@ -165,8 +237,8 @@ export default function DepositPage() {
                                                 </div>
                                             )}
                                             <div className="text-center">
-                                                <div className="font-bold">Recargar:</div>
-                                                <div className="text-sm">{bonus.label}</div>
+                                                <div className="font-black text-xl">Recargar:</div>
+                                                <div className="text-lg">{bonus.label}</div>
                                             </div>
                                         </button>
                                     ))}
@@ -192,7 +264,7 @@ export default function DepositPage() {
                                         backgroundRepeat: 'no-repeat'
                                     } : {}}
                                 >
-                                    Recargar: {amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} {userCurrency}
+                                    Recargar: {amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} {displayCurrency}
                                 </button>
                             ))}
                         </div>
@@ -465,7 +537,10 @@ export default function DepositPage() {
                         </svg>
                     </div>
                 </div>
+                    </>
+                )}
             </main>
-        </div>
+            </div>
+        </AuthGuard>
     );
 }

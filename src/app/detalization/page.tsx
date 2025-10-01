@@ -2,6 +2,7 @@
 
 import ProfileSidebar from "../../components/ProfileSidebar";
 import { useState, useEffect } from "react";
+import AuthGuard from "../../components/AuthGuard";
 
 interface Transaction {
     id: number;
@@ -80,11 +81,18 @@ export default function DetalizationPage() {
         fetchData();
     }, []);
     return (
-        <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
-            <ProfileSidebar />
-            <main className="flex-1 p-4 lg:p-8 bg-white rounded-2xl mt-5 lg:mt-0 w-full lg:w-auto">
-                {/* Header */}
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <AuthGuard>
+            <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
+                <ProfileSidebar />
+                <main className="flex-1 p-4 lg:p-8 bg-white rounded-2xl mt-5 lg:mt-0 w-full lg:w-auto">
+                {loading ? (
+                    <div className="flex items-center justify-center min-h-[400px]">
+                        <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+                    </div>
+                ) : (
+                    <>
+                        {/* Header */}
+                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div className="mb-4 lg:mb-8">
                         <h1 className="text-xl lg:text-3xl font-black text-[#23223a] leading-tight">
                             Historial de transacciones:<br />
@@ -128,11 +136,7 @@ export default function DetalizationPage() {
                             </tr>
                         </thead>
                         <tbody className="text-[#23223a] text-sm lg:text-base font-medium">
-                            {loading ? (
-                                <tr>
-                                    <td colSpan={5} className="py-4 lg:py-8 px-2 lg:px-6 text-center text-sm lg:text-base">Cargando...</td>
-                                </tr>
-                            ) : (activeTab === 'deposits' ? transactions.length === 0 : payments.length === 0) ? (
+                            {(activeTab === 'deposits' ? transactions.length === 0 : payments.length === 0) ? (
                                 <tr>
                                     <td colSpan={5} className="py-4 lg:py-8 px-2 lg:px-6 text-center text-sm lg:text-base">No hay transacciones</td>
                                 </tr>
@@ -166,7 +170,10 @@ export default function DetalizationPage() {
                         </tbody>
                     </table>
                 </div>
+                    </>
+                )}
             </main>
-        </div>
+            </div>
+        </AuthGuard>
     );
 }

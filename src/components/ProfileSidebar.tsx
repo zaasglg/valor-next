@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import Loader from "./Loader";
+import DotsLoader from "./DotsLoader";
 
 interface ProfileSidebarProps {
     balance?: string;
@@ -12,6 +14,7 @@ interface ProfileSidebarProps {
 export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileSidebarProps) {
     const pathname = usePathname();
     const [userInfo, setUserInfo] = useState({ user_id: userId, deposit: balance, currency: '$' });
+    const [isLoading, setIsLoading] = useState(true);
 
     const formatCurrency = (amount: number, currency: string = '$') => {
         return `${amount.toFixed(2)} ${currency}`;
@@ -44,6 +47,8 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
                 }
             } catch (error) {
                 console.error('Error fetching user info:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -134,18 +139,26 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
             <div className="grid grid-cols-2 gap-2 mb-2 relative z-10">
                 <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
                     <span className="text-xs">Saldo:</span>
-                    <span className="font-black text-base">{userInfo.deposit}</span>
+                    {isLoading ? (
+                        <DotsLoader className="mt-4" color="black" size="sm" />
+                    ) : (
+                        <span className="font-black text-base">{userInfo.deposit}</span>
+                    )}
                 </div>
                 <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
                     <span className="text-xs">ID de usuario:</span>
-                    <span className="font-black text-base">{userInfo.user_id}</span>
+                    {isLoading ? (
+                        <DotsLoader className="mt-4" color="black" size="sm" />
+                    ) : (
+                        <span className="font-black text-base">{userInfo.user_id}</span>
+                    )}
                 </div>
             </div>
 
             {/* Quick Recharge Button */}
-            <button className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-3 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 border-0 mb-2 relative z-10">
+            <Link href="/deposit" className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-3 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 border-0 mb-2 relative z-10 block text-center">
                 Recargar en 1 clic
-            </button>
+            </Link>
 
             {/* Navigation */}
             <nav className="flex flex-col relative z-10 space-y-1">

@@ -9,6 +9,7 @@ import {
 import { LoginDialog } from "@/components/LoginDialog";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
@@ -157,14 +158,14 @@ export default function Home() {
               </button>
             </div>
             <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/aviator.avif)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/diver.jpeg)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/wheel.jpeg)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/mines.jpeg)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/plinko.png)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/crash.jpeg)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/chicken_road.png)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/plinko_1000.png)' }} />
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/aviator.avif)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/diver.jpeg)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/wheel.jpeg)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/mines.jpeg)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/plinko.png)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/crash.jpeg)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/chicken_road.png)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/plinko_1000.png)' }}></Link>
             </div>
           </div>
 
@@ -183,14 +184,14 @@ export default function Home() {
               </button>
             </div>
             <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/blackjack.jpeg)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/powerup.jpeg)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/blackjack-2.jpeg)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/backjac-5.jpeg)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/32-cards.jpeg)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/one-day.jpeg)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/backjack-salon.jpeg)' }} />
-              <div className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/images/backjack-4.jpeg)' }} />
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/blackjack.jpeg)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/powerup.jpeg)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/blackjack-2.jpeg)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/backjac-5.jpeg)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/32-cards.jpeg)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/one-day.jpeg)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/backjack-salon.jpeg)' }}></Link>
+              <Link href="/game" className="rounded-lg p-4 text-white text-center h-40 flex items-center justify-center bg-cover bg-center transition-transform hover:scale-105" style={{ backgroundImage: 'url(/images/backjack-4.jpeg)' }}></Link>
             </div>
           </div>
         </div>

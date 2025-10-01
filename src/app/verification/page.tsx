@@ -5,6 +5,7 @@ import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { useState, useEffect } from "react";
+import AuthGuard from "../../components/AuthGuard";
 
 export default function VerificationPage() {
     const [userInfo, setUserInfo] = useState({
@@ -32,15 +33,16 @@ export default function VerificationPage() {
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('User info from API:', data);
                     setUserInfo({
-                        first_name: data.first_name || '',
-                        last_name: data.last_name || '',
-                        birthday: data.birthday || '',
-                        gender: data.gender || 'male',
+                        first_name: data.nombre || data.first_name || '',
+                        last_name: data.apellido || data.last_name || '',
+                        birthday: data.cumpleanos || data.birthday || '',
+                        gender: data.sexo === 'masculino' ? 'male' : data.sexo === 'femenino' ? 'female' : data.gender || 'male',
                         country: data.country || 'Colombia',
-                        city: data.city || '',
-                        address: data.address || '',
-                        phone: data.phone || '',
+                        city: data.ciudad || data.city || '',
+                        address: data.direccion || data.address || '',
+                        phone: data.numero_de_telefono || data.phone || '',
                         email: data.email || ''
                     });
                 }
@@ -54,21 +56,65 @@ export default function VerificationPage() {
         fetchUserInfo();
     }, []);
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-[#f5f6fa] flex items-center justify-center">
-                <div className="text-lg">Cargando...</div>
-            </div>
-        );
-    }
+    const handleSubmit = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+            
+            // Prepare data in the correct format for the API
+            const updateData = {
+                email: userInfo.email,
+                nombre: userInfo.first_name,
+                apellido: userInfo.last_name,
+                country: userInfo.country,
+                ciudad: userInfo.city,
+                direccion: userInfo.address,
+                numero_de_telefono: userInfo.phone,
+                sexo: userInfo.gender === 'male' ? 'masculino' : 'femenino',
+                cumpleanos: userInfo.birthday ? new Date(userInfo.birthday).toISOString().split('T')[0] : '',
+                status: "active",
+                stage: "verif"
+            };
+
+            console.log('Sending verification update data:', updateData);
+
+            const response = await fetch('/api/profile/update/', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(updateData)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Verification update response:', result);
+                alert('Datos actualizados exitosamente');
+            } else {
+                const errorData = await response.json();
+                console.error('Verification update error:', errorData);
+                alert('Error al actualizar los datos');
+            }
+        } catch (error) {
+            console.error('Error updating verification data:', error);
+            alert('Error al actualizar los datos');
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
-            <ProfileSidebar />
-            <main className="flex-1 p-4 lg:p-8 bg-white rounded-2xl mt-6 lg:*:mt-0 w-full lg:w-auto">
+        <AuthGuard>
+            <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
+                <ProfileSidebar />
+                <main className="flex-1 p-4 lg:p-8 bg-white rounded-2xl mt-6 lg:*:mt-0 w-full lg:w-auto">
+                {loading ? (
+                    <div className="flex items-center justify-center min-h-[400px]">
+                        <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+                    </div>
+                ) : (
+                    <>
                 <form className="w-full bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-lg p-4 lg:p-10 border-0 lg:border border-[#ecebfa]">
                     <h1 className="text-2xl lg:text-4xl font-black text-[#23223a] mb-4 lg:mb-8">Datos personales</h1>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-4 lg:mb-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-3 mb-4 lg:mb-6">
                         <div>
                             <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">Nombre</label>
                             <Input value={userInfo.first_name} onChange={(e) => setUserInfo({ ...userInfo, first_name: e.target.value })} className="text-base lg:text-lg" />
@@ -79,7 +125,12 @@ export default function VerificationPage() {
                         </div>
                         <div>
                             <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">Cumpleaños</label>
-                            <Input value={userInfo.birthday} onChange={(e) => setUserInfo({ ...userInfo, birthday: e.target.value })} className="text-base lg:text-lg" />
+                            <Input 
+                                type="date" 
+                                value={userInfo.birthday} 
+                                onChange={(e) => setUserInfo({ ...userInfo, birthday: e.target.value })} 
+                                className="text-base lg:text-lg" 
+                            />
                         </div>
                     </div>
                     <div className="mb-4 lg:mb-6">
@@ -98,8 +149,8 @@ export default function VerificationPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-4 lg:mb-6">
                         <div>
                             <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">País</label>
-                            <Select value={userInfo.country} onValueChange={(value) => setUserInfo({ ...userInfo, country: value })}>
-                                <SelectTrigger className="text-base lg:text-lg w-full">
+                            <Select value={userInfo.country} disabled>
+                                <SelectTrigger className="text-base lg:text-lg w-full cursor-not-allowed opacity-70">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -139,10 +190,19 @@ export default function VerificationPage() {
                         </div>
                     </div>
                     <div className="flex justify-center lg:justify-end">
-                        <Button className="bg-[#ffb32c] hover:bg-[#ff9800] text-white text-base lg:text-lg font-bold px-8 lg:px-12 py-3 rounded-xl shadow-[0_4px_0_0_#f5970a] active:shadow-none active:translate-y-0.5 transition-all duration-100 border-0 w-full lg:w-auto">Actualizar datos</Button>
+                        <Button 
+                            type="button"
+                            onClick={handleSubmit}
+                            className="bg-[#ffb32c] hover:bg-[#ff9800] text-white text-base lg:text-lg font-bold px-8 lg:px-12 py-3 rounded-xl shadow-[0_4px_0_0_#f5970a] active:shadow-none active:translate-y-0.5 transition-all duration-100 border-0 w-full lg:w-auto"
+                        >
+                            Actualizar datos
+                        </Button>
                     </div>
                 </form>
+                    </>
+                )}
             </main>
-        </div>
+            </div>
+        </AuthGuard>
     );
 }

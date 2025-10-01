@@ -4,8 +4,10 @@ import ProfileSidebar from "@/components/ProfileSidebar";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
+import AuthGuard from "@/components/AuthGuard";
 
 export default function ProfilePage() {
+    const [isLoading, setIsLoading] = useState(true);
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -43,40 +45,73 @@ export default function ProfilePage() {
                 }
             } catch (error) {
                 console.error('Error fetching user info:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchUserInfo();
     }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         try {
             const token = localStorage.getItem('access_token');
+            
+            // Prepare data in the correct format for the API
+            const updateData = {
+                email: formData.email,
+                nombre: formData.nombre,
+                apellido: formData.apellido,
+                country: formData.country,
+                ciudad: formData.ciudad,
+                direccion: formData.direccion,
+                numero_de_telefono: formData.numero_de_telefono,
+                sexo: formData.sexo,
+                cumpleanos: formData.cumpleanos ? new Date(formData.cumpleanos).toISOString().split('T')[0] : '',
+                status: "active"
+            };
+
+            console.log('Sending profile update data:', updateData);
+
             const response = await fetch('/api/profile/update/', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(updateData)
             });
+
             if (response.ok) {
+                const result = await response.json();
+                console.log('Profile update response:', result);
                 alert('Perfil actualizado exitosamente');
+            } else {
+                const errorData = await response.json();
+                console.error('Profile update error:', errorData);
+                alert('Error al actualizar el perfil');
             }
         } catch (error) {
             console.error('Error updating profile:', error);
+            alert('Error al actualizar el perfil');
         }
     };
     return (
-        <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
-            {/* Sidebar */}
-            <ProfileSidebar balance="0.00COP" userId="0" />
+        <AuthGuard>
+            <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
+                {/* Sidebar */}
+                <ProfileSidebar balance="0.00COP" userId="0" />
 
-            {/* Main content */}
-            <main className="w-full flex-1 flex flex-col items-center justify-start bg-white rounded-2xl p-4 lg:p-10 shadow-lg mt-10 lg:mt-0">
-                <h1 className="text-2xl lg:text-4xl font-black text-[#23223a] mt-3 lg:mt-6 mb-4 lg:mb-8 text-left w-full">
-                    Mi perfil: <span className="text-[#ffb32c]">Datos personales</span>
-                </h1>
+                {/* Main content */}
+                <main className="w-full flex-1 flex flex-col items-center justify-start bg-white rounded-2xl p-4 lg:p-10 shadow-lg mt-10 lg:mt-0">
+                {isLoading ? (
+                    <div className="flex items-center justify-center min-h-[400px]">
+                        <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+                    </div>
+                ) : (
+                    <>
+                        <h1 className="text-2xl lg:text-4xl font-black text-[#23223a] mt-3 lg:mt-6 mb-4 lg:mb-8 text-left w-full">
+                            Mi perfil: <span className="text-[#ffb32c]">Datos personales</span>
+                        </h1>
                 <section className="w-full bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-xl p-4 lg:p-10 flex flex-col gap-4 lg:gap-8 border-0 lg:border border-[#ececf1]">
                     <h2 className="text-xl lg:text-3xl font-black text-[#23223a] mb-2 lg:mb-4">Datos personales</h2>
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-4 lg:gap-y-6">
@@ -145,13 +180,20 @@ export default function ProfilePage() {
                             <Input className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-3 lg:px-4 py-2 lg:py-3 text-base lg:text-lg" value={formData.numero_de_telefono} onChange={(e) => setFormData({ ...formData, numero_de_telefono: e.target.value })} />
                         </div>
                         <div className="md:col-span-2 lg:col-span-4 flex justify-end mt-4">
-                            <button type="submit" className="bg-[#ffb32c] hover:bg-[#e6a029] text-white font-semibold px-6 py-2 rounded-lg transition-colors">
+                            <button 
+                                type="button" 
+                                onClick={handleSubmit}
+                                className="bg-[#ffb32c] hover:bg-[#e6a029] text-white font-semibold px-6 py-2 rounded-lg transition-colors"
+                            >
                                 Guardar cambios
                             </button>
                         </div>
                     </form>
                 </section>
+                    </>
+                )}
             </main>
-        </div>
+            </div>
+        </AuthGuard>
     );
 }

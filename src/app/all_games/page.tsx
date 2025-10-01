@@ -9,6 +9,7 @@ import {
 import { LoginDialog } from "@/components/LoginDialog";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 
 const categories = [
@@ -328,21 +329,25 @@ const handleCarouselClick = () => {
                         <div key={index} className="rounded-2xl overflow-hidden shadow-lg bg-white flex flex-col items-center">
                             <div className="relative w-full h-40 sm:h-48 lg:h-60">
                                 {isAuthenticated ? (
-                                    <Image 
-                                        src={game.img} 
-                                        alt="Juego" 
-                                        fill 
-                                        className="object-cover rounded-xl cursor-pointer" 
-                                        onClick={handleGameClick}
-                                    />
-                                ) : (
-                                    <LoginDialog>
+                                    <Link href="/game">
                                         <Image 
                                             src={game.img} 
                                             alt="Juego" 
                                             fill 
                                             className="object-cover rounded-xl cursor-pointer" 
+                                            onClick={handleGameClick}
                                         />
+                                    </Link>
+                                ) : (
+                                    <LoginDialog>
+                                        <Link href="/game" tabIndex={-1} aria-disabled="true">
+                                            <Image 
+                                                src={game.img} 
+                                                alt="Juego" 
+                                                fill 
+                                                className="object-cover rounded-xl cursor-pointer" 
+                                            />
+                                        </Link>
                                     </LoginDialog>
                                 )}
                             </div>

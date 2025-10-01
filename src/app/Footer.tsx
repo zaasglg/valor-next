@@ -1,12 +1,18 @@
+"use client"
+
 import React from 'react';
+import Link from 'next/link';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Footer: React.FC = () => {
+    const { t, language, setLanguage } = useLanguage();
+    
     return (
         <footer className="mt-2 px-4 md:px-8">
             {/* Top section with logo and text */}
@@ -31,48 +37,60 @@ const Footer: React.FC = () => {
             <div className="px-4 md:px-8 py-4 md:py-6 bg-white rounded-lg shadow-lg mt-5">
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                     <div>
-                        <a href="#" className="text-gray-600 hover:text-gray-800 text-xs text-left">General Terms and Conditions</a>
+                        <Link href="/policies?tab=general-terms" className="text-gray-600 hover:text-gray-800 text-xs text-left">{t('footer.general_terms')}</Link>
                     </div>
                     <div>
-                        <a href="#" className="text-gray-600 hover:text-gray-800 text-xs text-left">Responsible Gaming</a>
+                        <Link href="/policies?tab=responsible-gaming" className="text-gray-600 hover:text-gray-800 text-xs text-left">{t('footer.responsible_gaming')}</Link>
                     </div>
                     <div>
-                        <a href="#" className="text-gray-600 hover:text-gray-800 text-xs text-left">Contact</a>
+                        <Link href="/policies?tab=contact" className="text-gray-600 hover:text-gray-800 text-xs text-left">{t('footer.contact')}</Link>
                     </div>
                     <div>
-                        <a href="#" className="text-gray-600 hover:text-gray-800 text-xs text-left">Affiliate Program</a>
+                        <Link href="/policies?tab=affiliate-program" className="text-gray-600 hover:text-gray-800 text-xs text-left">{t('footer.affiliate_program')}</Link>
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger className="flex items-center gap-2 hover:bg-gray-50 p-1 rounded">
-                            <span className="text-lg">🇺🇸</span>
-                            <span className="text-gray-600 text-xs">English</span>
+                            <span className="text-lg">
+                                {language === 'es' && '🇪🇸'}
+                                {language === 'en' && '🇺🇸'}
+                                {language === 'pt' && '🇧🇷'}
+                                {language === 'ar' && '🇸🇦'}
+                                {language === 'fr' && '🇫🇷'}
+                            </span>
+                            <span className="text-gray-600 text-xs">
+                                {language === 'es' && 'Español'}
+                                {language === 'en' && 'English'}
+                                {language === 'pt' && 'Português'}
+                                {language === 'ar' && 'العربية'}
+                                {language === 'fr' && 'Français'}
+                            </span>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuItem className="flex items-center gap-2">
+                            <DropdownMenuItem className="flex items-center gap-2" onClick={() => setLanguage('es')}>
                                 <span className="text-lg">🇪🇸</span> Español
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="flex items-center gap-2">
+                            <DropdownMenuItem className="flex items-center gap-2" onClick={() => setLanguage('pt')}>
                                 <span className="text-lg">🇧🇷</span> Português
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="flex items-center gap-2">
+                            <DropdownMenuItem className="flex items-center gap-2" onClick={() => setLanguage('ar')}>
                                 <span className="text-lg">🇸🇦</span> العربية
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="flex items-center gap-2">
+                            <DropdownMenuItem className="flex items-center gap-2" onClick={() => setLanguage('en')}>
                                 <span className="text-lg">🇺🇸</span> English
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="flex items-center gap-2">
+                            <DropdownMenuItem className="flex items-center gap-2" onClick={() => setLanguage('fr')}>
                                 <span className="text-lg">🇫🇷</span> Français
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <div>
-                        <a href="#" className="text-gray-600 hover:text-gray-800 text-xs text-left">Privacy Policy</a>
+                        <Link href="/policies?tab=privacy-policy" className="text-gray-600 hover:text-gray-800 text-xs text-left">{t('footer.privacy_policy')}</Link>
                     </div>
                     <div>
-                        <a href="#" className="text-gray-600 hover:text-gray-800 text-xs text-left">About Us</a>
+                        <Link href="/policies?tab=about-us" className="text-gray-600 hover:text-gray-800 text-xs text-left">{t('footer.about_us')}</Link>
                     </div>
                     <div>
-                        <a href="#" className="text-gray-600 hover:text-gray-800 text-xs text-left">Account, Payments, and Bonuses</a>
+                        <Link href="/policies?tab=account-payments" className="text-gray-600 hover:text-gray-800 text-xs text-left">{t('footer.account_payments')}</Link>
                     </div>
                 </div>
             </div>

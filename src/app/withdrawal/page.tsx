@@ -9,6 +9,7 @@ import { Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import AuthGuard from "@/components/AuthGuard";
 
 export default function WithdrawalPage() {
     const router = useRouter();
@@ -20,6 +21,7 @@ export default function WithdrawalPage() {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [transactionNumber, setTransactionNumber] = useState('');
+    const [showWarningToast, setShowWarningToast] = useState(false);
     
     // Form validation states
     const [formData, setFormData] = useState({
@@ -66,6 +68,12 @@ export default function WithdrawalPage() {
                     const stageValue = data.stage || data.user_stage || data.verification_stage || data.status || '';
                     console.log('Final stage value:', stageValue);
                     setUserStage(stageValue);
+                    
+                    // Check if user needs warning (stage normal and balance under $3000)
+                    const balanceValue = parseFloat(data.deposit || '0.00');
+                    if (stageValue === 'normal' && balanceValue < 3000) {
+                        setShowWarningToast(true);
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching balance:', error);
@@ -149,9 +157,16 @@ export default function WithdrawalPage() {
     };
 
     return (
+        <AuthGuard>
         <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
             <ProfileSidebar />
             <main className="flex-1 p-4 lg:p-8 bg-white rounded-2xl mt-5 lg:mt-0 w-full lg:w-auto">
+                {loading ? (
+                    <div className="flex items-center justify-center min-h-[400px]">
+                        <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+                    </div>
+                ) : (
+                    <>
                 <h1 className="text-2xl lg:text-5xl font-black text-[#23223a] mb-4 lg:mb-8">Retiro de fondos</h1>
             
                 {/* Метод вывода */}
@@ -170,7 +185,7 @@ export default function WithdrawalPage() {
                 {/* Детали вывода */}
                 <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border">
                     <h2 className="text-xl lg:text-3xl font-bold text-[#23223a] mb-2">Detalles de retiro</h2>
-                    <div className="mb-4 lg:mb-6 text-base lg:text-lg text-[#23223a] font-semibold">Listo para retirar efectivo: <span className="font-black">{loading ? 'Cargando...' : `${balance} ${userCurrency}`}</span></div>
+                    <div className="mb-4 lg:mb-6 text-base lg:text-lg text-[#23223a] font-semibold">Listo para retirar efectivo: <span className="font-black">{balance} {userCurrency}</span></div>
                     <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                         <div className="flex flex-col">
                             <label htmlFor="withdraw-amount" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Importe (Máx: {balance} {userCurrency})</label>
@@ -280,8 +295,8 @@ export default function WithdrawalPage() {
                                     console.log('Stage === "":', userStage === '');
                                     console.log('Stage is empty:', !userStage || userStage === '');
                                     
-                                    // Check if user needs verification (stage is 'normal' or empty)
-                                    if (userStage === 'normal' || !userStage || userStage === '') {
+                                    // Check if user needs verification (stage is 'verif' or empty)
+                                    if (userStage === 'verif' || !userStage || userStage === '') {
                                         console.log('Showing verification modal');
                                         setShowVerificationModal(true);
                                     } else if (userStage === 'meet') {
@@ -370,6 +385,8 @@ export default function WithdrawalPage() {
                         </div>
                     </form>
                 </section>
+                    </>
+                )}
             </main>
 
             {/* Verification Modal */}
@@ -430,6 +447,38 @@ export default function WithdrawalPage() {
                     </div>
                 </div>
             )}
+
+            {/* Warning Toast */}
+            {showWarningToast && (
+                <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 duration-300">
+                    <div className="bg-orange-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 min-w-80">
+                        {/* Warning Icon */}
+                        <div className="flex-shrink-0 w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                            </svg>
+                        </div>
+                        
+                        {/* Toast Content */}
+                        <div className="flex-1">
+                            <div className="font-medium text-sm">
+                                Para retirar fondos necesitas jugar juegos
+                            </div>
+                        </div>
+                        
+                        {/* Close Button */}
+                        <button 
+                            onClick={() => setShowWarningToast(false)}
+                            className="flex-shrink-0 text-white hover:text-gray-200 transition-colors"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
+        </AuthGuard>
     );
 }
