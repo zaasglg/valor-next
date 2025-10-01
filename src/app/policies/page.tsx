@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -226,7 +226,7 @@ const policyContent = {
     }
 };
 
-export default function PoliciesPage() {
+function PoliciesContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [activeTab, setActiveTab] = useState('user-agreement');
@@ -283,5 +283,17 @@ export default function PoliciesPage() {
                 </div>
             </main>
         </div>
+    );
+}
+
+export default function PoliciesPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-[#f5f6fa] flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+            </div>
+        }>
+            <PoliciesContent />
+        </Suspense>
     );
 }
