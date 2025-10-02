@@ -157,7 +157,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
 
             {/* Quick Recharge Button */}
             <Link href="/deposit" className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-3 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 border-0 mb-2 relative z-10 block text-center">
-                Recargar en 1 clic
+            Depositlar em 1 clique
             </Link>
 
             {/* Navigation */}

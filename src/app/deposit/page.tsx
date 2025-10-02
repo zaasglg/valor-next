@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { Clock, Copy, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
+import Link from "next/link";
 
 export default function DepositPage() {
     const router = useRouter();
@@ -29,6 +30,10 @@ export default function DepositPage() {
     const [userCountry, setUserCountry] = useState('default');
     const [isLoading, setIsLoading] = useState(true);
     const [isManualInput, setIsManualInput] = useState(false);
+    
+    // Timer states
+    const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
+    const [isTimerActive, setIsTimerActive] = useState(false);
 
     const paymentMethods = [
         { id: 'NEQUI', name: 'NEQUI', image: '/images/deposit/Nequi.jpg' },
@@ -132,6 +137,29 @@ export default function DepositPage() {
         fetchUserInfo();
     }, []);
 
+    // Timer effect
+    useEffect(() => {
+        let interval: NodeJS.Timeout | null = null;
+        
+        if (isTimerActive && timeLeft > 0) {
+            interval = setInterval(() => {
+                setTimeLeft(time => {
+                    if (time <= 1) {
+                        setIsTimerActive(false);
+                        return 0;
+                    }
+                    return time - 1;
+                });
+            }, 1000);
+        } else if (!isTimerActive && interval) {
+            clearInterval(interval);
+        }
+        
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [isTimerActive, timeLeft]);
+
     // Set initial selected amount when predefinedAmounts changes (only if customAmount is empty and not manually input)
     useEffect(() => {
         if (predefinedAmounts.length > 0 && selectedAmount === 0 && !customAmount && !isManualInput) {
@@ -140,8 +168,74 @@ export default function DepositPage() {
         }
     }, [predefinedAmounts, selectedAmount, customAmount, isManualInput]);
 
+    // Get payment details based on selected method
+    const getPaymentDetails = () => {
+        switch(selectedMethod) {
+            case 'NEQUI':
+                return {
+                    accountNumber: '300-123-4567',
+                    accountName: 'NEQUI - Valor Casino',
+                    instructions: 'Transfiere desde tu app NEQUI'
+                };
+            case 'BTC':
+                return {
+                    accountNumber: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+                    accountName: 'Bitcoin Wallet',
+                    instructions: 'Envía Bitcoin a esta dirección'
+                };
+            case 'ETH':
+                return {
+                    accountNumber: '0x742d35Cc6634C0532925a3b8D4C2C8fCF2544395',
+                    accountName: 'Ethereum Wallet',
+                    instructions: 'Envía Ethereum a esta dirección'
+                };
+            case 'USDT':
+                return {
+                    accountNumber: 'TQn9Y2khEsLJW1ChVWFMSMeRDow5oNDMnt',
+                    accountName: 'USDT Wallet (TRC20)',
+                    instructions: 'Envía USDT (TRC20) a esta dirección'
+                };
+            default:
+                return {
+                    accountNumber: '000013930000013488550',
+                    accountName: 'Franco Chaile',
+                    instructions: 'Transferencia bancaria'
+                };
+        }
+    };
+
+    // Format time for display
+    const formatTime = (seconds: number) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        
+        return `${hours.toString().padStart(2, '0')}h : ${minutes.toString().padStart(2, '0')}m : ${secs.toString().padStart(2, '0')}s`;
+    };
+
+    // Toggle timer function
+    const toggleTimer = () => {
+        if (!isTimerActive && timeLeft === 0) {
+            // Reset timer to 1 hour if it's finished
+            setTimeLeft(3600);
+        }
+        setIsTimerActive(!isTimerActive);
+    };
+
     const handleDeposit = () => {
+        // Validate input first
+        if (!customAmount || customAmount.trim() === '') {
+            setShowWarning(true);
+            return;
+        }
+        
         let amount = parseInt(customAmount);
+        
+        // Check if amount is valid number
+        if (isNaN(amount) || amount <= 0) {
+            setShowWarning(true);
+            return;
+        }
         
         // If bonus section is shown and user selected a bonus amount, use that amount
         if (showBonusSection && selectedBonusAmount) {
@@ -217,7 +311,12 @@ export default function DepositPage() {
                                     {bonusAmounts.map((bonus) => (
                                         <button
                                             key={bonus.amount}
-                                            onClick={() => setSelectedBonusAmount(bonus)}
+                                            onClick={() => {
+                                                setSelectedBonusAmount(bonus);
+                                                setCustomAmount(bonus.amount.toString());
+                                                setSelectedAmount(0);
+                                                setIsManualInput(false);
+                                            }}
                                             className={`border-2 font-black rounded-xl p-4 h-32 text-lg focus:outline-none focus:ring-2 transition-all flex items-center justify-center relative ${
                                                 selectedBonusAmount?.amount === bonus.amount
                                                     ? 'text-white bg-green-700 border-green-700 overflow-hidden'
@@ -283,24 +382,25 @@ export default function DepositPage() {
                         <Input
                             id="deposit-amount"
                             type="number"
-                                placeholder={`Ingresa tu monto (ej: 100000)`}
+                                    placeholder={`Ingresa tu monto (ej: 100000)`}
                             value={customAmount}
                             onChange={(e) => {
                                     const value = e.target.value;
                                     setCustomAmount(value);
                                 setSelectedAmount(0);
+                                    setSelectedBonusAmount(null); // Сбрасываем выбранный бонус
                                     setIsManualInput(true);
                                 }}
-                                className="pr-16"
-                                min="1"
-                                step="1"
-                            />
+                                    className="pr-16"
+                                    min="1"
+                                    step="1"
+                                />
                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-medium">
                                 {displayCurrency}
                             </div>
                         </div>
                         <div className="mt-2 text-sm text-gray-600">
-                            Monto mínimo: 50,000 {displayCurrency}
+                            Monto mínimo: 60,000 {displayCurrency}
                         </div>
 
                         <div className="mt-10 bg-cover bg-[#3f1c80] px-5 py-10 rounded-2xl" style={{
@@ -331,51 +431,36 @@ export default function DepositPage() {
                     <svg width="24" height="30" viewBox="0 0 14 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
                         <path d="M12 8.11035V5C12 2.24316 9.75684 0 7 0C4.24316 0 2 2.24316 2 5V8.11035C0.764771 9.37317 0 11.0981 0 13C0 16.8599 3.14014 20 7 20C10.8599 20 14 16.8599 14 13C14 11.0981 13.2352 9.37317 12 8.11035ZM7 2C8.6543 2 10 3.3457 10 5V6.685C9.08923 6.25049 8.07452 6 7 6C5.92548 6 4.91077 6.25049 4 6.685V5C4 3.3457 5.3457 2 7 2ZM7 18C4.24316 18 2 15.7568 2 13C2 10.2432 4.24316 8 7 8C9.75684 8 12 10.2432 12 13C12 15.7568 9.75684 18 7 18ZM8 12V14C8 14.5522 7.55225 15 7 15C6.44775 15 6 14.5522 6 14V12C6 11.4478 6.44775 11 7 11C7.55225 11 8 11.4478 8 12Z" fill="#0A893D"></path>
                     </svg>
-                    <span className="text-gray-700 lg:border-l lg:pl-5 text-sm lg:text-base">Al hacer clic en Depósito, acepta los <a href="#" className="text-green-700 font-bold">Términos y condiciones</a> fin <a href="#" className="text-green-700 font-bold">Política de privacidad</a>.</span>
+                    <span className="text-gray-700 lg:border-l lg:pl-5 text-sm lg:text-base">Al hacer clic en Depósito, acepta los <Link href="policies?tab=general-terms" className="text-green-700 font-bold">Términos y condiciones</Link> fin <Link href="policies?tab=privacy-policy" className="text-green-700 font-bold">Política de privacidad</Link>.</span>
                 </section>
                 <div className="px-4 lg:px-0 lg:max-w-md lg:mx-auto">
                     
                     <button
                         onClick={handleDeposit}
-                        className="mt-4 lg:mt-8 w-full bg-green-700 hover:bg-green-800 text-white font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg"
+                        disabled={!customAmount || customAmount.trim() === '' || isNaN(parseInt(customAmount)) || parseInt(customAmount) <= 0}
+                        className={`mt-4 lg:mt-8 w-full font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg ${
+                            !customAmount || customAmount.trim() === '' || isNaN(parseInt(customAmount)) || parseInt(customAmount) <= 0
+                                ? 'bg-gray-400 text-gray-600 cursor-not-allowed shadow-[0_4px_0_0_#6b7280]'
+                                : 'bg-green-700 hover:bg-green-800 text-white'
+                        }`}
                     >
-                        {showBonusSection && selectedBonusAmount 
-                            ? `Depositar ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}${selectedBonusAmount.percentage > 0 ? ` +${selectedBonusAmount.percentage}%` : ''}`
-                            : `Depositar ${customAmount ? parseInt(customAmount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0'} ${userCurrency}`
-                        }
+{(() => {
+                            if (showBonusSection && selectedBonusAmount) {
+                                return `Depositar ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}${selectedBonusAmount.percentage > 0 ? ` +${selectedBonusAmount.percentage}%` : ''}`;
+                            } else {
+                                const amount = customAmount && !isNaN(parseInt(customAmount)) ? parseInt(customAmount) : 0;
+                                return `Depositar ${amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}`;
+                            }
+                        })()}
                     </button>
                 </div>
-
-
-
-                <AlertDialog open={showSuccess} onOpenChange={setShowSuccess}>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle className="text-red-500 text-2xl">¡Éxito!</AlertDialogTitle>
-                            <AlertDialogDescription className="text-lg">
-                                Depósito de {customAmount ? parseInt(customAmount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0'} COP con {selectedMethod} procesado correctamente.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogAction
-                                className="bg-green-500 hover:bg-green-600"
-                                onClick={() => {
-                                    setShowSuccess(false);
-                                    setShowPayment(true);
-                                }}
-                            >
-                                OK
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
 
                 <AlertDialog open={showWarning} onOpenChange={setShowWarning}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle className="text-red-500 text-2xl">Monto mínimo</AlertDialogTitle>
                             <AlertDialogDescription className="text-lg">
-                                El monto mínimo de depósito es 50,000 COP.
+                                El monto mínimo de depósito es 60,000 COP.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -402,36 +487,61 @@ export default function DepositPage() {
                                 </div>
                                 <div className="bg-blue-50 p-6 text-center">
                                     <p className="text-gray-600 mb-2">You have:</p>
-                                    <div className="flex items-center justify-center gap-2 text-2xl font-bold text-blue-900">
+                                    <button 
+                                        onClick={toggleTimer}
+                                        className={`flex items-center justify-center gap-2 text-2xl font-bold transition-colors cursor-pointer hover:opacity-80 ${
+                                            isTimerActive ? 'text-red-600' : timeLeft === 0 ? 'text-gray-400' : 'text-blue-900'
+                                        }`}
+                                    >
                                         <Clock />
-                                        01h : 51m : 38s
-                                    </div>
-                                    <p className="text-gray-600 mt-2">Pay before</p>
+                                        {formatTime(timeLeft)}
+                                    </button>
+                                    <p className="text-gray-600 mt-2">
+                                        {isTimerActive ? 'Timer running - Click to pause' : timeLeft === 0 ? 'Time expired - Click to restart' : 'Click to start timer'}
+                                    </p>
                                     <p className="text-gray-600">28 sept 2025, 12:24 hrs.</p>
                                 </div>
                             </div>
 
                             <div className="bg-blue-100 p-4">
-                                <p className="text-center text-gray-600 mb-2">Recaudación al servicio</p>
-                                <h3 className="text-2xl font-bold text-blue-900 text-center">Banco Belo</h3>
+                                <p className="text-center text-gray-600 mb-2">Método de pago seleccionado</p>
+                                <h3 className="text-2xl font-bold text-blue-900 text-center">
+                                    {paymentMethods.find(method => method.id === selectedMethod)?.name || selectedMethod}
+                                </h3>
                             </div>
 
                             <div className="space-y-4 bg-blue-200">
                                 <div>
-                                    <p className="text-gray-600 mb-2 text-center">Numero de cuenta</p>
+                                    <p className="text-gray-600 mb-2 text-center">
+                                        {selectedMethod === 'NEQUI' ? 'Número NEQUI' : 
+                                         ['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Dirección de Wallet' : 
+                                         'Numero de cuenta'}
+                                    </p>
                                     <div className="flex justify-center items-center gap-1 p-3 border-b border-blue-800">
-                                        <span className="font-mono text-3xl text-blue-900">000013930000013488550</span>
-                                        <button className="text-blue-900 hover:text-blue-800">
+                                        <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 break-all text-center">
+                                            {getPaymentDetails().accountNumber}
+                                        </span>
+                                        <button 
+                                            className="text-blue-900 hover:text-blue-800 ml-2 flex-shrink-0"
+                                            onClick={() => navigator.clipboard.writeText(getPaymentDetails().accountNumber)}
+                                        >
                                             <Copy />
                                         </button>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <p className="text-gray-600 mb-2 text-center">Nombre</p>
+                                    <p className="text-gray-600 mb-2 text-center">
+                                        {['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Tipo de Wallet' : 'Nombre'}
+                                    </p>
                                     <div className="flex justify-center items-center gap-1 p-3 border-b border-blue-800">
-                                        <span className="font-mono text-3xl text-blue-900 ">Franco Chaile</span>
-                                        <button className="text-blue-900 hover:text-blue-800">
+                                        <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 text-center">
+                                            {getPaymentDetails().accountName}
+                                        </span>
+                                        <button 
+                                            className="text-blue-900 hover:text-blue-800 ml-2 flex-shrink-0"
+                                            onClick={() => navigator.clipboard.writeText(getPaymentDetails().accountName)}
+                                        >
                                             <Copy />
                                         </button>
                                     </div>
@@ -441,7 +551,10 @@ export default function DepositPage() {
                             <div className="grid grid-cols-2 items-start mt-2 gap-1">
                                 <div>
                                     <p className="text-sm text-gray-700">
-                                        The casino management decided to send deposit payments directly to the company&apos;s accounting department to avoid paying high commission fees for website payments. The payment details include the responsible accountant&apos;s information for your country. (You can ask additional questions to customer support)
+                                        {getPaymentDetails().instructions}. Los pagos se procesan directamente para evitar comisiones altas. 
+                                        {selectedMethod === 'NEQUI' && ' Usa tu app NEQUI para transferir el monto exacto.'}
+                                        {['BTC', 'ETH', 'USDT'].includes(selectedMethod) && ' Asegúrate de enviar desde una wallet compatible.'}
+                                        (Puedes hacer preguntas adicionales al soporte al cliente)
                                     </p>
                                 </div>
 
@@ -515,7 +628,7 @@ export default function DepositPage() {
                                     }}
                                 />
                                 <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 pointer-events-none">
-                                    Upload receipt ➤
+                                    Download receipt 
                                 </button>
                             </div>
                         </div>

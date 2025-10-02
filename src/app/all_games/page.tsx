@@ -49,16 +49,16 @@ export default function AllGamesPage() {
     const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    useEffect(() => {
-        const token = localStorage.getItem('access_token');
-        setIsAuthenticated(!!token);
-    }, []);
+useEffect(() => {
+  const token = localStorage.getItem('access_token');
+  setIsAuthenticated(!!token);
+}, []);
 
-    const handleCarouselClick = () => {
-        if (isAuthenticated) {
-            router.push('/deposit');
-        }
-    };
+const handleCarouselClick = () => {
+  if (isAuthenticated) {
+    router.push('/deposit');
+  }
+};
 
     const handleGameClick = () => {
         if (isAuthenticated) {
@@ -120,20 +120,20 @@ export default function AllGamesPage() {
         if (selectedCategories.includes('Todos los Juegos')) {
             return true;
         }
-
+        
         // Filtrado por categorías
         const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(game.category);
-
+        
         // Filtrado por proveedores
         const providerMatch = selectedProviders.length === 0 || selectedProviders.includes(game.provider);
-
+        
         return categoryMatch && providerMatch;
     });
 
     return (
         <div className="flex min-h-screen bg-[#fafbfc]">
             {/* Mobile Menu Button */}
-            <button
+            <button 
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"
             >
@@ -143,10 +143,10 @@ export default function AllGamesPage() {
             </button>
 
             {/* Barra lateral */}
-            <aside className={`fixed lg:relative inset-y-0 left-0 z-40 w-[270px] p-4 lg:p-8 bg-white border-r border-[#ecebfa] flex flex-col gap-4 lg:gap-8 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-                }`}>
+            <aside className={`fixed lg:relative inset-y-0 left-0 z-40 w-[270px] 2xl:w-[320px] p-4 lg:p-8 2xl:p-10 bg-white border-r border-[#ecebfa] flex flex-col gap-4 lg:gap-8 2xl:gap-10 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+            }`}>
                 {/* Mobile Close Button */}
-                <button
+                <button 
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="lg:hidden self-end mb-2 p-2 rounded-lg hover:bg-gray-100"
                 >
@@ -154,57 +154,57 @@ export default function AllGamesPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-
+                
                 <div>
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="font-bold text-[#23223a] text-lg">Categorías</h2>
-                        <button
+                    <div className="flex items-center justify-between mb-4 2xl:mb-6">
+                        <h2 className="font-bold text-[#23223a] text-lg 2xl:text-xl">Categorías</h2>
+                        <button 
                             onClick={() => setSelectedCategories(['Todos los Juegos'])}
-                            className="text-sm text-[#b3b3c3] hover:text-[#23223a] transition-colors"
+                            className="text-sm 2xl:text-base text-[#b3b3c3] hover:text-[#23223a] transition-colors"
                         >
                             Limpiar
                         </button>
                     </div>
-                    <ul className="flex flex-col gap-2">
+                    <ul className="flex flex-col gap-2 2xl:gap-3">
                         {categories.map((cat) => (
                             <li key={cat.name} className="flex items-center justify-between">
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedCategories.includes(cat.name)}
+                                <label className="flex items-center gap-2 2xl:gap-3 cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedCategories.includes(cat.name)} 
                                         onChange={() => handleCategoryChange(cat.name)}
-                                        className="accent-[#23223a] w-5 h-5"
+                                        className="accent-[#23223a] w-5 h-5 2xl:w-6 2xl:h-6"
                                     />
-                                    <span className="text-[#23223a] text-base">{cat.name}</span>
+                                    <span className="text-[#23223a] text-base 2xl:text-lg">{cat.name}</span>
                                 </label>
-                                <span className="text-[#b3b3c3] text-base font-bold">{getCategoryCount(cat.name)}</span>
+                                <span className="text-[#b3b3c3] text-base 2xl:text-lg font-bold">{getCategoryCount(cat.name)}</span>
                             </li>
                         ))}
                     </ul>
                 </div>
                 <div>
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="font-bold text-[#23223a] text-lg">Proveedores</h2>
-                        <button
+                    <div className="flex items-center justify-between mb-4 2xl:mb-6">
+                        <h2 className="font-bold text-[#23223a] text-lg 2xl:text-xl">Proveedores</h2>
+                        <button 
                             onClick={() => setSelectedProviders([])}
-                            className="text-sm text-[#b3b3c3] hover:text-[#23223a] transition-colors"
+                            className="text-sm 2xl:text-base text-[#b3b3c3] hover:text-[#23223a] transition-colors"
                         >
                             Limpiar
                         </button>
                     </div>
-                    <ul className="flex flex-col gap-2">
+                    <ul className="flex flex-col gap-2 2xl:gap-3">
                         {providers.map((prov) => (
                             <li key={prov.name} className="flex items-center justify-between">
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedProviders.includes(prov.name)}
+                                <label className="flex items-center gap-2 2xl:gap-3 cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedProviders.includes(prov.name)} 
                                         onChange={() => handleProviderChange(prov.name)}
-                                        className="accent-[#23223a] w-5 h-5"
+                                        className="accent-[#23223a] w-5 h-5 2xl:w-6 2xl:h-6"
                                     />
-                                    <span className="text-[#23223a] text-base">{prov.name}</span>
+                                    <span className="text-[#23223a] text-base 2xl:text-lg">{prov.name}</span>
                                 </label>
-                                <span className="text-[#b3b3c3] text-base font-bold">{getProviderCount(prov.name)}</span>
+                                <span className="text-[#b3b3c3] text-base 2xl:text-lg font-bold">{getProviderCount(prov.name)}</span>
                             </li>
                         ))}
                     </ul>
@@ -212,50 +212,50 @@ export default function AllGamesPage() {
             </aside>
             {/* Mobile Overlay */}
             {isMobileMenuOpen && (
-                <div
+                <div 
                     className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
             )}
 
             {/* Contenido principal */}
-            <main className="flex-1 p-4 lg:p-8 pt-16 lg:pt-8">
+            <main className="flex-1 p-4 lg:p-8 2xl:p-12 pt-16 lg:pt-8 2xl:pt-12">
                 {/* Banners superiores */}
-                <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 mb-6 lg:mb-8">
-                    <div className="overflow-hidden w-full lg:w-5/12 bg-green-700 rounded-2xl flex items-center justify-center relative bg-[url(/images/Bbv2-xdH.jpg)] bg-cover h-64 lg:h-64 2xl:h-[40em]">
-                        <div className="absolute inset-0 flex flex-col items-center justify-end z-10 pb-10">
-                            <div className="flex items-end gap-1 lg:gap-2 w-full px-2 lg:px-5">
+                <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 2xl:gap-8 mb-6 lg:mb-8 2xl:mb-12">
+                    <div className="overflow-hidden w-full lg:w-5/12 bg-green-700 rounded-2xl 2xl:rounded-3xl flex items-center justify-center relative bg-[url(/images/Bbv2-xdH.jpg)] bg-cover h-64 lg:h-64 2xl:h-[45em]">
+                        <div className="absolute inset-0 flex flex-col items-center justify-end z-10 pb-10 2xl:pb-16">
+                            <div className="flex items-end gap-1 lg:gap-2 2xl:gap-3 w-full px-2 lg:px-5 2xl:px-8">
                                 <div className="flex-1 flex justify-center">
-                                    <Image src="/images/aviator.avif" alt="Aviador" width={120} height={120} className="w-full h-auto max-w-[60px] lg:max-w-[120px] rounded-2xl border-2 lg:border-4 border-white" />
+                                    <Image src="/images/aviator.avif" alt="Aviador" width={120} height={120} className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white" />
                                 </div>
                                 <div className="flex-1 flex justify-center">
-                                    <Image src="/images/diver.jpeg" alt="Buzo" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] rounded-2xl border-2 lg:border-4 border-white" />
+                                    <Image src="/images/diver.jpeg" alt="Buzo" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white" />
                                 </div>
                                 <div className="flex-1 flex justify-center">
-                                    <Image src="/images/plinko.png" alt="Rueda" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] rounded-2xl border-2 lg:border-4 border-white" />
+                                    <Image src="/images/plinko.png" alt="Rueda" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white" />
                                 </div>
                                 <div className="flex-1 flex justify-center">
-                                    <Image src="/images/mines.jpeg" alt="Minas" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] rounded-2xl border-2 lg:border-4 border-white" />
+                                    <Image src="/images/mines.jpeg" alt="Minas" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white" />
                                 </div>
                                 <div className="flex-1 flex justify-center">
-                                    <Image src="/images/chicken_road.png" alt="Camino del Pollo" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] rounded-2xl border-2 lg:border-4 border-white" />
+                                    <Image src="/images/chicken_road.png" alt="Camino del Pollo" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white" />
                                 </div>
                                 <div className="flex-1 flex justify-center">
-                                    <Image src="/images/plinko_1000.png" alt="Plinko Azteca" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] rounded-2xl border-2 lg:border-4 border-white" />
+                                    <Image src="/images/plinko_1000.png" alt="Plinko Azteca" width={90} height={90} className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="flex-1 w-full lg:w-7/12 h-64 2xl:h-[40em] relative overflow-hidden">
+                    <div className="flex-1 w-full lg:w-7/12 h-64 2xl:h-[45em] relative overflow-hidden">
                         <Carousel opts={{ align: "start", loop: true, slidesToScroll: 1 }} className="[&_.carousel-previous]:hidden [&_.carousel-next]:hidden [&_.carousel-dots]:hidden">
                             <CarouselContent className="flex h-full">
                                 <CarouselItem className="basis-full h-full">
-                                    {isAuthenticated ? (
+                {isAuthenticated ? (
                                         <div className="h-full w-full relative">
                                             <Image
                                                 src="/images/1-banner.jpg"
                                                 alt="imagen del banner"
-                                                className="rounded-lg w-full h-full object-contain cursor-pointer"
+                                                className="rounded-lg 2xl:rounded-2xl w-full h-full object-contain cursor-pointer"
                                                 width={1200}
                                                 height={400}
                                                 loading="lazy"
@@ -263,31 +263,31 @@ export default function AllGamesPage() {
                                                 onClick={handleCarouselClick}
                                                 style={{ objectFit: 'contain' }}
                                             />
-                                        </div>
-                                    ) : (
-                                        <LoginDialog>
+                                </div>
+                ) : (
+                  <LoginDialog>
                                             <div className="h-full w-full relative">
                                                 <Image
                                                     src="/images/1-banner.jpg"
                                                     alt="imagen del banner"
-                                                    className="rounded-lg w-full h-full object-contain cursor-pointer"
+                                                    className="rounded-lg 2xl:rounded-2xl w-full h-full object-contain cursor-pointer"
                                                     width={1200}
                                                     height={400}
                                                     loading="lazy"
                                                     priority={false}
                                                     style={{ objectFit: 'contain' }}
                                                 />
-                                            </div>
-                                        </LoginDialog>
-                                    )}
-                                </CarouselItem>
-                                <CarouselItem className="basis-full h-full">
-                                    {isAuthenticated ? (
+                                    </div>
+                  </LoginDialog>
+                )}
+              </CarouselItem>
+                             <CarouselItem className="basis-full h-full">
+                {isAuthenticated ? (
                                         <div className="h-full w-full relative">
                                             <Image
                                                 src="/images/2-banner.jpg"
                                                 alt="imagen del banner"
-                                                className="rounded-lg w-full h-full object-contain cursor-pointer"
+                                                className="rounded-lg 2xl:rounded-2xl w-full h-full object-contain cursor-pointer"
                                                 width={1200}
                                                 height={400}
                                                 loading="lazy"
@@ -295,47 +295,47 @@ export default function AllGamesPage() {
                                                 onClick={handleCarouselClick}
                                                 style={{ objectFit: 'contain' }}
                                             />
-                                        </div>
-                                    ) : (
-                                        <LoginDialog>
+                                 </div>
+                ) : (
+                  <LoginDialog>
                                             <div className="h-full w-full relative">
                                                 <Image
                                                     src="/images/2-banner.jpg"
                                                     alt="imagen del banner"
-                                                    className="rounded-lg w-full h-full object-contain cursor-pointer"
+                                                    className="rounded-lg 2xl:rounded-2xl w-full h-full object-contain cursor-pointer"
                                                     width={1200}
                                                     height={400}
                                                     loading="lazy"
                                                     priority={false}
                                                     style={{ objectFit: 'contain' }}
                                                 />
-                                            </div>
-                                        </LoginDialog>
-                                    )}
-                                </CarouselItem>
-
-                            </CarouselContent>
-                        </Carousel>
+                                     </div>
+                  </LoginDialog>
+                )}
+              </CarouselItem>
+                             
+            </CarouselContent>
+          </Carousel>
                     </div>
                 </div>
                 {/* Todos los Juegos */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between my-6 lg:my-8 gap-2">
-                    <h1 className="text-2xl lg:text-3xl font-bold text-[#23223a]">Todos los Juegos</h1>
-                    <span className="text-[#b3b3c3] text-base lg:text-lg">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between my-6 lg:my-8 2xl:my-12 gap-2 2xl:gap-4">
+                    <h1 className="text-2xl lg:text-3xl 2xl:text-4xl font-bold text-[#23223a]">Todos los Juegos</h1>
+                    <span className="text-[#b3b3c3] text-base lg:text-lg 2xl:text-xl">
                         {filteredGames.length} {filteredGames.length === 1 ? 'juego' : 'juegos'}
                     </span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 lg:gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 2xl:grid-cols-8 gap-2 lg:gap-3 2xl:gap-4">
                     {filteredGames.map((game, index) => (
-                        <div key={index} className="rounded-2xl overflow-hidden shadow-lg bg-white flex flex-col items-center">
-                            <div className="relative w-full h-40 sm:h-48 lg:h-60">
+                        <div key={index} className="rounded-2xl 2xl:rounded-3xl overflow-hidden shadow-lg bg-white flex flex-col items-center">
+                            <div className="relative w-full h-40 sm:h-48 lg:h-60 2xl:h-72">
                                 {isAuthenticated ? (
                                     <Link href="/game">
                                         <Image
                                             src={game.img}
                                             alt="Juego"
                                             fill
-                                            className="object-cover rounded-xl cursor-pointer"
+                                            className="object-cover rounded-xl 2xl:rounded-2xl cursor-pointer"
                                             onClick={handleGameClick}
                                         />
                                     </Link>
@@ -346,7 +346,7 @@ export default function AllGamesPage() {
                                                 src={game.img}
                                                 alt="Juego"
                                                 fill
-                                                className="object-cover rounded-xl cursor-pointer"
+                                                className="object-cover rounded-xl 2xl:rounded-2xl cursor-pointer"
                                             />
                                         </Link>
                                     </LoginDialog>
