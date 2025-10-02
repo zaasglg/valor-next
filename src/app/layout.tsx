@@ -1,6 +1,7 @@
 
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Mulish } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -44,6 +45,34 @@ export default function RootLayout({
             <Footer />
           </DialogProvider>
         </LanguageProvider>
+
+        {/* LiveChat Scripts */}
+        <Script 
+          src="https://livechatv2.chat2desk.com/packs/ie-11-support.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          id="chat24-config"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.chat24_token = "0f7f5dc5cec44ea9b6e7fe014e4f4af2";
+              window.chat24_url = "https://livechatv2.chat2desk.com";
+              window.chat24_socket_url = "wss://livechatv2.chat2desk.com/widget_ws_new";
+              window.chat24_static_files_domain = "https://storage.chat2desk.com/";
+              window.lang = "ru";
+              window.fetch("".concat(window.chat24_url, "/packs/manifest.json?nocache=").concat(new Date().getTime())).then(function (res) {
+                return res.json();
+              }).then(function (data) {
+                var chat24 = document.createElement("script");
+                chat24.type = "text/javascript";
+                chat24.async = true;
+                chat24.src = "".concat(window.chat24_url).concat(data["application.js"]);
+                document.body.appendChild(chat24);
+              });
+            `,
+          }}
+        />
       </body>
     </html>
   );

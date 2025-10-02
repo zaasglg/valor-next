@@ -35,6 +35,21 @@ const Header: React.FC = () => {
         setIsAuthenticated(!!token);
 
         if (token) {
+            // Basic token validation (check if it's not empty and looks like a JWT)
+            const isValidToken = token.length > 10 && token.includes('.');
+            
+            if (!isValidToken) {
+                console.log('Header - Invalid token format, clearing token');
+                localStorage.removeItem('access_token');
+                setIsAuthenticated(false);
+                setUserInfo({
+                    user_id: '',
+                    deposit: formatAmount(0),
+                    currency: '$'
+                });
+                return;
+            }
+
             const fetchUserInfo = async () => {
                 setIsBalanceLoading(true);
                 try {
@@ -76,7 +91,16 @@ const Header: React.FC = () => {
                             currency: currency
                         });
                     } else {
-                        console.error('Header - API response not ok:', response.status, response.statusText);
+                        // Handle different error statuses appropriately
+                        if (response.status === 401) {
+                            console.log('Header - User not authenticated, clearing token');
+                            // Clear invalid token
+                            localStorage.removeItem('access_token');
+                            setIsAuthenticated(false);
+                        } else {
+                            console.error('Header - API response not ok:', response.status, response.statusText);
+                        }
+                        
                         // Set default values if API fails
                         setUserInfo({
                             user_id: '',
