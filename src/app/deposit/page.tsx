@@ -223,8 +223,11 @@ export default function DepositPage() {
     };
 
     const handleDeposit = () => {
+        console.log('handleDeposit called'); // Добавляем для отладки
+        
         // Validate input first
         if (!customAmount || customAmount.trim() === '') {
+            console.log('Empty amount, showing warning');
             setShowWarning(true);
             return;
         }
@@ -233,6 +236,7 @@ export default function DepositPage() {
         
         // Check if amount is valid number
         if (isNaN(amount) || amount <= 0) {
+            console.log('Invalid amount, showing warning');
             setShowWarning(true);
             return;
         }
@@ -243,10 +247,15 @@ export default function DepositPage() {
             setCustomAmount(amount.toString());
         }
         
-        if (amount < 50000) {
+        // Check minimum amount (should be LESS than minimum to show warning)
+        if (amount < 60000) {
+            console.log(`Amount ${amount} is less than minimum 60000, showing warning`);
             setShowWarning(true);
             return;
         }
+        
+        // If we get here, proceed with deposit
+        console.log('Proceeding with deposit...');
         
         // Calculate bonus amount if bonus is selected
         let bonusAmount = 0;
@@ -267,7 +276,7 @@ export default function DepositPage() {
             isFirstBonus: showBonusSection
         };
         console.log('Deposit data:', depositData);
-        setShowSuccess(true);
+        setShowPayment(true); // Показываем форму оплаты вместо success
     };
     return (
         <AuthGuard>
@@ -437,12 +446,7 @@ export default function DepositPage() {
                     
                     <button
                         onClick={handleDeposit}
-                        disabled={!customAmount || customAmount.trim() === '' || isNaN(parseInt(customAmount)) || parseInt(customAmount) <= 0}
-                        className={`mt-4 lg:mt-8 w-full font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg ${
-                            !customAmount || customAmount.trim() === '' || isNaN(parseInt(customAmount)) || parseInt(customAmount) <= 0
-                                ? 'bg-gray-400 text-gray-600 cursor-not-allowed shadow-[0_4px_0_0_#6b7280]'
-                                : 'bg-green-700 hover:bg-green-800 text-white'
-                        }`}
+                        className="mt-4 lg:mt-8 w-full font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg bg-green-700 hover:bg-green-800 text-white"
                     >
 {(() => {
                             if (showBonusSection && selectedBonusAmount) {
@@ -458,14 +462,18 @@ export default function DepositPage() {
                 <AlertDialog open={showWarning} onOpenChange={setShowWarning}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle className="text-red-500 text-2xl">Monto mínimo</AlertDialogTitle>
+                            <AlertDialogTitle className="text-red-500 text-2xl">⚠️ Monto mínimo requerido</AlertDialogTitle>
                             <AlertDialogDescription className="text-lg">
-                                El monto mínimo de depósito es 60,000 COP.
+                                El monto mínimo de depósito es 60,000 {displayCurrency}. 
+                                Por favor, ingresa un monto mayor o igual a este valor.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogAction className="bg-red-500 hover:bg-red-600">
-                                OK
+                            <AlertDialogAction 
+                                className="bg-red-500 hover:bg-red-600"
+                                onClick={() => setShowWarning(false)}
+                            >
+                                Entendido
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
