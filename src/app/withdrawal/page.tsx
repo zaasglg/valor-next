@@ -4,6 +4,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import ProfileSidebar from "../../components/ProfileSidebar";
 import { Check } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -22,6 +23,7 @@ export default function WithdrawalPage() {
     const [toastMessage, setToastMessage] = useState('');
     const [transactionNumber, setTransactionNumber] = useState('');
     const [showWarningToast, setShowWarningToast] = useState(false);
+    const [showMinAmountWarning, setShowMinAmountWarning] = useState(false);
     
     // Form validation states
     const [formData, setFormData] = useState({
@@ -98,7 +100,14 @@ export default function WithdrawalPage() {
             case 'withdrawAmount':
                 if (!value) {
                     error = 'El importe es requerido';
-                } 
+                } else {
+                    const amount = parseFloat(value);
+                    if (isNaN(amount) || amount <= 0) {
+                        error = 'El importe debe ser un número válido mayor que 0';
+                    } else if (amount < 150000) {
+                        error = 'El importe mínimo es 150,000 COP';
+                    }
+                }
                 break;
             case 'clientPhone':
                 if (!value) {
@@ -197,7 +206,7 @@ export default function WithdrawalPage() {
                             <Input 
                                 id="withdraw-amount" 
                                 type="number" 
-                                placeholder={"150,000 COP"} 
+                                placeholder="Mínimo 150,000 COP" 
                                 value={formData.withdrawAmount}
                                 onChange={(e) => handleInputChange('withdrawAmount', e.target.value)}
                                 className={`mb-0 ${errors.withdrawAmount ? 'border-red-500' : ''}`}
@@ -287,7 +296,15 @@ export default function WithdrawalPage() {
                             <button 
                                 type="button" 
                                 onClick={async () => {
-                                    // Validate form first
+                                    // Check minimum amount first (before other validations)
+                                    const withdrawAmount = parseFloat(formData.withdrawAmount);
+                                    if (!formData.withdrawAmount || isNaN(withdrawAmount) || withdrawAmount < 150000) {
+                                        console.log('Minimum amount check failed:', withdrawAmount);
+                                        setShowMinAmountWarning(true);
+                                        return;
+                                    }
+
+                                    // Validate form
                                     if (!validateForm()) {
                                         console.log('Form validation failed');
                                         return;
@@ -487,6 +504,27 @@ export default function WithdrawalPage() {
                     </div>
                 </div>
             )}
+
+            {/* Minimum Amount Warning Dialog */}
+            <AlertDialog open={showMinAmountWarning} onOpenChange={setShowMinAmountWarning}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-red-500 text-2xl">⚠️ Monto mínimo requerido</AlertDialogTitle>
+                        <AlertDialogDescription className="text-lg">
+                            El monto mínimo para retiro es 150,000 COP. 
+                            Por favor, ingresa un monto mayor o igual a este valor.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction 
+                            className="bg-red-500 hover:bg-red-600"
+                            onClick={() => setShowMinAmountWarning(false)}
+                        >
+                            Entendido
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
         </AuthGuard>
     );
