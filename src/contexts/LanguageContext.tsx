@@ -34,12 +34,12 @@ const translations = {
     'nav.live_games': 'Juegos en vivo',
     
     // Footer
-    'footer.general_terms': 'Términos Generales',
-    'footer.responsible_gaming': 'Juego Responsable',
+    'footer.general_terms': 'Condiciones generales',
+    'footer.responsible_gaming': 'Juego responsable',
     'footer.contact': 'Contacto',
     'footer.affiliate_program': 'Programa de Afiliados',
     'footer.privacy_policy': 'Política de Privacidad',
-    'footer.about_us': 'Acerca de Nosotros',
+    'footer.about_us': 'Sobre nosotros',
     'footer.account_payments': 'Cuenta, Pagos y Bonos',
     
     // Common

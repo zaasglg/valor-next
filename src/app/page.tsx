@@ -5,7 +5,10 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel"
+import Autoplay from "embla-carousel-autoplay"
 import { LoginDialog } from "@/components/LoginDialog";
 import { RegisterDialog } from "@/components/RegisterDialog";
 import { useRouter } from "next/navigation";
@@ -50,8 +53,17 @@ export default function Home() {
   return (
     <div>
       <section className="px-4 md:px-8 py-4">
-        <div style={{ maxWidth: '100%', margin: '0 auto', overflow: 'visible' }}>
-          <Carousel opts={{ align: "start", loop: true, slidesToScroll: 1 }}>
+        <div style={{ maxWidth: '100%', margin: '0 auto', overflow: 'visible' }} className="relative">
+          <Carousel 
+            opts={{ align: "start", loop: true, slidesToScroll: 1 }}
+            plugins={[
+              Autoplay({
+                delay: 3000,
+                stopOnInteraction: false,
+                stopOnMouseEnter: true,
+              }),
+            ]}
+          >
             <CarouselContent className="flex gap-1" style={{ overflow: 'visible' }}>
               <CarouselItem className="basis-full md:basis-3/5">
                 {isAuthenticated ? (
@@ -158,8 +170,12 @@ export default function Home() {
                 )}
               </CarouselItem>
             </CarouselContent>
-            {/* <CarouselPrevious />
-            <CarouselNext /> */}
+            
+            {/* Custom Navigation Buttons - Bottom Center */}
+            <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex gap-4 z-10 w-[80px] h-auto">
+              <CarouselPrevious className="cursor-pointer h-10 w-20 rounded-lg bg-white border-0 hover:bg-gray-50 shadow-lg hover:shadow-xl active:shadow-md active:scale-95 transition-all duration-200 text-gray-700 hover:text-gray-900" />
+              <CarouselNext className="cursor-pointer h-10 w-20 rounded-lg bg-white border-0 hover:bg-gray-50 shadow-lg hover:shadow-xl active:shadow-md active:scale-95 transition-all duration-200 text-gray-700 hover:text-gray-900" />
+            </div>
           </Carousel>
         </div>
       </section>
@@ -173,8 +189,19 @@ export default function Home() {
                 <h2 className="text-xl md:text-2xl font-bold">Casino</h2>
                 <span className="text-yellow-500 text-sm md:text-base">🔥 PragmaticPlay</span>
               </div>
-              <button className="text-blue-500 text-xs md:text-sm flex items-center gap-1">
-                🎮 Todos los juegos
+              <button className="bg-white text-gray-700 text-xs md:text-sm flex items-center gap-1 px-3 py-2 rounded-lg border-0 shadow-[0_4px_0_0_#6b46c1] hover:shadow-[0_2px_0_0_#6b46c1] active:shadow-[0_1px_0_0_#6b46c1] active:translate-y-1 transition-all duration-100">
+                <div className="grid grid-cols-3 gap-0.5 w-3 h-3">
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                </div>
+                Todos los juegos
                 <span>›</span>
               </button>
             </div>
@@ -199,8 +226,19 @@ export default function Home() {
                 <span>Baccarat</span>
                 <span>Crash</span>
               </div>
-              <button className="text-blue-500 text-xs md:text-sm flex items-center gap-1">
-                🎮 Todos los juegos
+              <button className="bg-white text-gray-700 text-xs md:text-sm flex items-center gap-1 px-3 py-2 rounded-lg border-0 shadow-[0_4px_0_0_#6b46c1] hover:shadow-[0_2px_0_0_#6b46c1] active:shadow-[0_1px_0_0_#6b46c1] active:translate-y-1 transition-all duration-100">
+                <div className="grid grid-cols-3 gap-0.5 w-3 h-3">
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                  <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+                </div>
+                Todos los juegos
                 <span>›</span>
               </button>
             </div>

@@ -158,14 +158,23 @@ const Header: React.FC = () => {
             {/* Desktop Header */}
             <header className="hidden md:flex w-full items-center justify-between px-8 h-[60px] bg-white sticky top-0 z-50 border-b border-gray-200">
             {/* Logo */}
-            <Link href="/" className="flex items-center cursor-pointer h-full">
-                <span className="block">
-                    <LogoIcon />
-                </span>
-                <span className="ml-2 px-1.5 py-0.5 rounded bg-[#F9B24B] text-white font-bold text-xs leading-none tracking-widest">CASINO</span>
-            </Link>
+            <div className="flex items-center gap-4">
+                <Link href="/" className="flex items-center cursor-pointer h-full">
+                    <span className="block">
+                        <LogoIcon />
+                    </span>
+                    <span className="ml-2 px-1.5 py-0.5 rounded bg-[#F9B24B] text-white font-bold text-xs leading-none tracking-widest">CASINO</span>
+                </Link>
+            </div>
             {/* Navigation */}
             <nav className="h-full flex-1 flex items-center justify-center gap-8">
+                {/* Search Icon */}
+                <button className="flex items-center justify-center w-12 h-8 text-[#6B46C1] hover:text-[#5B21B6] transition-colors border-l border-r border-gray-200">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+                
                 <Link href="/" className="h-full relative flex items-center gap-2 text-[#202040] font-medium text-sm group">
                     <span className="block">
                         <HomeIcon />
@@ -207,13 +216,19 @@ const Header: React.FC = () => {
                         className='flex items-center gap-2 text-[#202040] font-medium text-sm hover:text-[#0a893d] transition-colors'
                     >
                         Más
-                        <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                        <span className="w-4 h-4 flex items-center justify-center transition-transform">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mx-auto">
+                                <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
+                                <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+                                <circle cx="13" cy="8" r="1.5" fill="currentColor"/>
+                            </svg>
+                        </span>
                     </button>
                     
                     {isDropdownOpen && (
                         <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                            <a 
-                                href="#" 
+                            <Link 
+                                href="/bonuses" 
                                 className="flex items-center gap-3 px-4 py-3 text-[#202040] hover:bg-gray-50 transition-colors"
                                 onClick={(e) => {
                                     e.preventDefault();
@@ -225,7 +240,7 @@ const Header: React.FC = () => {
                                     <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0ZM11 20C6.03741 20 2 15.9626 2 11C2 6.03735 6.03741 2 11 2C15.9626 2 20 6.03735 20 11C20 15.9626 15.9626 20 11 20ZM11 3C6.58173 3 3 6.58173 3 11C3 15.4183 6.58173 19 11 19C15.4183 19 19 15.4183 19 11C19 6.58173 15.4183 3 11 3ZM11.5651 14.7502V16H10.335V14.836C9.49341 14.7993 8.67792 14.5787 8.20081 14.3089L8.57739 12.8752C9.1051 13.157 9.8454 13.4145 10.6609 13.4145C11.377 13.4145 11.8661 13.1447 11.8661 12.6545C11.8661 12.1887 11.4649 11.8945 10.5359 11.5883C9.19281 11.1472 8.276 10.5344 8.276 9.3457C8.276 8.26733 9.0545 7.42157 10.3977 7.16431V6H11.6276V7.07849C12.4688 7.11523 13.0336 7.28668 13.4479 7.48285L13.0842 8.86774C12.7573 8.73279 12.1799 8.45117 11.276 8.45117C10.4601 8.45117 10.1969 8.79425 10.1969 9.13733C10.1969 9.54169 10.6363 9.79907 11.7028 10.1913C13.1972 10.706 13.7992 11.3801 13.7992 12.483C13.7992 13.5737 13.0084 14.5049 11.5651 14.7502Z" fill="#0F9658"></path>
                                 </svg>
                     Bonificaciones
-                </a>
+                </Link>
                             <Link 
                                 href="/casino" 
                                 className="flex items-center gap-3 px-4 py-3 text-[#202040] hover:bg-gray-50 transition-colors"
