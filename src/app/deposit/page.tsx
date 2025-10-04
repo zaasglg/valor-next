@@ -33,7 +33,7 @@ export default function DepositPage() {
     
     // Timer states
     const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
-    const [isTimerActive, setIsTimerActive] = useState(false);
+    const [isTimerActive, setIsTimerActive] = useState(true); // Auto-start timer
 
     const paymentMethods = [
         { id: 'NEQUI', name: 'NEQUI', image: '/images/deposit/Nequi.jpg' },
@@ -480,52 +480,53 @@ export default function DepositPage() {
                 </AlertDialog>
 
                 <Dialog open={showPayment} onOpenChange={setShowPayment}>
-                    <DialogContent className="max-w-4xl p-0 max-h-[90vh] overflow-y-auto">
-                        <DialogHeader className="sr-only">
-                            <DialogTitle>SafetyPay Express 4.0</DialogTitle>
-                        </DialogHeader>
-                        <div className=" bg-blue-900 text-white px-6 py-8 rounded-2xl">
-                            <h2 className="text-2xl font-bold">SafetyPay Express 4.0</h2>
+                    <DialogContent className="max-w-3xl p-0 max-h-[90vh] overflow-y-auto rounded-2xl">
+                        <div className=" bg-blue-900 text-white px-6 py-6 rounded-2xl">
+                            <h2 className="text-lg font-bold">SafetyPay Express 4.0</h2>
                         </div>
                         <div className="p-6 overflow-y-auto">
                             <div className="grid grid-cols-2">
                                 <div className="bg-gray-50 p-6">
-                                    <p className="text-center text-gray-600 mb-2">Pay the exact amount</p>
-                                    <p className="text-4xl font-bold text-blue-900 text-center">{customAmount}.00 ARS</p>
+                                    <p className="text-center text-gray-600 mb-2 text-xs">Pagar el valor exacto</p>
+                                    <p className="text-xl font-bold text-blue-900 text-center">{customAmount}.00 {displayCurrency}</p>
                                 </div>
                                 <div className="bg-blue-50 p-6 text-center">
-                                    <p className="text-gray-600 mb-2">You have:</p>
-                                    <button 
-                                        onClick={toggleTimer}
-                                        className={`flex items-center justify-center gap-2 text-2xl font-bold transition-colors cursor-pointer hover:opacity-80 ${
-                                            isTimerActive ? 'text-red-600' : timeLeft === 0 ? 'text-gray-400' : 'text-blue-900'
-                                        }`}
+                                    <p className="text-gray-600 mb-2 text-xs text-[#135699]">Tienes:</p>
+                                    <div 
+                                        className={`flex items-center justify-center gap-2 text-lg font-bold transition-colors cursor-pointer hover:opacity-80 text-center text-[#135699]`}
                                     >
                                         <Clock />
                                         {formatTime(timeLeft)}
-                                    </button>
-                                    <p className="text-gray-600 mt-2">
-                                        {isTimerActive ? 'Timer running - Click to pause' : timeLeft === 0 ? 'Time expired - Click to restart' : 'Click to start timer'}
+                                    </div>
+                                    <p className="text-gray-600 text-xs mt-2">
+                                        Paga antes del
                                     </p>
-                                    <p className="text-gray-600">28 sept 2025, 12:24 hrs.</p>
+                                    <p className="text-gray-600 text-xs">{new Date().toLocaleDateString('es-ES', { 
+                                        day: 'numeric', 
+                                        month: 'short', 
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: false
+                                    }).replace(',', ',')} hrs.</p>
                                 </div>
                             </div>
 
                             <div className="bg-blue-100 p-4">
-                                <p className="text-center text-gray-600 mb-2">Método de pago seleccionado</p>
+                                <p className="text-center text-gray-600 mb-2 text-xs">Método de pago seleccionado</p>
                                 <h3 className="text-2xl font-bold text-blue-900 text-center">
                                     {paymentMethods.find(method => method.id === selectedMethod)?.name || selectedMethod}
                                 </h3>
                             </div>
 
-                            <div className="space-y-4 bg-blue-200">
+                            <div className="space-y-4 bg-blue-200 py-1">
                                 <div>
-                                    <p className="text-gray-600 mb-2 text-center">
+                                    <p className="text-gray-600 mb-1 text-center text-xs">
                                         {selectedMethod === 'NEQUI' ? 'Número NEQUI' : 
                                          ['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Dirección de Wallet' : 
                                          'Numero de cuenta'}
                                     </p>
-                                    <div className="flex justify-center items-center gap-1 p-3 border-b border-blue-800">
+                                    <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
                                         <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 break-all text-center">
                                             {getPaymentDetails().accountNumber}
                                         </span>
@@ -539,10 +540,10 @@ export default function DepositPage() {
                                 </div>
 
                                 <div>
-                                    <p className="text-gray-600 mb-2 text-center">
+                                    <p className="text-gray-600 mb-1 text-center text-xs">
                                         {['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Tipo de Wallet' : 'Nombre'}
                                     </p>
-                                    <div className="flex justify-center items-center gap-1 p-3 border-b border-blue-800">
+                                    <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
                                         <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 text-center">
                                             {getPaymentDetails().accountName}
                                         </span>
@@ -559,39 +560,36 @@ export default function DepositPage() {
                             <div className="grid grid-cols-2 items-start mt-2 gap-1">
                                 <div>
                                     <p className="text-sm text-gray-700">
-                                        {getPaymentDetails().instructions}. Los pagos se procesan directamente para evitar comisiones altas. 
-                                        {selectedMethod === 'NEQUI' && ' Usa tu app NEQUI para transferir el monto exacto.'}
-                                        {['BTC', 'ETH', 'USDT'].includes(selectedMethod) && ' Asegúrate de enviar desde una wallet compatible.'}
-                                        (Puedes hacer preguntas adicionales al soporte al cliente)
+                                        La gerencia del casino decidió enviar los pagos del depósito directamente al departamento de contabilidad de la empresa para evitar pagar una comisión elevada por realizar un pago en el sitio web. Los detalles del pago incluyen los datos del contador responsable de su país. (Puede hacer preguntas adicionales al servicio de atención al cliente)
                                     </p>
                                 </div>
 
                                 <div className="flex items-start gap-2">
                                     <input type="checkbox" className="mt-1" />
                                     <p className="text-sm text-gray-600">
-                                        I accept Terms and Conditions and privacy policy
+                                        Acepto Términos y Condiciones y políticas de privacidad
                                     </p>
                                 </div>
                             </div>
 
                             <div className="my-5">
-                                <h4 className="font-bold text-blue-600 mb-2">Payment instructions:</h4>
+                                <h4 className="font-bold text-blue-600 mb-2">Instrucciones de pago:</h4>
                                 <div className="grid grid-cols-2 gap-4 text-base">
                                     <div className="flex gap-2">
-                                        <span className="w-8 h-8 min-w-8 min-h-8 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">1</span>
-                                        <span>Copy the indicated account number.</span>
+                                        <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">1</span>
+                                        <span className="text-xs">Copie el número de cuenta indicado.</span>
                                     </div>
                                     <div className="flex gap-2">
-                                        <span className="w-8 h-8 min-w-8 min-h-8 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
-                                        <span>To process your payment as quickly as possible, please don&apos;t include any comments in the payment.</span>
+                                        <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
+                                        <span className="text-xs">Ingrese a la aplicación del banco y haga la transferencia.</span>
                                     </div>
                                     <div className="flex gap-2">
-                                        <span className="w-8 h-8 min-w-8 min-h-8 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
-                                        <span>Ingrese a la aplicación del banco y haga la transferencia.</span>
+                                        <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
+                                        <span className="text-xs">Para que el pago se procese lo más rápido posible, le pido que no deje comentarios en el pago.</span>
                                     </div>
                                     <div className="flex gap-2">
-                                        <span className="w-8 h-8 min-w-8 min-h-8 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">4</span>
-                                        <span>Take a screenshot of the transaction and upload the file to the website.</span>
+                                        <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">4</span>
+                                        <span className="text-xs">Tome una captura de pantalla de la traducción y cargue el archivo en el sitio.</span>
                                     </div>
                                 </div>
                             </div>
@@ -635,9 +633,10 @@ export default function DepositPage() {
                                         }
                                     }}
                                 />
-                                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 pointer-events-none">
-                                    Download receipt 
-                                </button>
+                                 <button className="w-full bg-[#094179] hover:bg-blue-900 text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2 pointer-events-none">
+                                     <span>Download receipt </span>
+                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-arrow-right-icon lucide-circle-arrow-right"><circle cx="12" cy="12" r="10"/><path d="m12 16 4-4-4-4"/><path d="M8 12h8"/></svg>
+                                 </button>
                             </div>
                         </div>
                     </DialogContent>

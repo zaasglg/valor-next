@@ -14,9 +14,9 @@ const Footer: React.FC = () => {
   const { t, language, setLanguage } = useLanguage();
 
   return (
-    <footer className="mt-2 px-4 md:px-8">
+    <footer className="mt-2 px-4">
       {/* Top section with logo and text */}
-      <div className="px-4 md:px-8 py-4 md:py-6 bg-white rounded-lg shadow-lg">
+      <div className="px-4 py-4 md:py-6 bg-white rounded-lg shadow-lg">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-1">
           <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0">
             <svg

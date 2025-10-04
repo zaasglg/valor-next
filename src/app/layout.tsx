@@ -41,7 +41,9 @@ export default function RootLayout({
         <LanguageProvider>
           <DialogProvider>
             <Header />
-            {children}
+            <div className="pb-20 md:pb-0">
+              {children}
+            </div>
             <Footer />
           </DialogProvider>
         </LanguageProvider>

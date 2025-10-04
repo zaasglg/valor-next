@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import Loader from "./Loader";
 import DotsLoader from "./DotsLoader";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 
 interface ProfileSidebarProps {
     balance?: string;
@@ -15,6 +16,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
     const pathname = usePathname();
     const [userInfo, setUserInfo] = useState({ user_id: userId, deposit: balance, currency: '$' });
     const [isLoading, setIsLoading] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
 
     const formatCurrency = (amount: number, currency: string = '$') => {
         return `${amount.toFixed(2)} ${currency}`;
@@ -124,57 +126,149 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
     };
 
     return (
-        <aside className="relative w-full lg:w-[320px] bg-gradient-to-br from-[#ffb32c] to-[#ff9800] rounded-2xl p-6 flex flex-col gap-6 shadow-lg overflow-hidden">
-            {/* Decorative background SVG */}
-            <svg
-                className="absolute left-0 top-0 w-full h-full pointer-events-none select-none z-0"
-                width="324" height="604" viewBox="0 0 324 604" fill="none" xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-            >
-                <path d="M525.443 250.397L571.915 268.908L497.819 349.348L536.812 378.258L442.194 448.408L458.323 476.814L324.818 711.961L191.31 476.814L207.44 448.406L112.819 378.258L151.815 349.349L77.7165 268.91L122.824 250.942C109.601 225.359 98.3784 196.28 87.64 165.684H-42L254.899 820H393.137L690 165.684H560.352C549.688 196.064 538.549 224.95 525.443 250.397Z" fill="#F5970A" />
-                <path d="M651.024 -124.822C516.111 -35.8608 491.335 106.49 443.578 160.461C462.25 70.7507 428.508 22.7357 501.585 -56.5345C415.286 0.950485 446.182 78.936 411.957 156.331L404.291 151.841C447.117 31.1456 330.76 -123.115 509.219 -216C301.511 -152.49 361.546 -13.1154 339.453 113.879L324.817 105.309L310.178 113.879C288.086 -13.1153 348.122 -152.49 140.412 -216C318.871 -123.115 202.517 31.1457 245.342 151.841L236.346 157.108C201.567 79.457 233.001 1.1436 146.413 -56.5343C219.488 22.7358 185.748 70.7509 204.42 160.461C156.663 106.489 131.887 -35.8606 -3.02443 -124.822C92.8065 -37.7309 111.133 179.328 183.468 270.803L148.047 284.912L212.706 355.105L181.477 378.258L260.863 437.113L238.323 476.814L324.817 629.158L411.311 476.814L388.771 437.114L468.157 378.258L436.927 355.105L501.585 284.912L464.908 270.304C536.923 178.544 555.362 -37.886 651.024 -124.822ZM258.14 365.702L203.801 262.558L286.285 322.486L258.14 365.702ZM391.492 365.702L363.347 322.486L445.831 262.558L391.492 365.702Z" fill="#F5970A" />
-            </svg>
+        <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full lg:w-auto">
+            <aside className="relative w-full min-w-full bg-gradient-to-br from-[#ffb32c] to-[#ff9800] rounded-2xl shadow-lg overflow-hidden">
+                {/* Decorative background SVG */}
+                <svg
+                    className="absolute left-0 top-0 w-full h-full pointer-events-none select-none z-0"
+                    width="324" height="604" viewBox="0 0 324 604" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                >
+                    <path d="M525.443 250.397L571.915 268.908L497.819 349.348L536.812 378.258L442.194 448.408L458.323 476.814L324.818 711.961L191.31 476.814L207.44 448.406L112.819 378.258L151.815 349.349L77.7165 268.91L122.824 250.942C109.601 225.359 98.3784 196.28 87.64 165.684H-42L254.899 820H393.137L690 165.684H560.352C549.688 196.064 538.549 224.95 525.443 250.397Z" fill="#F5970A" />
+                    <path d="M651.024 -124.822C516.111 -35.8608 491.335 106.49 443.578 160.461C462.25 70.7507 428.508 22.7357 501.585 -56.5345C415.286 0.950485 446.182 78.936 411.957 156.331L404.291 151.841C447.117 31.1456 330.76 -123.115 509.219 -216C301.511 -152.49 361.546 -13.1154 339.453 113.879L324.817 105.309L310.178 113.879C288.086 -13.1153 348.122 -152.49 140.412 -216C318.871 -123.115 202.517 31.1457 245.342 151.841L236.346 157.108C201.567 79.457 233.001 1.1436 146.413 -56.5343C219.488 22.7358 185.748 70.7509 204.42 160.461C156.663 106.489 131.887 -35.8606 -3.02443 -124.822C92.8065 -37.7309 111.133 179.328 183.468 270.803L148.047 284.912L212.706 355.105L181.477 378.258L260.863 437.113L238.323 476.814L324.817 629.158L411.311 476.814L388.771 437.114L468.157 378.258L436.927 355.105L501.585 284.912L464.908 270.304C536.923 178.544 555.362 -37.886 651.024 -124.822ZM258.14 365.702L203.801 262.558L286.285 322.486L258.14 365.702ZM391.492 365.702L363.347 322.486L445.831 262.558L391.492 365.702Z" fill="#F5970A" />
+                </svg>
 
-            {/* Balance and User ID Section */}
-            <div className="grid grid-cols-2 gap-2 mb-2 relative z-10">
-                <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
-                    <span className="text-xs">Saldo:</span>
-                    {isLoading ? (
-                        <DotsLoader className="mt-4" color="black" size="sm" />
-                    ) : (
-                        <span className="font-black text-base">{userInfo.deposit}</span>
-                    )}
-                </div>
-                <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
-                    <span className="text-xs">ID de usuario:</span>
-                    {isLoading ? (
-                        <DotsLoader className="mt-4" color="black" size="sm" />
-                    ) : (
-                        <span className="font-black text-base">{userInfo.user_id}</span>
-                    )}
-                </div>
-            </div>
+                {/* Mobile Header - Hidden when expanded */}
+                {!isOpen && (
+                    <div className="lg:hidden p-4 relative z-10 w-full">
+                        <CollapsibleTrigger className="w-full flex items-center justify-between text-white font-semibold">
+                            <div className="flex items-center gap-3">
+                                {(() => {
+                                    const activeItem = navItems.find(item => pathname === item.href) || navItems[0];
+                                    return (
+                                        <Link
+                                            key={activeItem.href}
+                                            href={activeItem.href}
+                                            className="flex items-center gap-3"
+                                            // className={getNavItemClasses(activeItem.href)}
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            <span className="flex-shrink-0">
+                                                {activeItem.icon}
+                                            </span>
+                                            <span>{activeItem.label}</span>
+                                        </Link>
+                                    );
+                                })()}
+                            </div>
+                            <svg 
+                                className={`w-5 h-5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </CollapsibleTrigger>
+                    </div>
+                )}
 
-            {/* Quick Recharge Button */}
-            <Link href="/deposit" className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-3 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 border-0 mb-2 relative z-10 block text-center">
-            Recargar en 1 clic
-            </Link>
+                {/* Desktop Version - Always Visible */}
+                <div className="hidden lg:flex flex-col gap-6 p-6 w-full">
+                    {/* Balance and User ID Section */}
+                    <div className="grid grid-cols-2 gap-2 mb-2 relative z-10">
+                        <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
+                            <span className="text-xs">Saldo:</span>
+                            {isLoading ? (
+                                <DotsLoader className="mt-4" color="black" size="sm" />
+                            ) : (
+                                <span className="font-black text-base">{userInfo.deposit}</span>
+                            )}
+                        </div>
+                        <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
+                            <span className="text-xs">ID de usuario:</span>
+                            {isLoading ? (
+                                <DotsLoader className="mt-4" color="black" size="sm" />
+                            ) : (
+                                <span className="font-black text-base">{userInfo.user_id}</span>
+                            )}
+                        </div>
+                    </div>
 
-            {/* Navigation */}
-            <nav className="flex flex-col relative z-10 space-y-1">
-                {navItems.map((item) => (
-                    <Link
-                        key={item.href}
-                        href={item.href}
-                        className={getNavItemClasses(item.href)}
-                    >
-                        <span className="flex-shrink-0">
-                            {item.icon}
-                        </span>
-                        <span>{item.label}</span>
+                    {/* Quick Recharge Button */}
+                    <Link href="/deposit" className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-3 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 border-0 mb-2 relative z-10 block text-center">
+                    Recargar en 1 clic
                     </Link>
-                ))}
-            </nav>
-        </aside>
+
+                    {/* Navigation */}
+                    <nav className="flex flex-col relative z-10 space-y-1">
+                        {navItems.map((item) => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={getNavItemClasses(item.href)}
+                            >
+                                <span className="flex-shrink-0">
+                                    {item.icon}
+                                </span>
+                                <span>{item.label}</span>
+                            </Link>
+                        ))}
+                    </nav>
+                </div>
+
+                {/* Mobile Collapsible Content */}
+                <CollapsibleContent className="lg:hidden w-full">
+                    <div className="px-4 py-4 relative z-10">
+
+                    <div className="grid grid-cols-2 gap-2 mb-2 relative z-10 mb-3">
+                        <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
+                            <span className="text-xs">Saldo:</span>
+                            {isLoading ? (
+                                <DotsLoader className="mt-4" color="black" size="sm" />
+                            ) : (
+                                <span className="font-black text-base">{userInfo.deposit}</span>
+                            )}
+                        </div>
+                        <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
+                            <span className="text-xs">ID de usuario:</span>
+                            {isLoading ? (
+                                <DotsLoader className="mt-4" color="black" size="sm" />
+                            ) : (
+                                <span className="font-black text-base">{userInfo.user_id}</span>
+                            )}
+                        </div>
+                    </div>
+
+
+                        {/* Quick Recharge Button */}
+                        <Link 
+                            href="/deposit" 
+                            className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-3 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 border-0 mb-4 block text-center"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            Recargar en 1 clic
+                        </Link>
+
+                        {/* Navigation */}
+                        <nav className="flex flex-col space-y-1">
+                            {navItems.map((item) => (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className={getNavItemClasses(item.href)}
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    <span className="flex-shrink-0">
+                                        {item.icon}
+                                    </span>
+                                    <span>{item.label}</span>
+                                </Link>
+                            ))}
+                        </nav>
+                    </div>
+                </CollapsibleContent>
+            </aside>
+        </Collapsible>
     );
 }
