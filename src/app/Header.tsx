@@ -579,7 +579,7 @@ const Header: React.FC = () => {
         </div>
 
         {/* Bottom navigation menu - only show on home page and all_games page */}
-        <nav className="grid grid-cols-6 items-end px-">
+        <nav className="grid grid-cols-6 items-end px-2 py-3">
             <button
               className="flex flex-col items-center gap-1 py-3"
               onClick={() => setIsMobileMenuOpen(true)}
@@ -760,9 +760,6 @@ const Header: React.FC = () => {
                 ></path>
               </svg>
               Bonificaciones
-              {pathname === "/bonuses" && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-900 rounded-t-lg"></div>
-              )}
             </Link>
           </nav>
       </div>
