@@ -1,6 +1,12 @@
 "use client"
 
+import { X } from 'lucide-react'
+import { useState } from 'react'
+
 export default function BonusesPage() {
+    const [activeFilter, setActiveFilter] = useState('todos')
+    const [promoCode, setPromoCode] = useState('')
+    const [showModal, setShowModal] = useState(false)
     return (
         <div className="min-h-screen bg-[#f5f6fa] p-4" style={{ backgroundImage: 'url(/images/bonus_pattern.png)', backgroundRepeat: 'repeat' }}>
             <main className="max-w-7xl mx-auto">
@@ -11,57 +17,63 @@ export default function BonusesPage() {
                     </div>
                 </div>
 
-                {/* Welcome Bonus Section */}
-                <section className="bg-gradient-to-r from-purple-800 to-blue-800 rounded-2xl p-4 md:p-8 mb-6 md:mb-8 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-                    <div className="relative z-10">
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 md:mb-6 gap-4">
-                            <div className="flex-1">
-                                <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
-                                    <span className="text-yellow-400">650%</span> Bono de Bienvenida
-                                </h2>
-                                <p className="text-white text-base md:text-lg">
-                                    Reciba hasta <span className="text-yellow-400 font-bold">2000$</span> A tu saldo de bonificación acaba de incrementarse al recargar tu saldo de cuenta!
-                                </p>
-                            </div>
-                            <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-4 md:px-6 py-2 md:py-3 rounded-lg flex items-center gap-2 text-sm md:text-base">
-                                <span>?</span>
-                                Cómo funciona
+
+                <section>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-start gap-5 mb-4 md:mb-8">
+                        <h2 className="text-2xl md:text-5xl font-bold text-white mb-4 md:mb-0 text-left">Todos los bonos</h2>
+                        
+                        {/* Filter Tabs */}
+                        <div className="hidden lg:flex flex-wrap gap-1 md:gap-2">
+                            <button 
+                                onClick={() => setActiveFilter('todos')}
+                                className={`px-2 py-1 rounded-sm text-xs md:text-sm font-medium flex items-center gap-1 transition-colors ${
+                                    activeFilter === 'todos' 
+                                        ? 'bg-[#302fa0] text-white hover:bg-[#302fa0]' 
+                                        : 'text-white hover:bg-[#302fa0]'
+                                }`}
+                            >
+                                Todos los bonos
+                                <span className="bg-gray-600 text-white text-xs px-1 py-0.5 rounded-sm">0</span>
                             </button>
-                        </div>
-
-                        {/* Bonus Cards */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                            {/* First Bonus */}
-                            <div className="text-center relative rounded-2xl">
-                                <img src="/images/bonus_1.png" alt="Bonus" className="rounded-2xl w-full h-auto" />
-                            </div>
-
-                            {/* Second Bonus */}
-                            <div className="rounded-2xl text-center relative">
-                                <img src="/images/bonus_2.png" alt="Bonus" className="rounded-2xl w-full h-auto" />
-                            </div>
-
-                            {/* Third Bonus */}
-                            <div className="rounded-2xl text-center relative">
-                                <img src="/images/bonus_3.png" alt="Bonus" className="rounded-2xl w-full h-auto" />
-                            </div>
-
-                            {/* Fourth Bonus */}
-                            <div className="rounded-2xl text-center relative">
-                                <img src="/images/bonus_4.png" alt="Bonus" className="rounded-2xl w-full h-auto" />
-                            </div>
+                            <button 
+                                onClick={() => setActiveFilter('activos')}
+                                className={`px-2 py-1 rounded-sm text-xs md:text-sm font-medium flex items-center gap-1 transition-colors ${
+                                    activeFilter === 'activos' 
+                                        ? 'bg-[#302fa0] text-white hover:bg-[#302fa0]' 
+                                        : 'text-white hover:bg-[#302fa0]'
+                                }`}
+                            >
+                                Mis bonos activos
+                                <span className="bg-gray-600 text-white text-xs px-1 py-0.5 rounded-sm">0</span>
+                            </button>
+                            <button 
+                                onClick={() => setActiveFilter('disponibles')}
+                                className={`px-2 py-1 rounded-sm text-xs md:text-sm font-medium flex items-center gap-1 transition-colors ${
+                                    activeFilter === 'disponibles' 
+                                        ? 'bg-[#302fa0] text-white hover:bg-[#302fa0]' 
+                                        : 'text-white hover:bg-[#302fa0]'
+                                }`}
+                            >
+                                Disponible para mí
+                                <span className="bg-gray-600 text-white text-xs px-1 py-0.5 rounded-sm">0</span>
+                            </button>
+                            <button 
+                                onClick={() => setActiveFilter('archivo')}
+                                className={`px-2 py-1 rounded-sm text-xs md:text-sm font-medium flex items-center gap-1 transition-colors ${
+                                    activeFilter === 'archivo' 
+                                        ? 'bg-[#302fa0] text-white hover:bg-[#302fa0]' 
+                                        : 'text-white hover:bg-[#302fa0]'
+                                }`}
+                            >
+                                Archivo
+                                <span className="bg-gray-600 text-white text-xs px-1 py-0.5 rounded-sm">0</span>
+                            </button>
                         </div>
                     </div>
                 </section>
 
-
-                <section>
-                    <h2 className="text-2xl md:text-4xl font-bold text-white mb-4 md:mb-8 text-left">Todos los bonos</h2>
-                </section>
-
                 {/* Promo Code Section */}
-                <section className="w-full md:w-3/12 bg-[#20204080] rounded-3xl p-3 md:p-3 relative overflow-hidden shadow-2xl">
+                <section className="w-full md:w-4/12 bg-[#20204080] rounded-3xl p-3 md:p-3 relative overflow-hidden shadow-2xl">
                     {/* Background Pattern */}
                     <div className="">
                         <div className="rounded-2xl" style={{
@@ -89,15 +101,56 @@ export default function BonusesPage() {
                             <input
                                 type="text"
                                 placeholder="..."
-                                className="w-full px-3 md:px-4 py-2 md:py-3 rounded-xl text-base md:text-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-lg bg-white"
+                                value={promoCode}
+                                onChange={(e) => setPromoCode(e.target.value)}
+                                className="w-full px-3 md:px-4 py-2 rounded-md text-base md:text-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-lg bg-white"
                             />
                         </div>
-                        <button className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold py-2 md:py-2 px-4 md:px-6 rounded-xl shadow-[0_4px_0_0_#d97706] md:shadow-[0_6px_0_0_#d97706] hover:shadow-[0_2px_0_0_#d97706] md:hover:shadow-[0_3px_0_0_#d97706] active:shadow-[0_1px_0_0_#d97706] active:translate-y-1 transform transition-all duration-150 text-base md:text-lg border-b-2 md:border-b-3 border-orange-600 hover:border-orange-700 active:border-orange-800">
+                        <button 
+                            onClick={() => {
+                                if (promoCode.trim()) {
+                                    setShowModal(true)
+                                }
+                            }}
+                            className="w-full bg-[#fda700] text-white font-bold py-2 md:py-2 px-4 md:px-6 rounded-md active:shadow-[0_0.5px_0_0_#d97706] active:translate-y-1 transform transition-all duration-150 text-base md:text-lg border-b-2 md:border-b-3 border-orange-600 hover:border-orange-700 active:border-orange-800"
+                        >
                             Confirmar
                         </button>
                     </div>
                 </section>
             </main>
+
+            {/* Modal */}
+            {showModal && (
+                <div className="fixed inset-0 flex items-end justify-center z-50">
+                    <div className="bg-[#2d1259] rounded-t-lg p-6 max-w-md w-full mx-4">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center justify-center">
+                                    <X color='#fda700' size={44} />
+                                </div>
+                                <h3 className="text-white text-lg font-semibold">Error de activación</h3>
+                            </div>
+                        </div>
+                        
+                        {/* Message */}
+                        <div className="mb-6">
+                            <p className="text-white text-base font-bold">
+                                Código de promoción no encontrado.
+                            </p>
+                        </div>
+                        
+                        {/* Button */}
+                        <button
+                            onClick={() => setShowModal(false)}
+                            className="w-full bg-[#fda700] text-white font-bold py-2 md:py-2 px-4 md:px-6 rounded-md active:shadow-[0_0.5px_0_0_#d97706] active:translate-y-1 transform transition-all duration-150 text-base md:text-lg border-b-2 md:border-b-3 border-orange-600 hover:border-orange-700 active:border-orange-800"
+                        >
+                            Ok
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
