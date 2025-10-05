@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -8,10 +8,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Footer: React.FC = () => {
   const { t, language, setLanguage } = useLanguage();
+  const [isLegalOpen, setIsLegalOpen] = useState(true);
 
   return (
     <footer className="mt-2 px-4">
@@ -56,7 +58,8 @@ const Footer: React.FC = () => {
       </div>
 
       {/* Links section */}
-      <div className="px-4 md:px-8 py-4 md:py-6 bg-white rounded-lg shadow-lg mt-5">
+      {/* Desktop version */}
+      <div className="hidden md:block px-4 md:px-8 py-4 md:py-6 bg-white rounded-lg shadow-lg mt-5">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <div>
             <Link
@@ -165,6 +168,109 @@ const Footer: React.FC = () => {
             </Link>
           </div>
         </div>
+      </div>
+
+      {/* Mobile version with collapsible sections */}
+      <div className="md:hidden px-4 py-4 bg-white rounded-lg shadow-lg mt-5 space-y-2">
+        {/* Información Legal - Expanded by default with all desktop links */}
+        <Collapsible open={isLegalOpen} onOpenChange={setIsLegalOpen}>
+          <CollapsibleTrigger className="w-full flex items-center justify-between px-3 py-1 hover:bg-gray-50 rounded-lg">
+            <span className="text-gray-800 font-bold text-sm">Información Legal</span>
+            <svg 
+              className={`w-4 h-4 transition-transform duration-200 ${isLegalOpen ? 'rotate-180' : ''}`}
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="px-3 pb-2 mt-3">
+            <div className="space-y-2">
+              <Link href="/policies?tab=general-terms" className="block text-gray-600 hover:text-gray-800 text-xs py-1">
+                {t("footer.general_terms")}
+              </Link>
+              <Link href="/policies?tab=responsible-gaming" className="block text-gray-600 hover:text-gray-800 text-xs py-1">
+                {t("footer.responsible_gaming")}
+              </Link>
+              <Link href="/policies?tab=contact" className="block text-gray-600 hover:text-gray-800 text-xs py-1">
+                {t("footer.contact")}
+              </Link>
+              <Link href="/policies?tab=affiliate-program" className="block text-gray-600 hover:text-gray-800 text-xs py-1">
+                {t("footer.affiliate_program")}
+              </Link>
+              <Link href="/policies?tab=privacy-policy" className="block text-gray-600 hover:text-gray-800 text-xs py-1">
+                {t("footer.privacy_policy")}
+              </Link>
+              <Link href="/policies?tab=about-us" className="block text-gray-600 hover:text-gray-800 text-xs py-1">
+                {t("footer.about_us")}
+              </Link>
+              <Link href="/policies?tab=account-payments" className="block text-gray-600 hover:text-gray-800 text-xs py-1">
+                {t("footer.account_payments")}
+              </Link>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+      </div>
+
+      {/* Language Selector - Separate section without background */}
+      <div className="md:hidden px-4 py-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">
+                {language === "es" && "🇪🇸"}
+                {language === "en" && "🇺🇸"}
+                {language === "pt" && "🇧🇷"}
+                {language === "ar" && "🇸🇦"}
+                {language === "fr" && "🇫🇷"}
+              </span>
+              <span className="text-gray-800 font-medium text-sm">
+                {language === "es" && "Español"}
+                {language === "en" && "English"}
+                {language === "pt" && "Português"}
+                {language === "ar" && "العربية"}
+                {language === "fr" && "Français"}
+              </span>
+            </div>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              className="flex items-center gap-2"
+              onClick={() => setLanguage("es")}
+            >
+              <span className="text-lg">🇪🇸</span> Español
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="flex items-center gap-2"
+              onClick={() => setLanguage("pt")}
+            >
+              <span className="text-lg">🇧🇷</span> Português
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="flex items-center gap-2"
+              onClick={() => setLanguage("ar")}
+            >
+              <span className="text-lg">🇸🇦</span> العربية
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="flex items-center gap-2"
+              onClick={() => setLanguage("en")}
+            >
+              <span className="text-lg">🇺🇸</span> English
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="flex items-center gap-2"
+              onClick={() => setLanguage("fr")}
+            >
+              <span className="text-lg">🇫🇷</span> Français
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Certificates section */}

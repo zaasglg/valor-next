@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import {
   Carousel,
   CarouselContent,
@@ -552,54 +551,115 @@ export default function AllGamesPage() {
   });
 
   return (
-    <div className="flex min-h-screen bg-[#fafbfc]">
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"
-      >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
-      </button>
+    <div className="min-h-screen bg-[#fafbfc]">
+      {/* Mobile Filter Card - Always visible on mobile */}
+      <div className="lg:hidden p-4">
+        <div className="bg-white rounded-lg shadow-sm p-4 space-y-4">
+          {/* Top Categories */}
+          <div className="grid grid-cols-3 gap-2">
+            {/* Top Juegos */}
+            <button 
+              onClick={() => handleTopButtonClick("top")}
+              className={`flex flex-col items-center p-3 rounded-lg transition-colors duration-200 ${
+                activeTopButton === "top" ? "bg-blue-50 border border-blue-200" : "bg-gray-50 hover:bg-gray-100"
+              }`}
+            >
+              <div className="w-6 h-6 flex items-center justify-center mb-2">
+                <svg className="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              </div>
+              <span className={`text-xs font-semibold text-center ${
+                activeTopButton === "top" ? "text-blue-600" : "text-[#23223a]"
+              }`}>Top Juegos</span>
+              <span className="text-xs text-[#b3b3c3] mt-1">13</span>
+            </button>
 
-      {/* Barra lateral */}
-      <aside
-        className={`fixed lg:relative inset-y-0 left-0 z-40 w-[270px] 2xl:w-[320px] 2xl:p-10 bg-white border-r border-[#ecebfa] flex flex-col gap-4 lg:gap-8 2xl:gap-10 transform transition-transform duration-300 ease-in-out ${
-          isMobileMenuOpen
-            ? "translate-x-0"
-            : "-translate-x-full lg:translate-x-0"
-        }`}
-      >
-        {/* Mobile Close Button */}
-        <button
-          onClick={() => setIsMobileMenuOpen(false)}
-          className="lg:hidden self-end mb-2 p-2 rounded-lg hover:bg-gray-100"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
+            {/* Popular */}
+            <button 
+              onClick={() => handleTopButtonClick("popular")}
+              className={`flex flex-col items-center p-3 rounded-lg transition-colors duration-200 ${
+                activeTopButton === "popular" ? "bg-blue-50 border border-blue-200" : "bg-gray-50 hover:bg-gray-100"
+              }`}
+            >
+              <div className="w-6 h-6 flex items-center justify-center mb-2">
+                <svg className="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <span className={`text-xs font-semibold text-center ${
+                activeTopButton === "popular" ? "text-blue-600" : "text-[#23223a]"
+              }`}>Popular</span>
+              <span className="text-xs text-[#b3b3c3] mt-1">11</span>
+            </button>
+
+            {/* Calientes */}
+            <button 
+              onClick={() => handleTopButtonClick("hot")}
+              className={`flex flex-col items-center p-3 rounded-lg transition-colors duration-200 ${
+                activeTopButton === "hot" ? "bg-blue-50 border border-blue-200" : "bg-gray-50 hover:bg-gray-100"
+              }`}
+            >
+              <div className="w-6 h-6 flex items-center justify-center mb-2">
+                <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <span className={`text-xs font-semibold text-center ${
+                activeTopButton === "hot" ? "text-blue-600" : "text-[#23223a]"
+              }`}>Calientes</span>
+              <span className="text-xs text-[#b3b3c3] mt-1">9</span>
+            </button>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-4 w-4 text-[#b3b3c3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Buscar..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="block w-full pl-10 pr-10 py-2 border border-gray-200 rounded-lg bg-gray-50 text-sm placeholder-[#b3b3c3] focus:outline-none focus:ring-2 focus:ring-[#23223a] focus:border-transparent"
             />
-          </svg>
-        </button>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                <svg className="h-4 w-4 text-[#b3b3c3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+
+          {/* Filter Buttons */}
+          <div className="grid grid-cols-2 gap-2">
+            <button className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <span className="text-sm text-[#23223a]">Proveedores</span>
+              <svg className="w-4 h-4 text-[#b3b3c3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+              </svg>
+            </button>
+            <button className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <span className="text-sm text-[#23223a]">Categorías</span>
+              <svg className="w-4 h-4 text-[#b3b3c3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden lg:flex min-h-screen">
+        {/* Desktop Sidebar */}
+        <aside className="w-[270px] 2xl:w-[320px] 2xl:p-10 bg-white border-r border-[#ecebfa] flex flex-col gap-4 lg:gap-8 2xl:gap-10">
 
         {/* Top Games Section */}
         <div className="bg-gray-50 rounded-xl p-4 shadow-sm">
@@ -742,32 +802,23 @@ export default function AllGamesPage() {
           </ul>
         </div>
       </aside>
-      {/* Mobile Overlay */}
-      {isMobileMenuOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
 
-      {/* Contenido principal */}
-      <main className="flex-1 p-4 lg:p-8 2xl:p-12 pt-16 lg:pt-8 2xl:pt-12">
+      {/* Desktop Content */}
+      <main className="flex-1 p-8 2xl:p-12">
         {/* Banners superiores */}
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 2xl:gap-8 mb-6 lg:mb-8 2xl:mb-12">
           <div className="overflow-hidden w-full lg:w-5/12 bg-green-700 rounded-2xl 2xl:rounded-3xl flex items-center justify-center relative bg-[url(/images/Bbv2-xdH.jpg)] bg-cover h-64 lg:h-64 2xl:h-[45em]">
             <div className="absolute inset-0 flex flex-col items-center justify-end z-10 pb-10 2xl:pb-16">
               <div className="flex items-end gap-1 lg:gap-2 2xl:gap-3 w-full px-2 lg:px-5 2xl:px-8">
                 <div className="flex-1 flex justify-center">
-                  <Image
+                  <img
                     src="/images/aviator.avif"
                     alt="Aviador"
-                    width={120}
-                    height={120}
                     className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white"
                   />
                 </div>
                 <div className="flex-1 flex justify-center">
-                  <Image
+                  <img
                     src="/images/diver.jpeg"
                     alt="Buzo"
                     width={90}
@@ -776,7 +827,7 @@ export default function AllGamesPage() {
                   />
                 </div>
                 <div className="flex-1 flex justify-center">
-                  <Image
+                  <img
                     src="/images/plinko.png"
                     alt="Rueda"
                     width={90}
@@ -785,7 +836,7 @@ export default function AllGamesPage() {
                   />
                 </div>
                 <div className="flex-1 flex justify-center">
-                  <Image
+                  <img
                     src="/images/mines.jpeg"
                     alt="Minas"
                     width={90}
@@ -794,7 +845,7 @@ export default function AllGamesPage() {
                   />
                 </div>
                 <div className="flex-1 flex justify-center">
-                  <Image
+                  <img
                     src="/images/chicken_road.png"
                     alt="Camino del Pollo"
                     width={90}
@@ -803,7 +854,7 @@ export default function AllGamesPage() {
                   />
                 </div>
                 <div className="flex-1 flex justify-center">
-                  <Image
+                  <img
                     src="/images/plinko_1000.png"
                     alt="Plinko Azteca"
                     width={90}
@@ -823,30 +874,20 @@ export default function AllGamesPage() {
                 <CarouselItem className="basis-full h-full">
                   {isAuthenticated ? (
                     <div className="h-full w-full relative">
-                      <Image
+                      <img
                         src="/images/1-banner.jpg"
                         alt="imagen del banner"
                         className="rounded-lg 2xl:rounded-2xl w-full h-full object-contain cursor-pointer"
-                        width={1200}
-                        height={400}
-                        loading="lazy"
-                        priority={false}
                         onClick={handleCarouselClick}
-                        style={{ objectFit: "contain" }}
                       />
                     </div>
                   ) : (
                     <LoginDialog>
                       <div className="h-full w-full relative">
-                        <Image
+                        <img
                           src="/images/1-banner.jpg"
                           alt="imagen del banner"
                           className="rounded-lg 2xl:rounded-2xl w-full h-full object-contain cursor-pointer"
-                          width={1200}
-                          height={400}
-                          loading="lazy"
-                          priority={false}
-                          style={{ objectFit: "contain" }}
                         />
                       </div>
                     </LoginDialog>
@@ -855,30 +896,20 @@ export default function AllGamesPage() {
                 <CarouselItem className="basis-full h-full">
                   {isAuthenticated ? (
                     <div className="h-full w-full relative">
-                      <Image
+                      <img
                         src="/images/2-banner.jpg"
                         alt="imagen del banner"
                         className="rounded-lg 2xl:rounded-2xl w-full h-full object-contain cursor-pointer"
-                        width={1200}
-                        height={400}
-                        loading="lazy"
-                        priority={false}
                         onClick={handleCarouselClick}
-                        style={{ objectFit: "contain" }}
                       />
                     </div>
                   ) : (
                     <LoginDialog>
                       <div className="h-full w-full relative">
-                        <Image
+                        <img
                           src="/images/2-banner.jpg"
                           alt="imagen del banner"
                           className="rounded-lg 2xl:rounded-2xl w-full h-full object-contain cursor-pointer"
-                          width={1200}
-                          height={400}
-                          loading="lazy"
-                          priority={false}
-                          style={{ objectFit: "contain" }}
                         />
                       </div>
                     </LoginDialog>
@@ -898,11 +929,11 @@ export default function AllGamesPage() {
             {filteredGames.length === 1 ? "juego" : "juegos"}
           </span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 2xl:grid-cols-8 gap-2 lg:gap-3 2xl:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 2xl:grid-cols-8 gap-1 lg:gap-2 2xl:gap-4">
           {filteredGames.map((game, index) => (
             <div
               key={index}
-              className="rounded-2xl 2xl:rounded-3xl overflow-hidden duration-300"
+              className="rounded-lg 2xl:rounded-lg overflow-hidden duration-300"
             >
               <div className="relative w-full h-40 sm:h-48 lg:h-60 2xl:h-72">
                 {isAuthenticated ? (
@@ -910,7 +941,7 @@ export default function AllGamesPage() {
                     <img
                       src={game.img}
                       alt={game.name}
-                      className="object-cover rounded-xl 2xl:rounded-2xl cursor-pointer hover:scale-105 transition-transform duration-300"
+                      className="object-cover rounded-md 2xl:rounded-2xl cursor-pointer hover:scale-105 transition-transform duration-300"
                       onClick={handleGameClick}
                     />
                   </Link>
@@ -930,6 +961,87 @@ export default function AllGamesPage() {
           ))}
         </div>
       </main>
+      </div>
+
+      {/* Mobile Content */}
+      <div className="lg:hidden p-4">
+        {/* Banners superiores */}
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="overflow-hidden w-full bg-green-700 rounded-2xl flex items-center justify-center relative bg-[url(/images/Bbv2-xdH.jpg)] bg-cover h-64">
+            <div className="absolute inset-0 flex flex-col items-center justify-end z-10 pb-10">
+              <div className="flex items-end gap-1 w-full px-2">
+                <div className="flex-1 flex justify-center">
+                  <img alt="Aviador" className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white" src="/images/aviator.avif" />
+                </div>
+                <div className="flex-1 flex justify-center">
+                  <img alt="Buzo" width="90" height="90" className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white" src="/images/diver.jpeg" />
+                </div>
+                <div className="flex-1 flex justify-center">
+                  <img alt="Rueda" width="90" height="90" className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white" src="/images/plinko.png" />
+                </div>
+                <div className="flex-1 flex justify-center">
+                  <img alt="Minas" width="90" height="90" className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white" src="/images/mines.jpeg" />
+                </div>
+                <div className="flex-1 flex justify-center">
+                  <img alt="Camino del Pollo" width="90" height="90" className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white" src="/images/chicken_road.png" />
+                </div>
+                <div className="flex-1 flex justify-center">
+                  <img alt="Plinko Azteca" width="90" height="90" className="w-full h-auto max-w-[60px] lg:max-w-[120px] 2xl:max-w-[160px] rounded-2xl 2xl:rounded-3xl border-2 lg:border-4 2xl:border-6 border-white" src="/images/plinko_1000.png" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Games Grid */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-[#23223a]">Todos los juegos</h2>
+            <button className="p-2 rounded-lg hover:bg-gray-100">
+              <svg className="w-5 h-5 text-[#b3b3c3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {filteredGames.map((game, index) => (
+              <div key={index} className="relative group">
+                <div className="aspect-square rounded-lg overflow-hidden bg-white border border-gray-200">
+                  <img
+                    src={game.img}
+                    alt={game.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (fallback) {
+                        fallback.style.display = 'flex';
+                      }
+                    }}
+                  />
+                  {/* Fallback content when image fails to load */}
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center" style={{display: 'none'}}>
+                    <div className="text-center text-white">
+                      <div className="text-2xl font-bold mb-1">{game.name.charAt(0)}</div>
+                      <div className="text-xs opacity-80">{game.provider}</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 rounded-lg flex items-center justify-center">
+                  <button className="opacity-0 group-hover:opacity-100 bg-white text-[#23223a] px-4 py-2 rounded-lg font-semibold text-sm transition-opacity duration-300">
+                    Jugar
+                  </button>
+                </div>
+                <div className="mt-2">
+                  <h3 className="font-bold text-sm text-[#23223a] truncate">{game.name}</h3>
+                  <p className="text-xs text-[#b3b3c3]">{game.provider}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

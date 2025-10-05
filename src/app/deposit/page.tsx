@@ -297,11 +297,19 @@ export default function DepositPage() {
                             <button
                                 key={method.id}
                                 onClick={() => setSelectedMethod(method.id)}
-                                className={`border-2 rounded-xl p-2 flex flex-col justify-center items-center w-28 h-36 bg-white focus:outline-none focus:ring-2 transition-all ${selectedMethod === method.id
+                                className={`border rounded-md p-2 flex flex-col justify-center items-center w-28 h-30 bg-white focus:outline-none focus:ring-2 transition-all relative overflow-hidden ${selectedMethod === method.id
                                     ? 'border-green-600 focus:ring-green-600'
                                     : 'border-gray-300 hover:border-gray-400'
                                     }`}
                             >
+                                {/* Green checkmark for selected method */}
+                                {selectedMethod === method.id && (
+                                    <div className="absolute -top-0 -left-0 w-6 h-6 bg-green-600 rounded-br-xl flex items-center justify-center">
+                                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                )}
                                 <img src={method.image} alt={method.name} className="mb-2 h-16" />
                                 <span className="text-gray-500 text-xs">{method.name}</span>
                             </button>
@@ -316,7 +324,7 @@ export default function DepositPage() {
                         
                         {showBonusSection ? (
                             <div className="mb-4 lg:mb-8">
-                                <div className="grid grid-cols-2 gap-2 mb-4">
+                                <div className="grid grid-cols-2 gap-0.5 mb-4">
                                     {bonusAmounts.map((bonus) => (
                                         <button
                                             key={bonus.amount}
@@ -326,7 +334,7 @@ export default function DepositPage() {
                                                 setSelectedAmount(0);
                                                 setIsManualInput(false);
                                             }}
-                                            className={`border-2 font-black rounded-xl p-4 h-32 text-lg focus:outline-none focus:ring-2 transition-all flex items-center justify-center relative ${
+                                            className={`border-2 font-black rounded-md p-4 h-32 text-lg focus:outline-none focus:ring-2 transition-all flex items-center justify-center relative shadow-[0_4px_0_0_#16a34a] active:shadow-[0_2px_0_0_#16a34a] active:translate-y-0.5 duration-100 ${
                                                 selectedBonusAmount?.amount === bonus.amount
                                                     ? 'text-white bg-green-700 border-green-700 overflow-hidden'
                                                     : 'text-green-700 bg-white border-green-600 hover:bg-green-50'
@@ -346,10 +354,9 @@ export default function DepositPage() {
                                                 </div>
                                             )}
                                             <div className="text-center">
-                                                <div className="font-black text-xl">Recargar:</div>
-                                                <div className="text-lg">
-                                                    {bonus.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} {displayCurrency}
-                                                    {bonus.percentage > 0 && ` +${bonus.percentage}%`}
+                                                <div className="font-black text-xl">Recargar:                                                     {bonus.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} {displayCurrency}</div>
+                                                <div className="text-sm text-gray-400 font-normal">
+                                                    {bonus.percentage > 0 && `Bono +${bonus.percentage}%`}
                                                 </div>
                                             </div>
                                         </button>
@@ -366,7 +373,7 @@ export default function DepositPage() {
                                         setCustomAmount(amount.toString());
                                         setIsManualInput(false);
                                     }}
-                                    className={`border-2 border-green-600 rounded-xl p-5 h-32 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-green-600 transition-all flex items-center justify-start text-left ${selectedAmount === amount
+                                    className={`border-2 border-green-600 rounded-xl p-5 h-32 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-green-600 transition-all flex items-center justify-start text-left shadow-[0_4px_0_0_#16a34a] active:shadow-[0_2px_0_0_#16a34a] active:translate-y-0.5 duration-100 ${selectedAmount === amount
                                         ? 'text-white bg-green-700 relative overflow-hidden'
                                         : 'text-green-700 bg-white hover:bg-green-50'
                                         }`}
@@ -412,7 +419,7 @@ export default function DepositPage() {
                             Monto mínimo: 60,000 {displayCurrency}
                         </div>
 
-                        <div className="mt-10 bg-cover bg-[#3f1c80] px-5 py-10 rounded-2xl" style={{
+                        <div className="mt-10 bg-cover bg-[#2d1259] px-5 py-5 rounded-2xl" style={{
                             backgroundImage: "url('images/deposit.svg')"
                         }}>
                             <label htmlFor="first-name" className="text-sm text-white" >Nombre de pila</label>

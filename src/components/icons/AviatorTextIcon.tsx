@@ -1,10 +1,10 @@
 import React from 'react';
 
-interface AviatorTextIconProps {
+interface ChickenTextIconProps {
   className?: string;
 }
 
-const AviatorTextIcon: React.FC<AviatorTextIconProps> = ({ className }) => {
+const ChickenTextIcon: React.FC<ChickenTextIconProps> = ({ className }) => {
   return (
     <svg 
       width="55" 
@@ -19,4 +19,4 @@ const AviatorTextIcon: React.FC<AviatorTextIconProps> = ({ className }) => {
   );
 };
 
-export default AviatorTextIcon;
+export default ChickenTextIcon;

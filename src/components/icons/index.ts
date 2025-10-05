@@ -3,3 +3,8 @@ export { default as HomeIcon } from './HomeIcon';
 export { default as AviatorIcon } from './AviatorIcon';
 export { default as AviatorTextIcon } from './AviatorTextIcon';
 export { default as GamesIcon } from './GamesIcon';
+export { default as CasinoIcon } from './CasinoIcon';
+export { default as BonusIcon } from './BonusIcon';
+export { default as LiveIcon } from './LiveIcon';
+export { default as ChickenIcon } from './ChickenIcon';
+export { default as ChickenTextIcon } from './ChickenTextIcon';

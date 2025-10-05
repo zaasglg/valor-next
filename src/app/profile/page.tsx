@@ -128,10 +128,10 @@ export default function ProfilePage() {
                   </span>
                 </h1>
                 {/* Tabs */}
-                <div className="flex mb-4 lg:mb-6 bg-gray-200 rounded-2xl p-1 w-full lg:w-auto">
+                <div className="flex mb-4 lg:mb-6 bg-gray-200 rounded-lg p-1 w-full lg:w-auto">
                   <button
                     onClick={() => setActiveTab("datos-personales")}
-                    className={`flex-1 lg:flex-none px-3 lg:px-6 py-1.5 rounded-xl text-xs lg:text-sm font-bold focus:outline-none transition-all ${
+                    className={`flex-1 lg:flex-none px-3 lg:px-6 py-1.5 rounded-md text-xs lg:text-sm font-bold focus:outline-none transition-all ${
                       activeTab === "datos-personales"
                         ? "bg-white border-b-3 border-[#ffb32c] text-[#23223a]"
                         : "text-[#23223a] hover:bg-gray-100"
@@ -141,7 +141,7 @@ export default function ProfilePage() {
                   </button>
                   <button
                     onClick={() => setActiveTab("seguro")}
-                    className={`flex-1 lg:flex-none px-3 lg:px-6 py-1.5 rounded-xl ml-1 text-xs lg:text-sm focus:outline-none transition-all ${
+                    className={`flex-1 lg:flex-none px-3 lg:px-6 py-1.5 rounded-md ml-1 text-xs lg:text-sm focus:outline-none transition-all ${
                       activeTab === "seguro"
                         ? "bg-white border-b-3 border-[#ffb32c] text-[#23223a] font-bold"
                         : "text-[#23223a] hover:bg-gray-100"
@@ -177,7 +177,7 @@ export default function ProfilePage() {
                     </h2>
                     <form
                       onSubmit={handleSubmit}
-                      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-4 lg:gap-y-3"
+                      className="flex flex-col lg:grid lg:grid-cols-4 gap-x-3 gap-y-4 lg:gap-y-3"
                     >
                       <div className="flex flex-col gap-2">
                         <label className="text-sm text-[#a3a3b3] font-semibold">
@@ -349,7 +349,7 @@ export default function ProfilePage() {
                     Configuración de seguridad
                   </h2>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-4 lg:gap-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-x-3 gap-y-4 lg:gap-y-6">
                     <div className="flex flex-col gap-2">
                       <label className="text-sm text-[#a3a3b3] font-semibold">
                         Contraseña Antigua

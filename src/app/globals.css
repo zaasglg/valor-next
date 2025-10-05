@@ -126,4 +126,27 @@ body {
     @apply bg-background text-foreground;
   }
 
+  /* Chat widget positioning for mobile - Maximum specificity */
+  @media (max-width: 768px) {
+    #chat24-widget {
+      bottom: 80px !important;
+      right: 12px !important;
+    }
+    
+    /* Fallback selectors */
+    .startBtn--outside.startBtn--bottom {
+      bottom: 80px !important;
+    }
+    
+    .startBtn--outside.startBtn--right {
+      right: 12px !important;
+    }
+    
+    /* Universal selectors */
+    [style*="position: fixed"][style*="bottom"],
+    [style*="position:fixed"][style*="bottom"],
+    div[style*="bottom"][style*="right"] {
+      bottom: 80px !important;
+    }
+  }
 }
