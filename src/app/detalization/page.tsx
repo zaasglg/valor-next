@@ -248,7 +248,7 @@ export default function DetalizationPage() {
                             <td className="py-2 lg:py-4 px-2 lg:px-6">
                               <span
                                 className={`px-2 lg:px-3 py-1 rounded-full text-xs lg:text-sm ${
-                                  item.estado === "completado"
+                                  item.estado === "completado" || item.estado === "aprobado"
                                     ? "bg-green-100 text-green-800"
                                     : item.estado === "esperando"
                                     ? "bg-yellow-100 text-yellow-800"

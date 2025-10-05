@@ -174,7 +174,7 @@ export default function DepositPage() {
             case 'NEQUI':
                 return {
                     accountNumber: '300-123-4567',
-                    accountName: 'NEQUI - Valor Casino',
+                    accountName: 'NEQUI',
                     instructions: 'Transfiere desde tu app NEQUI'
                 };
             case 'BTC':
@@ -611,30 +611,41 @@ export default function DepositPage() {
                                         if (file) {
                                             try {
                                                 const token = localStorage.getItem('access_token');
+                                                
+                                                // Create FormData for file upload
+                                                const formData = new FormData();
+                                                formData.append('receipt_image', file);
+                                                formData.append('transacciones_monto', customAmount);
+                                                formData.append('metodo_de_pago', paymentMethods.find(m => m.id === selectedMethod)?.name || "bank_transfer");
+                                                formData.append('amount_usd', customAmount);
+                                                formData.append('currency', userCurrency);
+                                                formData.append('exchange_rate', '1.0');
+
                                                 const response = await fetch('/api/transactions/create/', {
                                                     method: 'POST',
                                                     headers: {
-                                                        'Content-Type': 'application/json',
                                                         'Authorization': 'Bearer ' + token
+                                                        // Don't set Content-Type header - let browser set it with boundary for FormData
                                                     },
-                                                    body: JSON.stringify({
-                                                        transacciones_data: new Date().toISOString(),
-                                                        transacciones_monto: customAmount,
-                                                        estado: "esperando",
-                                                        transaccion_number: `TXN${Date.now()}`,
-                                                        metodo_de_pago: paymentMethods.find(m => m.id === selectedMethod)?.name || "bank_transfer",
-                                                        amount_usd: customAmount,
-                                                        currency: userCurrency
-                                                    })
+                                                    body: formData
                                                 });
 
                                                 if (response.ok) {
                                                     alert(`Recibo subido exitosamente: ${file.name}`);
                                                     router.push('/detalization');
                                                 } else {
-                                                    alert('Error al procesar el pago');
+                                                    const errorData = await response.json();
+                                                    console.error('Error response:', errorData);
+                                                    
+                                                    // Check for specific database schema error
+                                                    if (errorData.error === 'Database schema issue') {
+                                                        alert(`Error del servidor: ${errorData.message}\n\nPor favor contacte al equipo técnico para resolver este problema.`);
+                                                    } else {
+                                                        alert('Error al procesar el pago');
+                                                    }
                                                 }
-                                            } catch {
+                                            } catch (error) {
+                                                console.error('Error uploading receipt:', error);
                                                 alert('Error de conexión');
                                             }
                                         }
