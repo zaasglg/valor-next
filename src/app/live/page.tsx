@@ -382,7 +382,7 @@ const games = [
 ];
 
 
-export default function CasinoPage() {
+export default function LivePage() {
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 

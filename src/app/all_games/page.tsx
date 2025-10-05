@@ -1020,22 +1020,6 @@ export default function AllGamesPage() {
                       }
                     }}
                   />
-                  {/* Fallback content when image fails to load */}
-                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center" style={{display: 'none'}}>
-                    <div className="text-center text-white">
-                      <div className="text-2xl font-bold mb-1">{game.name.charAt(0)}</div>
-                      <div className="text-xs opacity-80">{game.provider}</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 rounded-lg flex items-center justify-center">
-                  <button className="opacity-0 group-hover:opacity-100 bg-white text-[#23223a] px-4 py-2 rounded-lg font-semibold text-sm transition-opacity duration-300">
-                    Jugar
-                  </button>
-                </div>
-                <div className="mt-2">
-                  <h3 className="font-bold text-sm text-[#23223a] truncate">{game.name}</h3>
-                  <p className="text-xs text-[#b3b3c3]">{game.provider}</p>
                 </div>
               </div>
             ))}
