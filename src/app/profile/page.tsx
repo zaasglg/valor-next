@@ -108,7 +108,7 @@ export default function ProfilePage() {
     <AuthGuard>
       <div className="min-h-screen bg-[#f5f6fa] flex flex-col lg:flex-row items-start gap-0 lg:gap-6 p-4">
         {/* Sidebar */}
-        <ProfileSidebar balance="0.00COP" userId="0" />
+        <ProfileSidebar />
 
         {/* Main content */}
         <main className="w-full flex-1 flex flex-col items-center justify-start bg-white rounded-2xl p-4 lg:p-10 shadow-lg mt-10 lg:mt-0">

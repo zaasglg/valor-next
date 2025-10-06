@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import Loader from "./Loader";
 import DotsLoader from "./DotsLoader";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
+import { useBalanceContext } from "@/contexts/BalanceContext";
 
 interface ProfileSidebarProps {
     balance?: string;
@@ -17,6 +18,9 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
     const [userInfo, setUserInfo] = useState({ user_id: userId, deposit: balance, currency: '$' });
     const [isLoading, setIsLoading] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
+    
+    // Используем BalanceContext для получения актуального баланса и валюты
+    const { formattedBalance, currency, balanceLoading } = useBalanceContext();
 
     const formatCurrency = (amount: number, currency: string = '$') => {
         return `${amount.toFixed(2)} ${currency}`;
@@ -27,6 +31,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
             const token = localStorage.getItem('access_token');
             if (!token) {
                 console.log('No access token found');
+                setIsLoading(false);
                 return;
             }
 
@@ -37,12 +42,11 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
                 if (response.ok) {
                     const data = await response.json();
                     console.log('User info response:', data);
-                    // Используем currency из country_info, если он есть, иначе fallback на currency из user/info
-                    const currency = data.country_info?.currency || data.currency || '$';
+                    // Получаем только user_id, баланс и валюта теперь из BalanceContext
                     setUserInfo({
                         user_id: data.user_id || data.id || userId,
-                        deposit: data.deposit !== undefined ? formatCurrency(data.deposit, currency) : balance,
-                        currency: currency
+                        deposit: formattedBalance, // Используем баланс из контекста
+                        currency: data.country_info?.currency || data.currency || '$' // Используем валюту из API
                     });
                 } else {
                     console.error('API response error:', response.status, response.statusText);
@@ -55,7 +59,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
         };
 
         fetchUserInfo();
-    }, [userId, balance]);
+    }, [userId, formattedBalance, currency]); // Добавляем зависимости от контекста
 
     const navItems = [
         {
@@ -179,10 +183,10 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
                     <div className="grid grid-cols-2 gap-2 mb-2 relative z-10">
                         <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
                             <span className="text-xs">Saldo:</span>
-                            {isLoading ? (
+                            {balanceLoading ? (
                                 <DotsLoader className="mt-4" color="black" size="sm" />
                             ) : (
-                                <span className="font-black text-base">{userInfo.deposit}</span>
+                                <span className="font-black text-base">{formattedBalance} {userInfo.currency}</span>
                             )}
                         </div>
                         <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
@@ -224,10 +228,10 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
                     <div className="grid grid-cols-2 gap-2 mb-2 relative z-10 mb-3">
                         <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
                             <span className="text-xs">Saldo:</span>
-                            {isLoading ? (
+                            {balanceLoading ? (
                                 <DotsLoader className="mt-4" color="black" size="sm" />
                             ) : (
-                                <span className="font-black text-base">{userInfo.deposit}</span>
+                                <span className="font-black text-base">{formattedBalance} {userInfo.currency}</span>
                             )}
                         </div>
                         <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">

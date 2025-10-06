@@ -7,6 +7,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { DialogProvider } from "@/components/DialogProvider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { BalanceProvider } from "@/contexts/BalanceContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,13 +40,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${mulish.variable} antialiased bg-[#f1f3f6]`}
       >
         <LanguageProvider>
-          <DialogProvider>
-            <Header />
-            <div className="pb-20 md:pb-0">
-              {children}
-            </div>
-            <Footer />
-          </DialogProvider>
+          <BalanceProvider>
+            <DialogProvider>
+              <Header />
+              <div className="pb-20 md:pb-0">
+                {children}
+              </div>
+              <Footer />
+            </DialogProvider>
+          </BalanceProvider>
         </LanguageProvider>
 
         {/* LiveChat Scripts */}

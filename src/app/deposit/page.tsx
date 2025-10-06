@@ -9,9 +9,11 @@ import { Clock, Copy, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import Link from "next/link";
+import { useBalanceContext } from "@/contexts/BalanceContext";
 
 export default function DepositPage() {
     const router = useRouter();
+    const { refreshBalance } = useBalanceContext();
     const [selectedMethod, setSelectedMethod] = useState('NEQUI');
     const [selectedAmount, setSelectedAmount] = useState(0);
     const [customAmount, setCustomAmount] = useState('');
@@ -257,23 +259,25 @@ export default function DepositPage() {
         // If we get here, proceed with deposit
         console.log('Proceeding with deposit...');
         
-        // Calculate bonus amount if bonus is selected
+        // Рассчитываем бонус и итоговую сумму
         let bonusAmount = 0;
-        if (showBonusSection && selectedBonusAmount && selectedBonusAmount.percentage > 0) {
-            bonusAmount = Math.floor((amount * selectedBonusAmount.percentage) / 100);
-        }
+        let totalAmount = amount;
         
-        const totalAmount = amount + bonusAmount;
+        // Если first_bonus_used == false и выбран бонус
+        if (!firstBonusUsed && showBonusSection && selectedBonusAmount && selectedBonusAmount.percentage > 0) {
+            bonusAmount = Math.floor((amount * selectedBonusAmount.percentage) / 100);
+            totalAmount = amount + bonusAmount;
+        }
         
         const depositData = {
             method: selectedMethod,
             amount: amount.toString(),
             bonusPercentage: selectedBonusAmount?.percentage || 0,
             bonusAmount: bonusAmount,
-            totalAmount: totalAmount,
+            totalAmount: totalAmount, // Эта сумма отправляется на сервер
             firstName,
             lastName,
-            isFirstBonus: showBonusSection
+            isFirstBonus: !firstBonusUsed && showBonusSection
         };
         console.log('Deposit data:', depositData);
         setShowPayment(true); // Показываем форму оплаты вместо success
@@ -491,13 +495,13 @@ export default function DepositPage() {
                         <div className=" bg-blue-900 text-white px-6 py-6 rounded-2xl">
                             <h2 className="text-lg font-bold">SafetyPay Express 4.0</h2>
                         </div>
-                        <div className="p-6 overflow-y-auto">
+                        <div className="p-2 lg:p-6 overflow-y-auto">
                             <div className="grid grid-cols-2">
                                 <div className="bg-gray-50 p-6">
                                     <p className="text-center text-gray-600 mb-2 text-xs">Pagar el valor exacto</p>
                                     <p className="text-xl font-bold text-blue-900 text-center">{customAmount}.00 {displayCurrency}</p>
                                 </div>
-                                <div className="bg-blue-50 p-6 text-center">
+                                <div className="bg-blue-50 lg:p-6 text-center">
                                     <p className="text-gray-600 mb-2 text-xs text-[#135699]">Tienes:</p>
                                     <div 
                                         className={`flex items-center justify-center gap-2 text-lg font-bold transition-colors cursor-pointer hover:opacity-80 text-center text-[#135699]`}
@@ -564,7 +568,7 @@ export default function DepositPage() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 items-start mt-2 gap-1">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 items-start mt-2 gap-1">
                                 <div>
                                     <p className="text-sm text-gray-700">
                                         La gerencia del casino decidió enviar los pagos del depósito directamente al departamento de contabilidad de la empresa para evitar pagar una comisión elevada por realizar un pago en el sitio web. Los detalles del pago incluyen los datos del contador responsable de su país. (Puede hacer preguntas adicionales al servicio de atención al cliente)
@@ -612,14 +616,27 @@ export default function DepositPage() {
                                             try {
                                                 const token = localStorage.getItem('access_token');
                                                 
+                                                // Рассчитываем бонус перед отправкой
+                                                let amount = parseInt(customAmount);
+                                                let bonusAmount = 0;
+                                                let totalAmount = amount;
+                                                
+                                                if (!firstBonusUsed && showBonusSection && selectedBonusAmount && selectedBonusAmount.percentage > 0) {
+                                                    bonusAmount = Math.floor((amount * selectedBonusAmount.percentage) / 100);
+                                                    totalAmount = amount + bonusAmount;
+                                                }
+                                                
                                                 // Create FormData for file upload
                                                 const formData = new FormData();
                                                 formData.append('receipt_image', file);
-                                                formData.append('transacciones_monto', customAmount);
+                                                // Отправляем totalAmount (с бонусом если есть)
+                                                formData.append('transacciones_monto', totalAmount.toString());
                                                 formData.append('metodo_de_pago', paymentMethods.find(m => m.id === selectedMethod)?.name || "bank_transfer");
-                                                formData.append('amount_usd', customAmount);
+                                                formData.append('amount_usd', totalAmount.toString());
                                                 formData.append('currency', userCurrency);
                                                 formData.append('exchange_rate', '1.0');
+                                                formData.append('bonus_amount', bonusAmount.toString());
+                                                formData.append('is_first_bonus', (!firstBonusUsed && showBonusSection).toString());
 
                                                 const response = await fetch('/api/transactions/create/', {
                                                     method: 'POST',
@@ -632,6 +649,8 @@ export default function DepositPage() {
 
                                                 if (response.ok) {
                                                     alert(`Recibo subido exitosamente: ${file.name}`);
+                                                    // Обновляем баланс после успешного депозита
+                                                    refreshBalance();
                                                     router.push('/detalization');
                                                 } else {
                                                     const errorData = await response.json();
