@@ -20,7 +20,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
     const [isOpen, setIsOpen] = useState(false);
     
     // Используем BalanceContext для получения актуального баланса и валюты
-    const { formattedBalance, currency, balanceLoading } = useBalanceContext();
+    const { formattedBalance, currency, loading: balanceLoading } = useBalanceContext();
 
     const formatCurrency = (amount: number, currency: string = '$') => {
         return `${amount.toFixed(2)} ${currency}`;
