@@ -617,7 +617,7 @@ export default function DepositPage() {
                                                 const token = localStorage.getItem('access_token');
                                                 
                                                 // Рассчитываем бонус перед отправкой
-                                                let amount = parseInt(customAmount);
+                                                const amount = parseInt(customAmount);
                                                 let bonusAmount = 0;
                                                 let totalAmount = amount;
                                                 
