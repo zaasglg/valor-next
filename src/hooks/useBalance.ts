@@ -45,6 +45,10 @@ export function useBalance() {
       }
 
       setBalance(balanceData)
+      
+      // Сохраняем в кэш
+      localStorage.setItem('cached_balance', JSON.stringify(balanceData))
+      localStorage.setItem('balance_cache_timestamp', Date.now().toString())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
       console.error('Error fetching balance:', err)
@@ -53,15 +57,28 @@ export function useBalance() {
     }
   }, [isAuthenticated, user?.user_id])
 
-  // Автоматическое обновление баланса каждые 30 секунд
+  // Загружаем баланс только при первом входе
   useEffect(() => {
     if (!isAuthenticated) return
 
-    fetchBalance()
+    // Проверяем, есть ли кэшированный баланс и не устарел ли он
+    const cachedBalance = localStorage.getItem('cached_balance')
+    const cacheTimestamp = localStorage.getItem('balance_cache_timestamp')
+    const now = Date.now()
+    const CACHE_DURATION = 5 * 60 * 1000 // 5 минут
 
-    const interval = setInterval(fetchBalance, 30000) // 30 секунд
-    return () => clearInterval(interval)
-  }, [fetchBalance, isAuthenticated])
+    if (cachedBalance && cacheTimestamp && (now - parseInt(cacheTimestamp)) < CACHE_DURATION) {
+      try {
+        const parsedBalance = JSON.parse(cachedBalance)
+        setBalance(parsedBalance)
+        return // Не делаем запрос, если кэш актуален
+      } catch (error) {
+        console.error('Error parsing cached balance:', error)
+      }
+    }
+
+    fetchBalance()
+  }, [isAuthenticated, fetchBalance])
 
   // Обновление баланса при изменении localStorage (между вкладками)
   useEffect(() => {
@@ -83,11 +100,17 @@ export function useBalance() {
   // Функция для обновления баланса после транзакции
   const updateBalanceAfterTransaction = useCallback((newBalance: number) => {
     if (balance) {
-      setBalance({
+      const updatedBalance = {
         ...balance,
         deposit: newBalance,
         lastUpdated: Date.now()
-      })
+      }
+      
+      setBalance(updatedBalance)
+      
+      // Обновляем кэш
+      localStorage.setItem('cached_balance', JSON.stringify(updatedBalance))
+      localStorage.setItem('balance_cache_timestamp', Date.now().toString())
       
       // Уведомляем другие вкладки
       localStorage.setItem('balance_updated', Date.now().toString())

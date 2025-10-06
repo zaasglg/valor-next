@@ -2,9 +2,16 @@
 
 import { useEffect, useRef, useCallback } from 'react'
 import { useBalanceContext } from '@/contexts/BalanceContext'
+import { useSmartBalance } from './useSmartBalance'
 
 export function useBalanceWebSocket() {
-    const { refreshBalance, updateBalanceAfterTransaction } = useBalanceContext()
+    const { updateBalanceAfterTransaction } = useBalanceContext()
+    const { smartRefresh } = useSmartBalance({
+      updateOnFocus: true,
+      updateOnVisibility: true,
+      minUpdateInterval: 60000 // 1 минута минимум между обновлениями
+    })
+    
     const wsRef = useRef<WebSocket | null>(null)
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -13,19 +20,15 @@ export function useBalanceWebSocket() {
             // Подключаемся к WebSocket серверу (если есть)
             // wsRef.current = new WebSocket('ws://localhost:8080/balance')
             
-            // Пока используем polling как fallback
-            const pollBalance = () => {
-                refreshBalance()
+            // Используем умное обновление баланса вместо постоянного polling
+            
+            return () => {
+                // Cleanup функция
             }
-            
-            // Обновляем баланс каждые 10 секунд
-            const interval = setInterval(pollBalance, 10000)
-            
-            return () => clearInterval(interval)
         } catch (error) {
             console.error('WebSocket connection error:', error)
         }
-    }, [refreshBalance])
+    }, [smartRefresh])
 
     const disconnect = useCallback(() => {
         if (wsRef.current) {
@@ -64,8 +67,14 @@ export function useBalanceWebSocket() {
         }
     }, [updateBalanceAfterTransaction])
 
+    // Функция для принудительного обновления баланса
+    const forceRefresh = useCallback(() => {
+        smartRefresh()
+    }, [smartRefresh])
+
     return {
         notifyBalanceUpdate,
+        forceRefresh,
         isConnected: wsRef.current?.readyState === WebSocket.OPEN
     }
 }
