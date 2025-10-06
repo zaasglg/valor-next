@@ -32,14 +32,9 @@ import ChickenTextIcon from "@/components/icons/ChickenTextIcon";
 const Header: React.FC = () => {
   const { openLogin, openRegister } = useDialog();
   const { t, language, setLanguage } = useLanguage();
-  const {
-    balance,
-    loading: balanceLoading,
-    formattedBalance,
-    currency,
-  } = useBalanceContext();
   const pathname = usePathname();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [balanceLoading, setBalanceLoading] = useState(false);
   const [userInfo, setUserInfo] = useState({
     user_id: "",
     deposit: "0.00",
@@ -80,9 +75,9 @@ const Header: React.FC = () => {
         return;
       }
 
-      // Теперь баланс управляется через BalanceContext
-      // Получаем только user_id для отображения
+      // Получаем баланс и информацию о пользователе из /api/user/info
       const fetchUserInfo = async () => {
+        setBalanceLoading(true);
         try {
           const response = await fetch("/api/user/info", {
             headers: { Authorization: `Bearer ${token}` },
@@ -90,6 +85,8 @@ const Header: React.FC = () => {
 
           if (response.ok) {
             const data = await response.json();
+            console.log('User info with balance:', data);
+            
             // Используем currency из country_info, если он есть, иначе fallback на currency из user/info
             const currencyFromCountry = data.country_info?.currency;
             const currencyFromUser = data.currency;
@@ -99,9 +96,12 @@ const Header: React.FC = () => {
               (currencyFromUser && currencyFromUser.trim()) ||
               "$";
 
+            // Получаем deposit из API и форматируем
+            const deposit = parseFloat(data.deposit || "0").toFixed(2);
+
             setUserInfo({
               user_id: data.user_id || "",
-              deposit: "0.00", // Баланс теперь управляется через контекст
+              deposit: deposit,
               currency: currency,
             });
           } else if (response.status === 401) {
@@ -110,9 +110,16 @@ const Header: React.FC = () => {
           }
         } catch (error) {
           console.error("Header - Error fetching user info:", error);
+        } finally {
+          setBalanceLoading(false);
         }
       };
       fetchUserInfo();
+      
+      // Автоматическое обновление баланса каждые 30 секунд
+      const intervalId = setInterval(fetchUserInfo, 30000);
+      
+      return () => clearInterval(intervalId);
     }
 
     const handleStorageChange = () => {
@@ -393,7 +400,7 @@ const Header: React.FC = () => {
               ) : (
                 <div className="flex items-center gap-1">
                   <div className="text-sm font-bold text-[#202040]">
-                    {formattedBalance}
+                    {userInfo.deposit}
                   </div>
                   <div className="text-sm font-bold text-[#202040]">
                     {userInfo.currency}
@@ -476,7 +483,7 @@ const Header: React.FC = () => {
                     <div className="w-8 h-4 bg-gray-200 rounded animate-pulse"></div>
                   ) : (
                     <div className="flex items-center gap-1">
-                      <span>{formattedBalance}</span>
+                      <span>{userInfo.deposit}</span>
                       <span>{userInfo.currency}</span>
                     </div>
                   )}
