@@ -346,9 +346,7 @@ const Header: React.FC = () => {
                   href="/bonuses"
                   className="flex items-center gap-3 px-4 py-3 text-[#202040] hover:bg-gray-50 transition-colors"
                   onClick={(e) => {
-                    e.preventDefault();
                     setIsDropdownOpen(false);
-                    alert("Bonificaciones - функция в разработке");
                   }}
                 >
                   <svg
