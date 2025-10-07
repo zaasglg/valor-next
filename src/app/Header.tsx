@@ -38,7 +38,7 @@ const Header: React.FC = () => {
   const [userInfo, setUserInfo] = useState({
     user_id: "",
     deposit: "0.00",
-    currency: "$",
+    currency: "COP",
   });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -70,7 +70,7 @@ const Header: React.FC = () => {
         setUserInfo({
           user_id: "",
           deposit: formatAmount(0),
-          currency: "$",
+          currency: "COP",
         });
         return;
       }
@@ -94,7 +94,7 @@ const Header: React.FC = () => {
             const currency =
               (currencyFromCountry && currencyFromCountry.trim()) ||
               (currencyFromUser && currencyFromUser.trim()) ||
-              "$";
+              "COP";
 
             // Получаем deposit из API и форматируем
             const deposit = parseFloat(data.deposit || "0").toFixed(2);
