@@ -38,7 +38,7 @@ export default function Home() {
   // Функция для сброса флага первого визита (для разработки)
   // Можно вызвать в консоли: window.resetFirstVisit()
   useEffect(() => {
-    (window as any).resetFirstVisit = () => {
+    (window as Window & { resetFirstVisit?: () => void }).resetFirstVisit = () => {
       localStorage.removeItem('hasVisitedValorGames');
       console.log('First visit flag reset. Refresh the page to see loading screen again.');
     };

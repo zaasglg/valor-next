@@ -9,11 +9,7 @@ export default function GamePage() {
   const router = useRouter();
   const { t } = useLanguage();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([
-    "All Games",
-  ]);
-  const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const [showGameModeDialog, setShowGameModeDialog] = useState(true);
   const [gameMode, setGameMode] = useState<'demo' | 'real' | null>(null);
   const [userInfo, setUserInfo] = useState<{
@@ -22,8 +18,6 @@ export default function GamePage() {
     country?: string;
     language?: string;
   } | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeTopButton, setActiveTopButton] = useState<string>("");
 
   const handleGameModeSelect = (mode: 'demo' | 'real') => {
     setGameMode(mode);
