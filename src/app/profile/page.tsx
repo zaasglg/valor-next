@@ -2,19 +2,122 @@
 
 import ProfileSidebar from "@/components/ProfileSidebar";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import AuthGuard from "@/components/AuthGuard";
+import { useLanguage } from "@/contexts/LanguageContext";
+
+// Список стран с телефонными кодами
+const countryPhoneCodes: { [key: string]: string } = {
+  "Colombia": "+57",
+  "Argentina": "+54",
+  "Mexico": "+52",
+  "Chile": "+56",
+  "Peru": "+51",
+  "Ecuador": "+593",
+  "Venezuela": "+58",
+  "Bolivia": "+591",
+  "Paraguay": "+595",
+  "Uruguay": "+598",
+  "Brazil": "+55",
+  "Spain": "+34",
+  "United States": "+1",
+  "Canada": "+1",
+  "United Kingdom": "+44",
+  "France": "+33",
+  "Germany": "+49",
+  "Italy": "+39",
+  "Portugal": "+351",
+  "Russia": "+7",
+  "China": "+86",
+  "Japan": "+81",
+  "South Korea": "+82",
+  "India": "+91",
+  "Australia": "+61",
+  "Vietnam": "+84",
+  "Thailand": "+66",
+  "Philippines": "+63",
+  "Indonesia": "+62",
+  "Malaysia": "+60",
+  "Singapore": "+65",
+  "Turkey": "+90",
+  "Egypt": "+20",
+  "South Africa": "+27",
+  "Nigeria": "+234",
+  "Kenya": "+254",
+  "Morocco": "+212",
+  "Algeria": "+213",
+  "Tunisia": "+216",
+  "Israel": "+972",
+  "Saudi Arabia": "+966",
+  "UAE": "+971",
+  "Qatar": "+974",
+  "Kuwait": "+965",
+  "Bahrain": "+973",
+  "Oman": "+968",
+  "Jordan": "+962",
+  "Lebanon": "+961",
+  "Syria": "+963",
+  "Iraq": "+964",
+  "Iran": "+98",
+  "Afghanistan": "+93",
+  "Pakistan": "+92",
+  "Bangladesh": "+880",
+  "Sri Lanka": "+94",
+  "Nepal": "+977",
+  "Bhutan": "+975",
+  "Myanmar": "+95",
+  "Cambodia": "+855",
+  "Laos": "+856",
+  "Mongolia": "+976",
+  "Kazakhstan": "+7",
+  "Uzbekistan": "+998",
+  "Kyrgyzstan": "+996",
+  "Tajikistan": "+992",
+  "Turkmenistan": "+993",
+  "Azerbaijan": "+994",
+  "Armenia": "+374",
+  "Georgia": "+995",
+  "Ukraine": "+380",
+  "Belarus": "+375",
+  "Moldova": "+373",
+  "Romania": "+40",
+  "Bulgaria": "+359",
+  "Greece": "+30",
+  "Albania": "+355",
+  "Macedonia": "+389",
+  "Serbia": "+381",
+  "Montenegro": "+382",
+  "Bosnia": "+387",
+  "Croatia": "+385",
+  "Slovenia": "+386",
+  "Slovakia": "+421",
+  "Czech Republic": "+420",
+  "Poland": "+48",
+  "Hungary": "+36",
+  "Austria": "+43",
+  "Switzerland": "+41",
+  "Liechtenstein": "+423",
+  "Netherlands": "+31",
+  "Belgium": "+32",
+  "Luxembourg": "+352",
+  "Denmark": "+45",
+  "Sweden": "+46",
+  "Norway": "+47",
+  "Finland": "+358",
+  "Iceland": "+354",
+  "Ireland": "+353",
+  "Malta": "+356",
+  "Cyprus": "+357",
+  "Estonia": "+372",
+  "Latvia": "+371",
+  "Lithuania": "+370"
+};
 
 export default function ProfilePage() {
+  const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("datos-personales");
+  const [phoneCode, setPhoneCode] = useState("+57"); // По умолчанию код Колумбии
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -28,6 +131,7 @@ export default function ProfilePage() {
     numero_de_telefono: "",
   });
 
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -37,18 +141,38 @@ export default function ProfilePage() {
         });
         if (response.ok) {
           const data = await response.json();
+          const country = data.country || "Colombia";
+          
+          // Парсим номер телефона для извлечения кода и номера
+          let phoneNumber = data.numero_de_telefono || "";
+          let phoneCodeFromData = "+57"; // По умолчанию код Колумбии
+          
+          // Если номер начинается с кода, извлекаем его
+          if (phoneNumber.startsWith("+")) {
+            // Ищем первый код из списка, который совпадает с началом номера
+            for (const [countryName, code] of Object.entries(countryPhoneCodes)) {
+              if (phoneNumber.startsWith(code)) {
+                phoneCodeFromData = code;
+                phoneNumber = phoneNumber.substring(code.length);
+                break;
+              }
+            }
+          }
+          
           setFormData({
             email: data.email || "",
             password: "",
-            country: data.country || "Colombia",
+            country: country,
             nombre: data.nombre || "",
             apellido: data.apellido || "",
             cumpleanos: data.cumpleanos || "1993-01-09",
             sexo: data.sexo || "masculino",
             ciudad: data.ciudad || "",
             direccion: data.direccion || "",
-            numero_de_telefono: data.numero_de_telefono || "",
+            numero_de_telefono: phoneNumber,
           });
+          // Устанавливаем телефонный код
+          setPhoneCode(phoneCodeFromData);
         }
       } catch (error) {
         console.error("Error fetching user info:", error);
@@ -64,6 +188,10 @@ export default function ProfilePage() {
       const token = localStorage.getItem("access_token");
 
       // Prepare data in the correct format for the API
+      const fullPhoneNumber = formData.numero_de_telefono 
+        ? `${phoneCode}${formData.numero_de_telefono}` 
+        : "";
+      
       const updateData = {
         email: formData.email,
         nombre: formData.nombre,
@@ -71,7 +199,7 @@ export default function ProfilePage() {
         country: formData.country,
         ciudad: formData.ciudad,
         direccion: formData.direccion,
-        numero_de_telefono: formData.numero_de_telefono,
+        numero_de_telefono: fullPhoneNumber,
         sexo: formData.sexo,
         cumpleanos: formData.cumpleanos
           ? new Date(formData.cumpleanos).toISOString().split("T")[0]
@@ -93,7 +221,7 @@ export default function ProfilePage() {
       if (response.ok) {
         const result = await response.json();
         console.log("Profile update response:", result);
-        alert("Perfil actualizado exitosamente");
+        alert(t("profile.profile_updated"));
       } else {
         const errorData = await response.json();
         console.error("Profile update error:", errorData);
@@ -120,11 +248,11 @@ export default function ProfilePage() {
             <>
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 w-full">
                 <h1 className="text-xl lg:text-3xl font-black text-[#23223a] mt-3 lg:mt-6 mb-4 lg:mb-8 text-left">
-                  Mi perfil:{" "}
+                  {t("profile.my_profile")}:{" "}
                   <span className="text-[#ffb32c]">
                     {activeTab === "datos-personales"
-                      ? "Datos personales"
-                      : "Seguro"}
+                      ? t("profile.personal_data")
+                      : t("profile.security")}
                   </span>
                 </h1>
                 {/* Tabs */}
@@ -137,7 +265,7 @@ export default function ProfilePage() {
                         : "text-[#23223a] hover:bg-gray-100"
                     }`}
                   >
-                    Datos personales
+                    {t("profile.personal_data")}
                   </button>
                   <button
                     onClick={() => setActiveTab("seguro")}
@@ -147,7 +275,7 @@ export default function ProfilePage() {
                         : "text-[#23223a] hover:bg-gray-100"
                     }`}
                   >
-                    Seguro
+                    {t("profile.security")}
                   </button>
                 </div>
               </div>
@@ -158,22 +286,20 @@ export default function ProfilePage() {
                   <div className="w-full bg-white rounded-lg border border-gray-200 shadow-sm p-4 lg:p-6 mb-4">
                     <div className="text-left">
                       <p className="text-gray-700 text-base lg:text-sm mb-4 font-black">
-                        Tu correo electrónico no ha sido verificado. Por favor,
-                        verifica tu correo electrónico y no olvides revisar tu
-                        carpeta de spam.
+                        {t("profile.email_not_verified")}
                       </p>
                       <button
                         type="button"
                         className="bg-[#14532d] hover:bg-[#0f3d20] text-white font-medium px-3 py-1 rounded-md shadow-[0_1px_0_0_#14532d] active:shadow-[0_0.5px_0_0_#14532d] active:translate-y-0.5 transition-all text-sm"
                       >
-                        Enviar correo nuevamente
+                        {t("profile.resend_email")}
                       </button>
                     </div>
                   </div>
 
                   <section className="w-full bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-xl p-4 lg:p-10 flex flex-col gap-4 lg:gap-8 border-0 lg:border border-[#ececf1]">
                     <h2 className="text-xl lg:text-xl font-black text-[#23223a] mb-2">
-                      Datos personales
+                      {t("profile.personal_data")}
                     </h2>
                     <form
                       onSubmit={handleSubmit}
@@ -181,7 +307,7 @@ export default function ProfilePage() {
                     >
                       <div className="flex flex-col gap-2">
                         <label className="text-sm text-[#a3a3b3] font-semibold">
-                          Nombre
+                          {t("profile.first_name")}
                         </label>
                         <Input
                           className="rounded-lg border border-[#e3e6f0] bg-white px-3 lg:px-4 py-2 lg:py-3 text-base lg:text-lg"
@@ -193,7 +319,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex flex-col gap-2">
                         <label className="text-sm text-[#a3a3b3] font-semibold">
-                          Apellido
+                          {t("profile.last_name")}
                         </label>
                         <Input
                           className="rounded-lg border border-[#e3e6f0] bg-white px-3 lg:px-4 py-2 lg:py-3 text-base lg:text-lg"
@@ -208,7 +334,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex flex-col gap-2">
                         <label className="text-sm text-[#a3a3b3] font-semibold">
-                          Cumpleaños
+                          {t("profile.birthday")}
                         </label>
                         <Input
                           type="date"
@@ -224,7 +350,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex flex-col gap-1 md:col-span-2 lg:col-span-1">
                         <label className="text-sm text-[#a3a3b3] font-semibold">
-                          Sexo
+                          {t("profile.gender")}
                         </label>
                         <div className="flex gap-4 lg:gap-6 items-center h-full">
                           <label className="flex items-center gap-2 text-sm">
@@ -237,7 +363,7 @@ export default function ProfilePage() {
                               }
                               className="accent-white w-4 h-4 lg:w-5 lg:h-5"
                             />{" "}
-                            Masculino
+                            {t("profile.male")}
                           </label>
                           <label className="flex items-center gap-2 text-sm">
                             <Input
@@ -249,13 +375,13 @@ export default function ProfilePage() {
                               }
                               className="accent-[#23223a] w-4 h-4 lg:w-5 lg:h-5"
                             />{" "}
-                            Femenino
+                            {t("profile.female")}
                           </label>
                         </div>
                       </div>
                       <div className="flex flex-col gap-2">
                         <label className="text-sm text-[#a3a3b3] font-semibold">
-                          País
+                          {t("profile.country")}
                         </label>
                         <Input
                           className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-3 lg:px-4 py-2 lg:py-3 text-base lg:text-lg"
@@ -265,7 +391,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex flex-col gap-2">
                         <label className="text-sm text-[#a3a3b3] font-semibold">
-                          Ciudad
+                          {t("profile.city")}
                         </label>
                         <Input
                           className="rounded-lg border border-[#e3e6f0] bg-white px-3 lg:px-4 py-2 lg:py-3 text-base lg:text-lg"
@@ -277,7 +403,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex flex-col gap-2 md:col-span-2">
                         <label className="text-sm text-[#a3a3b3] font-semibold">
-                          Dirección
+                          {t("profile.address")}
                         </label>
                         <Input
                           className="rounded-lg border border-[#e3e6f0] bg-white px-3 lg:px-4 py-2 lg:py-3 text-base lg:text-lg"
@@ -292,7 +418,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="col-span-2 flex flex-col gap-2">
                         <label className="text-sm text-[#a3a3b3] font-semibold">
-                          Número de teléfono
+                          {t("profile.phone_number")}
                         </label>
                         <div className="flex items-center gap-2">
                           <div>
@@ -300,7 +426,7 @@ export default function ProfilePage() {
                               type="button"
                               className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-3 lg:px-4 py-2 lg:py-2 text-sm text-[#a3a3b3]"
                             >
-                              +84
+                              {phoneCode}
                             </button>
                           </div>
                           <Input
@@ -319,7 +445,7 @@ export default function ProfilePage() {
 
                       <div className="col-span-2 flex flex-col gap-2">
                         <label className="text-sm text-[#a3a3b3] font-semibold">
-                          Correo electrónico
+                          {t("profile.email")}
                         </label>
                         <Input
                           type="email"
@@ -335,7 +461,7 @@ export default function ProfilePage() {
                           className="bg-[#ffb32c] hover:bg-[#e6a029] text-white font-semibold px-10 py-1.5 rounded-lg transition-colors shadow-[0_4px_0_0_#b97a16] active:shadow-[0_1px_0_0_#b97a16] active:translate-y-1"
                           style={{ boxShadow: "0 4px 0 0 #b97a16" }}
                         >
-                          Guardar
+                          {t("profile.save")}
                         </button>
                       </div>
                     </form>
@@ -346,40 +472,40 @@ export default function ProfilePage() {
               {activeTab === "seguro" && (
                 <section className="w-full bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-xl p-4 lg:p-10 flex flex-col gap-4 lg:gap-8 border-0 lg:border border-[#ececf1]">
                   <h2 className="text-xl lg:text-3xl font-black text-[#23223a] mb-2 lg:mb-4">
-                    Configuración de seguridad
+                    {t("profile.security_settings")}
                   </h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-x-3 gap-y-4 lg:gap-y-6">
                     <div className="flex flex-col gap-2">
                       <label className="text-sm text-[#a3a3b3] font-semibold">
-                        Contraseña Antigua
+                        {t("profile.old_password")}
                       </label>
                       <Input
                         type="password"
                         className="rounded-lg border border-[#e3e6f0] bg-white px-3 lg:px-4 py-2 lg:py-3 text-base lg:text-sm placeholder:text-sm"
-                        placeholder="Contraseña Antigua"
+                        placeholder={t("profile.old_password")}
                       />
                     </div>
 
                     <div className="flex flex-col gap-2">
                       <label className="text-sm text-[#a3a3b3] font-semibold">
-                        Nueva Contraseña
+                        {t("profile.new_password")}
                       </label>
                       <Input
                         type="password"
                         className="rounded-lg border border-[#e3e6f0] bg-white px-3 lg:px-4 py-2 lg:py-3 text-base lg:text-sm placeholder:text-sm"
-                        placeholder="Nueva Contraseña"
+                        placeholder={t("profile.new_password")}
                       />
                     </div>
 
                     <div className="flex flex-col gap-2">
                       <label className="text-sm text-[#a3a3b3] font-semibold">
-                        Confirmar Contraseña
+                        {t("profile.confirm_password")}
                       </label>
                       <Input
                         type="password"
                         className="rounded-lg border border-[#e3e6f0] bg-white px-3 lg:px-4 py-2 lg:py-3 text-base lg:text-sm placeholder:text-sm"
-                        placeholder="Confirmar Contraseña"
+                        placeholder={t("profile.confirm_password")}
                       />
                     </div>
                     <div className="w-full flex items-end">
@@ -391,7 +517,7 @@ export default function ProfilePage() {
                           transition: "box-shadow 0.1s, transform 0.1s"
                         }}
                       >
-                        Enviar
+                        {t("profile.send")}
                       </button>
                     </div>
                   </div>

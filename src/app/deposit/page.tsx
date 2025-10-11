@@ -10,10 +10,12 @@ import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import Link from "next/link";
 import { useBalanceContext } from "@/contexts/BalanceContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function DepositPage() {
     const router = useRouter();
     const { refreshBalance } = useBalanceContext();
+    const { t } = useLanguage();
     const [selectedMethod, setSelectedMethod] = useState('NEQUI');
     const [selectedAmount, setSelectedAmount] = useState(0);
     const [customAmount, setCustomAmount] = useState('');
@@ -51,13 +53,14 @@ export default function DepositPage() {
         'Venezuela': [1500, 3000, 5000, 100000],
         'Peru': [50, 100, 200, 500],
         'Costa Rica': [10000, 25000, 50000, 100000],
-        'Paraguay': [100000, 200000, 300000, 500000],
+        'Paraguay': [120000, 150000, 300000, 600000],
         'Guatemala': [100, 150, 250, 400],
         'Chile': [12000, 14000, 20000, 25000],
         'Colombia': [60000, 75000, 150000, 300000],
         'Mexico': [250, 300, 400, 500],
         'Honduras': [350, 700, 1500, 3000],
         'Dominican Republic': [800, 1500, 3000, 6000],
+        'Ecuador': [12, 15, 30, 60],
         'default': [10, 25, 50, 100]
     };
 
@@ -75,11 +78,15 @@ export default function DepositPage() {
         'Mexico': 'MXN',
         'Honduras': 'HNL',
         'Dominican Republic': 'DOP',
+        'Ecuador': '$',
         'default': '$'
     };
 
     // Get predefined amounts based on user's country
     const predefinedAmounts = depositAmountsByCountry[userCountry as keyof typeof depositAmountsByCountry] || depositAmountsByCountry.default;
+    
+    // Get minimum amount for the user's country
+    const minimumAmount = predefinedAmounts[0]; // First amount is always the minimum
     
     // Get currency for display (fallback to country currency if userCurrency is not set)
     const displayCurrency = userCurrency || currencyByCountry[userCountry as keyof typeof currencyByCountry] || '$';
@@ -250,8 +257,21 @@ export default function DepositPage() {
         }
         
         // Check minimum amount (should be LESS than minimum to show warning)
-        if (amount < 60000) {
-            console.log(`Amount ${amount} is less than minimum 60000, showing warning`);
+        if (amount < minimumAmount) {
+            console.log(`Amount ${amount} is less than minimum ${minimumAmount}, showing warning`);
+            setShowWarning(true);
+            return;
+        }
+        
+        // Validate required fields
+        if (!firstName || firstName.trim() === '') {
+            console.log('First name is required');
+            setShowWarning(true);
+            return;
+        }
+        
+        if (!lastName || lastName.trim() === '') {
+            console.log('Last name is required');
             setShowWarning(true);
             return;
         }
@@ -293,9 +313,9 @@ export default function DepositPage() {
                     </div>
                 ) : (
                     <>
-                <h1 className="text-2xl lg:text-4xl font-black text-[#23223a] mb-4 lg:mb-8">Recargar</h1>
+                <h1 className="text-2xl lg:text-4xl font-black text-[#23223a] mb-4 lg:mb-8">{t('deposit.page_title')}</h1>
                 <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border">
-                    <h2 className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">Elige el método de depósito</h2>
+                    <h2 className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">{t('deposit.choose_method')}</h2>
                     <div className="flex gap-2 flex-wrap">
                         {paymentMethods.map((method) => (
                             <button
@@ -323,7 +343,7 @@ export default function DepositPage() {
                 <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-10">
                     <div>
                         <h2 className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">
-                            {showBonusSection ? '¡Elige tu bono!' : '¡Elige tu monto!'}
+                            {showBonusSection ? t('deposit.choose_bonus') : t('deposit.choose_amount')}
                         </h2>
                         
                         {showBonusSection ? (
@@ -358,7 +378,7 @@ export default function DepositPage() {
                                                 </div>
                                             )}
                                             <div className="text-center">
-                                                <div className="font-black text-xl">Recargar:                                                     {bonus.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} {displayCurrency}</div>
+                                                <div className="font-black text-xl">{t('deposit.recharge')}:                                                     {bonus.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} {displayCurrency}</div>
                                                 <div className="text-sm text-gray-400 font-normal">
                                                     {bonus.percentage > 0 && `Bono +${bonus.percentage}%`}
                                                 </div>
@@ -388,7 +408,7 @@ export default function DepositPage() {
                                         backgroundRepeat: 'no-repeat'
                                     } : {}}
                                 >
-                                    Recargar: {amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} {displayCurrency}
+                                    {t('deposit.recharge')}: {amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} {displayCurrency}
                                 </button>
                             ))}
                         </div>
@@ -397,12 +417,12 @@ export default function DepositPage() {
                     <div
                         className="flex flex-col relative"
                     >
-                        <label htmlFor="deposit-amount" className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">Monto de depósito</label>
+                        <label htmlFor="deposit-amount" className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">{t('deposit.amount')}</label>
                         <div className="relative">
                         <Input
                             id="deposit-amount"
                             type="number"
-                                    placeholder={`Ingresa tu monto (ej: 100000)`}
+                                    placeholder={t('deposit.enter_amount')}
                             value={customAmount}
                             onChange={(e) => {
                                     const value = e.target.value;
@@ -420,29 +440,31 @@ export default function DepositPage() {
                             </div>
                         </div>
                         <div className="mt-2 text-sm text-gray-600">
-                            Monto mínimo: 60,000 {displayCurrency}
+                            {t('deposit.minimum_amount')}: {minimumAmount.toLocaleString()} {displayCurrency}
                         </div>
 
                         <div className="mt-10 bg-cover bg-[#2d1259] px-5 py-5 rounded-2xl" style={{
                             backgroundImage: "url('images/deposit.svg')"
                         }}>
-                            <label htmlFor="first-name" className="text-sm text-white" >Nombre de pila</label>
+                            <label htmlFor="first-name" className="text-sm text-white" >{t('deposit.first_name')} <span className="text-red-400">*</span></label>
                             <Input
                                 id="first-name"
                                 type="text"
                                 className="mb-2 border-gray-700 mt-2 placeholder:text-white text-white"
-                                placeholder="Nombre de pila"
+                                placeholder={t('deposit.first_name')}
                                 value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
+                                required
                             />
-                            <label htmlFor="last-name" className="text-sm text-white">Apellido</label>
+                            <label htmlFor="last-name" className="text-sm text-white">{t('deposit.last_name')} <span className="text-red-400">*</span></label>
                             <Input
                                 id="last-name"
                                 type="text"
-                                placeholder="Apellido"
+                                placeholder={t('deposit.last_name')}
                                 className="border-gray-700 mt-2 placeholder:text-white text-white"
                                 value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
+                                required
                             />
                         </div>
                     </div>
@@ -451,7 +473,7 @@ export default function DepositPage() {
                     <svg width="24" height="30" viewBox="0 0 14 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
                         <path d="M12 8.11035V5C12 2.24316 9.75684 0 7 0C4.24316 0 2 2.24316 2 5V8.11035C0.764771 9.37317 0 11.0981 0 13C0 16.8599 3.14014 20 7 20C10.8599 20 14 16.8599 14 13C14 11.0981 13.2352 9.37317 12 8.11035ZM7 2C8.6543 2 10 3.3457 10 5V6.685C9.08923 6.25049 8.07452 6 7 6C5.92548 6 4.91077 6.25049 4 6.685V5C4 3.3457 5.3457 2 7 2ZM7 18C4.24316 18 2 15.7568 2 13C2 10.2432 4.24316 8 7 8C9.75684 8 12 10.2432 12 13C12 15.7568 9.75684 18 7 18ZM8 12V14C8 14.5522 7.55225 15 7 15C6.44775 15 6 14.5522 6 14V12C6 11.4478 6.44775 11 7 11C7.55225 11 8 11.4478 8 12Z" fill="#0A893D"></path>
                     </svg>
-                    <span className="text-gray-700 lg:border-l lg:pl-5 text-sm lg:text-base">Al hacer clic en Depósito, acepta los <Link href="policies?tab=general-terms" className="text-green-700 font-bold">Términos y condiciones</Link> fin <Link href="policies?tab=privacy-policy" className="text-green-700 font-bold">Política de privacidad</Link>.</span>
+                    <span className="text-gray-700 lg:border-l lg:pl-5 text-sm lg:text-base">{t('deposit.terms_acceptance')} <Link href="policies?tab=general-terms" className="text-green-700 font-bold">{t('deposit.terms_conditions')}</Link> fin <Link href="policies?tab=privacy-policy" className="text-green-700 font-bold">{t('deposit.privacy_policy')}</Link>.</span>
                 </section>
                 <div className="px-4 lg:px-0 lg:max-w-md lg:mx-auto">
                     
@@ -461,10 +483,10 @@ export default function DepositPage() {
                     >
 {(() => {
                             if (showBonusSection && selectedBonusAmount) {
-                                return `Depositar ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}${selectedBonusAmount.percentage > 0 ? ` +${selectedBonusAmount.percentage}%` : ''}`;
+                                return `${t('deposit.deposit_button')} ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}${selectedBonusAmount.percentage > 0 ? ` +${selectedBonusAmount.percentage}%` : ''}`;
                             } else {
                                 const amount = customAmount && !isNaN(parseInt(customAmount)) ? parseInt(customAmount) : 0;
-                                return `Depositar ${amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}`;
+                                return `${t('deposit.deposit_button')} ${amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}`;
                             }
                         })()}
                     </button>
@@ -473,10 +495,14 @@ export default function DepositPage() {
                 <AlertDialog open={showWarning} onOpenChange={setShowWarning}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle className="text-red-500 text-2xl">⚠️ Monto mínimo requerido</AlertDialogTitle>
+                            <AlertDialogTitle className="text-red-500 text-2xl">{t('deposit.minimum_required')}</AlertDialogTitle>
                             <AlertDialogDescription className="text-lg">
-                                El monto mínimo de depósito es 60,000 {displayCurrency}. 
-                                Por favor, ingresa un monto mayor o igual a este valor.
+                                {!firstName || firstName.trim() === '' ? 
+                                    'El nombre es obligatorio. Por favor, ingresa tu nombre.' :
+                                !lastName || lastName.trim() === '' ?
+                                    'El apellido es obligatorio. Por favor, ingresa tu apellido.' :
+                                `El monto mínimo de depósito es ${minimumAmount.toLocaleString()} ${displayCurrency}. Por favor, ingresa un monto mayor o igual a este valor.`
+                                }
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -484,7 +510,7 @@ export default function DepositPage() {
                                 className="bg-red-500 hover:bg-red-600"
                                 onClick={() => setShowWarning(false)}
                             >
-                                Entendido
+                                {t('deposit.understood')}
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
@@ -492,8 +518,11 @@ export default function DepositPage() {
 
                 <Dialog open={showPayment} onOpenChange={setShowPayment}>
                     <DialogContent className="max-w-3xl p-0 max-h-[90vh] overflow-y-auto rounded-2xl">
+                        <DialogHeader>
+                            <DialogTitle className="sr-only">{t('deposit.safety_pay')}</DialogTitle>
+                        </DialogHeader>
                         <div className=" bg-blue-900 text-white px-6 py-6 rounded-2xl">
-                            <h2 className="text-lg font-bold">SafetyPay Express 4.0</h2>
+                            <h2 className="text-lg font-bold">{t('deposit.safety_pay')}</h2>
                         </div>
                         <div className="p-2 lg:p-6 overflow-y-auto">
                             <div className="grid grid-cols-2">

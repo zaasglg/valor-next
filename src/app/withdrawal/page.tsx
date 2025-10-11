@@ -11,9 +11,11 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function WithdrawalPage() {
     const router = useRouter();
+    const { t } = useLanguage();
     const [balance, setBalance] = useState<string>('0.00');
     const [loading, setLoading] = useState(true);
     const [userCurrency, setUserCurrency] = useState('COP');
@@ -181,32 +183,32 @@ export default function WithdrawalPage() {
                     </div>
                 ) : (
                     <>
-                <h1 className="text-2xl lg:text-5xl font-black text-[#23223a] mb-4 lg:mb-8">Retiro de fondos</h1>
+                <h1 className="text-2xl lg:text-5xl font-black text-[#23223a] mb-4 lg:mb-8">{t('withdrawal.page_title')}</h1>
             
                 {/* Метод вывода */}
                 <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border">
-                    <h2 className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">Elige el método de retiro</h2>
+                    <h2 className="text-xl lg:text-2xl font-bold text-[#23223a] mb-4 lg:mb-6">{t('withdrawal.choose_method')}</h2>
                     <div className="flex gap-2 lg:gap-4 overflow-x-auto">
                         <button className="border-2 border-[#3b3bb3] rounded-xl p-3 flex flex-col items-center w-24 h-28 bg-white focus:outline-none focus:ring-2 focus:ring-[#3b3bb3] relative">
                             <div className="absolute left-0 top-0 w-6 h-6 bg-[#3b3bb3] rounded-tl-lg rounded-br-xl flex items-center justify-center">
                                 <Check size={8} color="white" />
                             </div>
                             <img src="https://static.valor.bet/withdrawal-methods/kGj8XKRlpkjZcEwRfNXZK3jXW0juYtqbH21QBnHV.svg" alt="" className="w-10 h-10 mt-2" />
-                            <span className="mt-auto text-[#3b3bb3] font-bold text-[8px] leading-2 text-center">TRANSFERENCIA BANCARIA</span>
+                            <span className="mt-auto text-[#3b3bb3] font-bold text-[8px] leading-2 text-center">{t('withdrawal.bank_transfer')}</span>
                         </button>
                     </div>
                 </section>
                 {/* Детали вывода */}
                 <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border">
-                    <h2 className="text-xl lg:text-3xl font-bold text-[#23223a] mb-2">Detalles de retiro</h2>
-                    <div className="mb-4 lg:mb-6 text-base lg:text-lg text-[#23223a] font-semibold">Listo para retirar efectivo: <span className="font-black">{balance} {userCurrency}</span></div>
+                    <h2 className="text-xl lg:text-3xl font-bold text-[#23223a] mb-2">{t('withdrawal.details')}</h2>
+                    <div className="mb-4 lg:mb-6 text-base lg:text-lg text-[#23223a] font-semibold">{t('withdrawal.ready_to_withdraw')}: <span className="font-black">{balance} {userCurrency}</span></div>
                     <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                         <div className="flex flex-col">
-                            <label htmlFor="withdraw-amount" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Importe (Máx: {balance} {userCurrency})</label>
+                            <label htmlFor="withdraw-amount" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.amount_label').replace('{balance}', balance).replace('{currency}', userCurrency)}</label>
                             <Input 
                                 id="withdraw-amount" 
                                 type="number" 
-                                placeholder="Mínimo 150,000 COP" 
+                                placeholder={t('withdrawal.minimum_amount')} 
                                 value={formData.withdrawAmount}
                                 onChange={(e) => handleInputChange('withdrawAmount', e.target.value)}
                                 className={`mb-0 ${errors.withdrawAmount ? 'border-red-500' : ''}`}
@@ -214,11 +216,11 @@ export default function WithdrawalPage() {
                             {errors.withdrawAmount && <span className="text-red-500 text-xs mt-1">{errors.withdrawAmount}</span>}
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="client-phone" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Teléfono del cliente</label>
+                            <label htmlFor="client-phone" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.client_phone')}</label>
                             <Input 
                                 id="client-phone" 
                                 type="text" 
-                                placeholder="Teléfono del cliente" 
+                                placeholder={t('withdrawal.client_phone')} 
                                 value={formData.clientPhone}
                                 onChange={(e) => handleInputChange('clientPhone', e.target.value)}
                                 className={`mb-0 ${errors.clientPhone ? 'border-red-500' : ''}`}
@@ -226,11 +228,11 @@ export default function WithdrawalPage() {
                             {errors.clientPhone && <span className="text-red-500 text-xs mt-1">{errors.clientPhone}</span>}
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="account-type" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Cuenta corriente o ahorro</label>
+                            <label htmlFor="account-type" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.account_type')}</label>
                             <Input 
                                 id="account-type" 
                                 type="text" 
-                                placeholder="corriente o ahorro" 
+                                placeholder={t('withdrawal.account_type_placeholder')} 
                                 value={formData.accountType}
                                 onChange={(e) => handleInputChange('accountType', e.target.value)}
                                 className={`mb-0 ${errors.accountType ? 'border-red-500' : ''}`}
@@ -238,11 +240,11 @@ export default function WithdrawalPage() {
                             {errors.accountType && <span className="text-red-500 text-xs mt-1">{errors.accountType}</span>}
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="account-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Número de cuenta</label>
+                            <label htmlFor="account-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.account_number')}</label>
                             <Input 
                                 id="account-number" 
                                 type="text" 
-                                placeholder="Número de cuenta" 
+                                placeholder={t('withdrawal.account_number')} 
                                 value={formData.accountNumber}
                                 onChange={(e) => handleInputChange('accountNumber', e.target.value)}
                                 className={`mb-0 ${errors.accountNumber ? 'border-red-500' : ''}`}
@@ -250,11 +252,11 @@ export default function WithdrawalPage() {
                             {errors.accountNumber && <span className="text-red-500 text-xs mt-1">{errors.accountNumber}</span>}
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="doc-type" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Tipo de Documento</label>
+                            <label htmlFor="doc-type" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.document_type')}</label>
                             <Input 
                                 id="doc-type" 
                                 type="text" 
-                                placeholder="cedula, pasaporte, etc." 
+                                placeholder={t('withdrawal.document_type_placeholder')} 
                                 value={formData.docType}
                                 onChange={(e) => handleInputChange('docType', e.target.value)}
                                 className={`mb-0 ${errors.docType ? 'border-red-500' : ''}`}
@@ -262,11 +264,11 @@ export default function WithdrawalPage() {
                             {errors.docType && <span className="text-red-500 text-xs mt-1">{errors.docType}</span>}
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="doc-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Número del Documento</label>
+                            <label htmlFor="doc-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.document_number')}</label>
                             <Input 
                                 id="doc-number" 
                                 type="text" 
-                                placeholder="Número del Documento" 
+                                placeholder={t('withdrawal.document_number')} 
                                 value={formData.docNumber}
                                 onChange={(e) => handleInputChange('docNumber', e.target.value)}
                                 className={`mb-0 ${errors.docNumber ? 'border-red-500' : ''}`}
@@ -274,20 +276,20 @@ export default function WithdrawalPage() {
                             {errors.docNumber && <span className="text-red-500 text-xs mt-1">{errors.docNumber}</span>}
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="bank" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Banco</label>
+                            <label htmlFor="bank" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.bank')}</label>
                             <Select value={formData.bank} onValueChange={(value) => handleInputChange('bank', value)}>
                                 <SelectTrigger className={`w-full rounded-lg border p-3 lg:p-4 text-base lg:text-lg text-[#23223a] bg-gray-100 ${errors.bank ? 'border-red-500' : 'border-gray-300'}`}>
-                                    <SelectValue placeholder="Seleccione su banco" />
+                                    <SelectValue placeholder={t('withdrawal.select_bank')} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="bancolombia">Bancolombia</SelectItem>
-                                    <SelectItem value="davivienda">Davivienda</SelectItem>
-                                    <SelectItem value="bbva">BBVA</SelectItem>
-                                    <SelectItem value="banco-bogota">Banco de Bogotá</SelectItem>
-                                    <SelectItem value="banco-agrario">Banco Agrario</SelectItem>
-                                    <SelectItem value="banco-popular">Banco Popular</SelectItem>
-                                    <SelectItem value="banco-occidente">Banco de Occidente</SelectItem>
-                                    <SelectItem value="banco-caja-social">Banco Caja Social</SelectItem>
+                                    <SelectItem value="bancolombia">{t('withdrawal.bancolombia')}</SelectItem>
+                                    <SelectItem value="davivienda">{t('withdrawal.davivienda')}</SelectItem>
+                                    <SelectItem value="bbva">{t('withdrawal.bbva')}</SelectItem>
+                                    <SelectItem value="banco-bogota">{t('withdrawal.banco_bogota')}</SelectItem>
+                                    <SelectItem value="banco-agrario">{t('withdrawal.banco_agrario')}</SelectItem>
+                                    <SelectItem value="banco-popular">{t('withdrawal.banco_popular')}</SelectItem>
+                                    <SelectItem value="banco-occidente">{t('withdrawal.banco_occidente')}</SelectItem>
+                                    <SelectItem value="banco-caja-social">{t('withdrawal.banco_caja_social')}</SelectItem>
                                 </SelectContent>
                             </Select>
                             {errors.bank && <span className="text-red-500 text-xs mt-1">{errors.bank}</span>}
@@ -406,7 +408,7 @@ export default function WithdrawalPage() {
                                 }}
                                 className="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 lg:py-1 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg"
                             >
-                                Continuar
+                                {t('withdrawal.request_withdrawal')}
                             </button>
                         </div>
                     </form>

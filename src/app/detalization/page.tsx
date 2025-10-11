@@ -3,6 +3,7 @@
 import ProfileSidebar from "../../components/ProfileSidebar";
 import { useState, useEffect } from "react";
 import AuthGuard from "../../components/AuthGuard";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Transaction {
   id: number;
@@ -36,6 +37,7 @@ interface PaymentHistory {
 }
 
 export default function DetalizationPage() {
+  const { t } = useLanguage();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [payments, setPayments] = useState<PaymentHistory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,7 +100,7 @@ export default function DetalizationPage() {
                     Historial de transacciones:
                     <br />
                     <span className="text-[#ffb32c]">
-                      {activeTab === "deposits" ? "depósitos" : "pagos"}
+                      {activeTab === "deposits" ? t('detalization.deposits') : t('detalization.payments')}
                     </span>
                   </h1>
                 </div>
@@ -112,7 +114,7 @@ export default function DetalizationPage() {
                         : "text-[#23223a] hover:bg-gray-100"
                     }`}
                   >
-                    depósitos
+                    {t('detalization.deposits')}
                   </button>
                   <button
                     onClick={() => setActiveTab("payments")}
@@ -122,7 +124,7 @@ export default function DetalizationPage() {
                         : "text-[#23223a] hover:bg-gray-100"
                     }`}
                   >
-                    pagos
+                    {t('detalization.payments')}
                   </button>
                 </div>
               </div>
@@ -135,19 +137,19 @@ export default function DetalizationPage() {
                     <thead>
                       <tr className="bg-[#ffb32c] text-white text-left">
                         <th className="py-2 lg:py-4 px-2 lg:px-6 rounded-tl-none lg:rounded-tl-2xl text-xs lg:text-base">
-                          Fecha y Hora
+                          {t('detalization.date_time')}
                         </th>
                         <th className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-base">
-                          Transacción
+                          {t('detalization.transaction')}
                         </th>
                         <th className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-base">
-                          Monto
+                          {t('detalization.amount')}
                         </th>
                         <th className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-base hidden md:table-cell">
-                          Método de pago
+                          {t('detalization.payment_method')}
                         </th>
                         <th className="py-2 lg:py-4 px-2 lg:px-6 rounded-tr-none lg:rounded-tr-2xl text-xs lg:text-base">
-                          Estado
+                          {t('detalization.status')}
                         </th>
                       </tr>
                     </thead>
@@ -180,12 +182,11 @@ export default function DetalizationPage() {
                             <h3 className="text-lg lg:text-xl font-bold text-[#23223a] mb-3">
                               {activeTab === "deposits" ? (
                                 <>
-                                  La historia de operaciones está <br /> vacía
+                                  {t('detalization.empty_deposits')}
                                 </>
                               ) : (
                                 <>
-                                  Aún no hay solicitudes para <br /> recibir
-                                  ganancias
+                                  {t('detalization.empty_payments')}
                                 </>
                               )}
                             </h3>
@@ -193,13 +194,11 @@ export default function DetalizationPage() {
                             <p className="text-sm lg:text-sm text-gray-400 mb-6">
                               {activeTab === "deposits" ? (
                                 <>
-                                  Recarga tu cuenta, realiza apuestas <br /> y
-                                  obtén ganancias!
+                                  {t('detalization.deposits_description')}
                                 </>
                               ) : (
                                 <>
-                                  Las solicitudes de ganancias <br /> se
-                                  mostrarán aquí
+                                  {t('detalization.payments_description')}
                                 </>
                               )}
                             </p>
@@ -214,8 +213,8 @@ export default function DetalizationPage() {
                               }
                             >
                               {activeTab === "deposits"
-                                ? "Recargar"
-                                : "Obtener una ganancia"}
+                                ? t('detalization.recharge_button')
+                                : t('detalization.withdraw_button')}
                             </button>
                           </div>
                         </td>
@@ -257,7 +256,11 @@ export default function DetalizationPage() {
                                     : "bg-red-100 text-red-800"
                                 }`}
                               >
-                                {item.estado}
+                                {item.estado === "completado" ? t('detalization.status_completed') :
+                                 item.estado === "aprobado" ? t('detalization.status_approved') :
+                                 item.estado === "esperando" ? t('detalization.status_waiting') :
+                                 item.estado === "pendiente" ? t('detalization.status_pending') :
+                                 item.estado}
                               </span>
                             </td>
                           </tr>

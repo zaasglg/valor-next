@@ -9,6 +9,7 @@ import { LoginDialog } from "@/components/LoginDialog";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const categories = [
   { name: "Crash", count: 8 },
@@ -413,6 +414,7 @@ const games = [
 
 export default function AllGamesPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([
     "All Games",
@@ -571,7 +573,7 @@ export default function AllGamesPage() {
               </div>
               <span className={`text-xs font-semibold text-center ${
                 activeTopButton === "top" ? "text-blue-600" : "text-[#23223a]"
-              }`}>Top Juegos</span>
+              }`}>{t('all_games.top_games')}</span>
               <span className="text-xs text-[#b3b3c3] mt-1">13</span>
             </button>
 
@@ -589,7 +591,7 @@ export default function AllGamesPage() {
               </div>
               <span className={`text-xs font-semibold text-center ${
                 activeTopButton === "popular" ? "text-blue-600" : "text-[#23223a]"
-              }`}>Popular</span>
+              }`}>{t('all_games.popular')}</span>
               <span className="text-xs text-[#b3b3c3] mt-1">11</span>
             </button>
 
@@ -607,7 +609,7 @@ export default function AllGamesPage() {
               </div>
               <span className={`text-xs font-semibold text-center ${
                 activeTopButton === "hot" ? "text-blue-600" : "text-[#23223a]"
-              }`}>Calientes</span>
+              }`}>{t('all_games.hot')}</span>
               <span className="text-xs text-[#b3b3c3] mt-1">9</span>
             </button>
           </div>
@@ -621,7 +623,7 @@ export default function AllGamesPage() {
             </div>
             <input
               type="text"
-              placeholder="Buscar..."
+              placeholder={t('all_games.search_placeholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="block w-full pl-10 pr-10 py-2 border border-gray-200 rounded-lg bg-gray-50 text-sm placeholder-[#b3b3c3] focus:outline-none focus:ring-2 focus:ring-[#23223a] focus:border-transparent"
@@ -641,13 +643,13 @@ export default function AllGamesPage() {
           {/* Filter Buttons */}
           <div className="grid grid-cols-2 gap-2">
             <button className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <span className="text-sm text-[#23223a]">Proveedores</span>
+              <span className="text-sm text-[#23223a]">{t('all_games.providers')}</span>
               <svg className="w-4 h-4 text-[#b3b3c3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
               </svg>
             </button>
             <button className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <span className="text-sm text-[#23223a]">Categorías</span>
+              <span className="text-sm text-[#23223a]">{t('all_games.categories')}</span>
               <svg className="w-4 h-4 text-[#b3b3c3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
               </svg>
@@ -679,7 +681,7 @@ export default function AllGamesPage() {
                 </div>
                 <span className={`font-semibold text-sm ${
                   activeTopButton === "top" ? "text-blue-600" : "text-[#23223a]"
-                }`}>Top Juegos</span>
+                }`}>{t('all_games.top_games')}</span>
               </div>
               <span className="text-[#b3b3c3] text-sm font-medium">13</span>
             </button>
@@ -699,7 +701,7 @@ export default function AllGamesPage() {
                 </div>
                 <span className={`font-semibold text-sm ${
                   activeTopButton === "hot" ? "text-blue-600" : "text-[#23223a]"
-                }`}>Calientes</span>
+                }`}>{t('all_games.hot')}</span>
               </div>
               <span className="text-[#b3b3c3] text-sm font-medium">9</span>
             </button>
@@ -719,7 +721,7 @@ export default function AllGamesPage() {
                 </div>
                 <span className={`font-semibold text-sm ${
                   activeTopButton === "popular" ? "text-blue-600" : "text-[#23223a]"
-                }`}>Popular</span>
+                }`}>{t('all_games.popular')}</span>
               </div>
               <span className="text-[#b3b3c3] text-sm font-medium">11</span>
             </button>
@@ -735,7 +737,7 @@ export default function AllGamesPage() {
               </div>
               <input
                 type="text"
-                placeholder="Buscar..."
+                placeholder={t('all_games.search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="block w-full pl-10 pr-10 py-2 border border-gray-200 rounded-lg bg-white text-sm placeholder-[#b3b3c3] focus:outline-none focus:ring-2 focus:ring-[#23223a] focus:border-transparent"
@@ -757,13 +759,13 @@ export default function AllGamesPage() {
         <div className="p-4">
           <div className="flex items-center justify-between mb-4 2xl:mb-6">
             <h2 className="font-bold text-[#23223a] text-lg 2xl:text-xl">
-              Categorías
+              {t('all_games.categories')}
             </h2>
             <button
               onClick={() => setSelectedCategories(["All Games"])}
               className="text-sm 2xl:text-base text-[#b3b3c3] hover:text-[#23223a] transition-colors"
             >
-              Limpiar
+              {t('all_games.clear')}
             </button>
           </div>
           <ul className="space-y-0">
@@ -922,11 +924,11 @@ export default function AllGamesPage() {
         {/* Todos los Juegos */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between my-6 lg:my-8 2xl:my-12 gap-2 2xl:gap-4">
           <h1 className="text-2xl lg:text-3xl 2xl:text-4xl font-bold text-[#23223a]">
-            Todos los Juegos
+            {t('all_games.all_games')}
           </h1>
           <span className="text-[#b3b3c3] text-base lg:text-lg 2xl:text-xl">
             {filteredGames.length}{" "}
-            {filteredGames.length === 1 ? "juego" : "juegos"}
+            {filteredGames.length === 1 ? t('all_games.game') : t('all_games.games')}
           </span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 2xl:grid-cols-8 gap-1 lg:gap-2 2xl:gap-4">
@@ -996,7 +998,7 @@ export default function AllGamesPage() {
         {/* Games Grid */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-[#23223a]">Todos los juegos</h2>
+            <h2 className="text-lg font-bold text-[#23223a]">{t('all_games.all_games_mobile')}</h2>
             <button className="p-2 rounded-lg hover:bg-gray-100">
               <svg className="w-5 h-5 text-[#b3b3c3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />

@@ -6,8 +6,10 @@ import { Button } from "../../components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { useState, useEffect } from "react";
 import AuthGuard from "../../components/AuthGuard";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function VerificationPage() {
+    const { t } = useLanguage();
     const [userInfo, setUserInfo] = useState({
         first_name: '',
         last_name: '',
@@ -89,11 +91,11 @@ export default function VerificationPage() {
             if (response.ok) {
                 const result = await response.json();
                 console.log('Verification update response:', result);
-                alert('Datos actualizados exitosamente');
+                alert(t('verification.data_updated_successfully'));
             } else {
                 const errorData = await response.json();
                 console.error('Verification update error:', errorData);
-                alert('Error al actualizar los datos');
+                alert(t('verification.error_updating_data'));
             }
         } catch (error) {
             console.error('Error updating verification data:', error);
@@ -113,18 +115,18 @@ export default function VerificationPage() {
                 ) : (
                     <>
                 <form className="w-full bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-lg p-4 lg:p-10 border-0 lg:border border-[#ecebfa]">
-                    <h1 className="text-2xl lg:text-4xl font-black text-[#23223a] mb-4 lg:mb-8">Datos personales</h1>
+                    <h1 className="text-2xl lg:text-4xl font-black text-[#23223a] mb-4 lg:mb-8">{t('verification.personal_data')}</h1>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-3 mb-4 lg:mb-6">
                         <div>
-                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">Nombre</label>
+                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">{t('verification.first_name')}</label>
                             <Input value={userInfo.first_name} onChange={(e) => setUserInfo({ ...userInfo, first_name: e.target.value })} className="text-base lg:text-lg" />
                         </div>
                         <div>
-                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">Apellido</label>
+                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">{t('verification.last_name')}</label>
                             <Input value={userInfo.last_name} onChange={(e) => setUserInfo({ ...userInfo, last_name: e.target.value })} className="text-base lg:text-lg" />
                         </div>
                         <div>
-                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">Cumpleaños</label>
+                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">{t('verification.birthday')}</label>
                             <Input 
                                 type="date" 
                                 value={userInfo.birthday} 
@@ -134,21 +136,21 @@ export default function VerificationPage() {
                         </div>
                     </div>
                     <div className="mb-4 lg:mb-6">
-                        <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">Sexo</label>
+                        <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">{t('verification.gender')}</label>
                         <div className="flex gap-4 lg:gap-8 items-center">
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input type="radio" name="gender" checked={userInfo.gender === 'male'} onChange={() => setUserInfo({ ...userInfo, gender: 'male' })} className="accent-[#23223a] w-4 h-4 lg:w-5 lg:h-5" />
-                                <span className="text-base lg:text-lg text-[#23223a]">Masculino</span>
+                                <span className="text-base lg:text-lg text-[#23223a]">{t('verification.male')}</span>
                             </label>
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input type="radio" name="gender" checked={userInfo.gender === 'female'} onChange={() => setUserInfo({ ...userInfo, gender: 'female' })} className="accent-[#b3b3c3] w-4 h-4 lg:w-5 lg:h-5" />
-                                <span className="text-base lg:text-lg text-[#23223a]">Femenino</span>
+                                <span className="text-base lg:text-lg text-[#23223a]">{t('verification.female')}</span>
                             </label>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-4 lg:mb-6">
                         <div>
-                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">País</label>
+                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">{t('verification.country')}</label>
                             <Select value={userInfo.country} disabled>
                                 <SelectTrigger className="text-base lg:text-lg w-full cursor-not-allowed opacity-70">
                                     <SelectValue />
@@ -168,24 +170,24 @@ export default function VerificationPage() {
                             </Select>
                         </div>
                         <div>
-                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">Ciudad</label>
+                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">{t('verification.city')}</label>
                             <Input value={userInfo.city} onChange={(e) => setUserInfo({ ...userInfo, city: e.target.value })} className="text-base lg:text-lg" />
                         </div>
                     </div>
                     <div className="mb-4 lg:mb-6">
-                        <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">Dirección</label>
+                        <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">{t('verification.address')}</label>
                         <Input value={userInfo.address} onChange={(e) => setUserInfo({ ...userInfo, address: e.target.value })} className="text-base lg:text-lg" />
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
                         <div>
-                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">Número de teléfono</label>
+                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">{t('verification.phone_number')}</label>
                             <div className="flex gap-2">
                                 <span className="inline-flex items-center px-3 lg:px-4 rounded-lg bg-[#f5f5f7] text-[#b3b3c3] text-base lg:text-lg border border-[#ecebfa]">+57</span>
                                 <Input value={userInfo.phone} onChange={(e) => setUserInfo({ ...userInfo, phone: e.target.value })} className="text-base lg:text-lg" />
                             </div>
                         </div>
                         <div>
-                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">Correo electrónico</label>
+                            <label className="block text-[#b3b3c3] mb-2 text-sm lg:text-base">{t('verification.email')}</label>
                             <Input value={userInfo.email} className="text-base lg:text-lg bg-[#f5f5f7] shadow-md" readOnly />
                         </div>
                     </div>
@@ -195,7 +197,7 @@ export default function VerificationPage() {
                             onClick={handleSubmit}
                             className="bg-[#ffb32c] hover:bg-[#ff9800] text-white text-base lg:text-lg font-bold px-8 lg:px-12 py-3 rounded-xl shadow-[0_4px_0_0_#f5970a] active:shadow-none active:translate-y-0.5 transition-all duration-100 border-0 w-full lg:w-auto"
                         >
-                            Actualizar datos
+                            {t('verification.update_data')}
                         </Button>
                     </div>
                 </form>

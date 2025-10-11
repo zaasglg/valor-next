@@ -310,7 +310,7 @@ const Header: React.FC = () => {
                 fill="#0F9658"
               ></path>
             </svg>
-            Casino
+            {t("header.casino")}
             {/* Pseudo-element replacement */}
             <div
               className={`absolute bottom-0 left-0 w-full h-1 bg-[#0a893d] rounded-t transition-opacity duration-200 ease-in-out ${isActive("/all_games")
@@ -324,7 +324,7 @@ const Header: React.FC = () => {
               onClick={toggleDropdown}
               className="flex items-center gap-2 text-[#202040] font-medium text-sm hover:text-[#0a893d] transition-colors"
             >
-              Más
+              {t("header.more")}
               <span className="w-4 h-4 flex items-center justify-center transition-transform">
                 <svg
                   width="16"
@@ -361,7 +361,7 @@ const Header: React.FC = () => {
                       fill="#0F9658"
                     ></path>
                   </svg>
-                  Bonificaciones
+                  {t("header.bonuses")}
                 </Link>
                 <Link
                   href="/casino"
@@ -430,7 +430,7 @@ const Header: React.FC = () => {
               <Link href="/profile">
                 <button className="bg-gradient-to-b cursor-pointer from-[#F9B24B] to-[#e09a2a] hover:scale-105 text-white font-bold py-2 px-4 rounded-md shadow-lg border-b-2 border-[#c2791a] transition-transform duration-150 ease-in-out flex items-center gap-1.5 text-sm h-[40px]">
                   <UserRound />
-                  Cuenta
+                  {t("header.account")}
                   <EllipsisVertical size={17} />
                 </button>
               </Link>
@@ -441,13 +441,13 @@ const Header: React.FC = () => {
                 onClick={() => openLogin()}
                 className="bg-gradient-to-b cursor-pointer from-green-500 to-green-700 hover:scale-105 text-white font-bold py-2 px-4 rounded-md shadow-lg border-b-2 border-green-800 transition-transform duration-150 ease-in-out flex items-center gap-1.5 text-sm"
               >
-                Iniciar sesión
+                {t("header.login")}
               </button>
               <button
                 onClick={() => openRegister()}
                 className="bg-gradient-to-b cursor-pointer from-[#F9B24B] to-[#e09a2a] hover:scale-105 text-white font-bold py-2 px-4 rounded-md shadow-lg border-b-2 border-[#c2791a] transition-transform duration-150 ease-in-out flex items-center gap-1.5 text-sm"
               >
-                Registrarse
+                {t("header.register")}
               </button>
             </>
           )}
@@ -475,7 +475,7 @@ const Header: React.FC = () => {
                 </svg>
               </div>
               <div className="flex items-center gap-1">
-                <div className="text-xs text-gray-600 font-medium">Saldo:</div>
+                <div className="text-xs text-gray-600 font-medium">{t("header.balance")}</div>
                 <div className="text-sm font-bold text-green-600">
                   {balanceLoading ? (
                     <div className="w-8 h-4 bg-gray-200 rounded animate-pulse"></div>
@@ -607,7 +607,7 @@ const Header: React.FC = () => {
                   fill="#0F9658"
                 ></path>
               </svg>
-              Casino
+              {t("header.casino")}
               {pathname === "/all_games" && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-900 rounded-t-lg"></div>
               )}
@@ -697,7 +697,7 @@ const Header: React.FC = () => {
                   <CasinoIcon />
                 </div>
                 <span className="text-gray-800 font-bold text-sm text-center">
-                  Casino
+                  {t("header.casino")}
                 </span>
                 <svg
                   width="12"
@@ -726,7 +726,7 @@ const Header: React.FC = () => {
                   <GamesIcon />
                 </div>
                 <span className="text-gray-800 font-bold text-sm text-center">
-                  Juegos
+                  {t("header.games")}
                 </span>
                 <svg
                   width="12"
@@ -755,7 +755,7 @@ const Header: React.FC = () => {
                   <LiveIcon />
                 </div>
                 <span className="text-gray-800 font-bold text-sm text-center">
-                  Juegos en vivo
+                  {t("header.live_games")}
                 </span>
                 <svg
                   width="12"
@@ -784,7 +784,7 @@ const Header: React.FC = () => {
                   <BonusIcon />
                 </div>
                 <span className="text-gray-800 font-bold text-sm text-center">
-                  Bonificaciones
+                  {t("header.bonuses")}
                 </span>
                 <svg
                   width="12"

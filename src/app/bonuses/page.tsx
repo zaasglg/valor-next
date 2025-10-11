@@ -2,8 +2,10 @@
 
 import { X } from 'lucide-react'
 import { useState } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function BonusesPage() {
+    const { t } = useLanguage()
     const [activeFilter, setActiveFilter] = useState('todos')
     const [promoCode, setPromoCode] = useState('')
     const [showModal, setShowModal] = useState(false)
@@ -13,14 +15,14 @@ export default function BonusesPage() {
                 {/* Hero Section */}
                 <div className="relative text-left py-12 md:py-24">
                     <div className="relative text-left">
-                        <h1 className="text-3xl md:text-5xl font-black text-white mb-4">¡El casino en línea más generoso!</h1>
+                        <h1 className="text-3xl md:text-5xl font-black text-white mb-4">{t('bonuses.hero_title')}</h1>
                     </div>
                 </div>
 
 
                 <section>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-start gap-5 mb-4 md:mb-8">
-                        <h2 className="text-2xl md:text-5xl font-bold text-white mb-4 md:mb-0 text-left">Todos los bonos</h2>
+                        <h2 className="text-2xl md:text-5xl font-bold text-white mb-4 md:mb-0 text-left">{t('bonuses.all_bonuses')}</h2>
                         
                         {/* Filter Tabs */}
                         <div className="hidden lg:flex flex-wrap gap-1 md:gap-2">
@@ -32,7 +34,7 @@ export default function BonusesPage() {
                                         : 'text-white hover:bg-[#302fa0]'
                                 }`}
                             >
-                                Todos los bonos
+                                {t('bonuses.all_bonuses')}
                                 <span className="bg-gray-600 text-white text-xs px-1 py-0.5 rounded-sm">0</span>
                             </button>
                             <button 
@@ -43,7 +45,7 @@ export default function BonusesPage() {
                                         : 'text-white hover:bg-[#302fa0]'
                                 }`}
                             >
-                                Mis bonos activos
+                                {t('bonuses.my_active_bonuses')}
                                 <span className="bg-gray-600 text-white text-xs px-1 py-0.5 rounded-sm">0</span>
                             </button>
                             <button 
@@ -54,7 +56,7 @@ export default function BonusesPage() {
                                         : 'text-white hover:bg-[#302fa0]'
                                 }`}
                             >
-                                Disponible para mí
+                                {t('bonuses.available_for_me')}
                                 <span className="bg-gray-600 text-white text-xs px-1 py-0.5 rounded-sm">0</span>
                             </button>
                             <button 
@@ -65,7 +67,7 @@ export default function BonusesPage() {
                                         : 'text-white hover:bg-[#302fa0]'
                                 }`}
                             >
-                                Archivo
+                                {t('bonuses.archive')}
                                 <span className="bg-gray-600 text-white text-xs px-1 py-0.5 rounded-sm">0</span>
                             </button>
                         </div>
@@ -88,10 +90,10 @@ export default function BonusesPage() {
                     {/* Text Section */}
                     <div className="text-center my-4 md:my-8 px-2 md:px-5">
                         <h2 className="text-lg md:text-xl font-black text-white mb-2 md:mb-4 text-left">
-                            ¡Hasta un +400%  en tu depósito con un código promocional!
+                            {t('bonuses.promo_title')}
                         </h2>
                         <p className="text-left text-white text-sm md:text-lg opacity-90">
-                            Cada código promocional es único y otorga del <span className="text-yellow-400 font-bold">+50%</span> al <span className="text-yellow-400 font-bold">+1000%</span> a tu saldo de bonificación.
+                            {t('bonuses.promo_description')}
                         </p>
                     </div>
 
@@ -100,7 +102,7 @@ export default function BonusesPage() {
                         <div className="mb-3 md:mb-4">
                             <input
                                 type="text"
-                                placeholder="..."
+                                placeholder={t('bonuses.promo_placeholder')}
                                 value={promoCode}
                                 onChange={(e) => setPromoCode(e.target.value)}
                                 className="w-full px-3 md:px-4 py-2 rounded-md text-base md:text-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-lg bg-white"
@@ -114,7 +116,7 @@ export default function BonusesPage() {
                             }}
                             className="w-full bg-[#fda700] text-white font-bold py-2 md:py-2 px-4 md:px-6 rounded-md active:shadow-[0_0.5px_0_0_#d97706] active:translate-y-1 transform transition-all duration-150 text-base md:text-lg border-b-2 md:border-b-3 border-orange-600 hover:border-orange-700 active:border-orange-800"
                         >
-                            Confirmar
+                            {t('bonuses.confirm')}
                         </button>
                     </div>
                 </section>
@@ -130,14 +132,14 @@ export default function BonusesPage() {
                                 <div className="flex items-center justify-center">
                                     <X color='#fda700' size={44} />
                                 </div>
-                                <h3 className="text-white text-lg font-semibold">Error de activación</h3>
+                                <h3 className="text-white text-lg font-semibold">{t('bonuses.activation_error')}</h3>
                             </div>
                         </div>
                         
                         {/* Message */}
                         <div className="mb-6">
                             <p className="text-white text-base font-bold">
-                                Código de promoción no encontrado.
+                                {t('bonuses.promo_not_found')}
                             </p>
                         </div>
                         
@@ -146,7 +148,7 @@ export default function BonusesPage() {
                             onClick={() => setShowModal(false)}
                             className="w-full bg-[#fda700] text-white font-bold py-2 md:py-2 px-4 md:px-6 rounded-md active:shadow-[0_0.5px_0_0_#d97706] active:translate-y-1 transform transition-all duration-150 text-base md:text-lg border-b-2 md:border-b-3 border-orange-600 hover:border-orange-700 active:border-orange-800"
                         >
-                            Ok
+                            {t('bonuses.ok')}
                         </button>
                     </div>
                 </div>

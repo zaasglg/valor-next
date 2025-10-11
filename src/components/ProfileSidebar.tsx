@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import Loader from "./Loader";
 import DotsLoader from "./DotsLoader";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProfileSidebarProps {
     balance?: string;
@@ -13,6 +14,7 @@ interface ProfileSidebarProps {
 }
 
 export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileSidebarProps) {
+    const { t } = useLanguage();
     const pathname = usePathname();
     const [userInfo, setUserInfo] = useState({ user_id: userId, deposit: balance, currency: '$' });
     const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +74,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
     const navItems = [
         {
             href: "/profile",
-            label: "Mi perfil",
+            label: t('sidebar.my_profile'),
             icon: (
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M8.00801 8C10.218 8 12.008 6.21 12.008 4C12.008 1.79 10.218 0 8.00801 0C5.79801 0 4.00801 1.79 4.00801 4C4.00801 6.21 5.79801 8 8.00801 8ZM8.00801 2C9.10802 2 10.008 2.9 10.008 4C10.008 5.1 9.10802 6 8.00801 6C6.90801 6 6.00801 5.1 6.00801 4C6.00801 2.9 6.90801 2 8.00801 2ZM15.478 15.88C15.328 15.96 15.168 16 15.008 16C14.648 16 14.298 15.81 14.128 15.47C14.058 15.33 12.198 12 8.00801 12C3.81801 12 1.90801 15.43 1.88801 15.47C1.70801 15.81 1.35801 16 1.00801 16C0.848014 16 0.688014 15.96 0.538014 15.88C0.0480143 15.62 -0.131986 15.02 0.118014 14.53C0.218014 14.35 2.57801 10 7.99801 10C13.418 10 15.788 14.35 15.878 14.53C16.138 15.02 15.948 15.62 15.458 15.88H15.478Z" fill="currentColor" />
@@ -81,7 +83,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
         },
         {
             href: "/deposit",
-            label: "Recargar",
+            label: t('sidebar.recharge'),
             icon: (
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4.29 8.71C3.9 8.32 3.9 7.69 4.29 7.3C4.68 6.91 5.31 6.91 5.7 7.3L6.99 8.59V1C6.99 0.45 7.44 0 7.99 0C8.54 0 8.99 0.45 8.99 1V8.58L10.28 7.29C10.67 6.9 11.3 6.9 11.69 7.29C12.08 7.68 12.08 8.31 11.69 8.7L8.69 11.7C8.6 11.79 8.49 11.87 8.36 11.92C8.24 11.97 8.11 12 7.98 12C7.85 12 7.72 11.97 7.6 11.92C7.48 11.87 7.37 11.8 7.27 11.7L4.27 8.7L4.29 8.71ZM15 12C14.45 12 14 12.45 14 13V14H2V13C2 12.45 1.55 12 1 12C0.45 12 0 12.45 0 13V15C0 15.55 0.45 16 1 16H15C15.55 16 16 15.55 16 15V13C16 12.45 15.55 12 15 12Z" fill="currentColor" />
@@ -90,7 +92,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
         },
         {
             href: "/withdrawal",
-            label: "Retirar",
+            label: t('sidebar.withdraw'),
             icon: (
                 <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3.08 4.62128C3.13 4.50128 3.2 4.39128 3.3 4.29128L6.29 1.29128C6.68 0.901279 7.31 0.901279 7.7 1.29128C8.09 1.68128 8.09 2.31128 7.7 2.70128L6.41 3.99128H11C11.55 3.99128 12 4.44128 12 4.99128V11.9913C12 12.5413 11.55 12.9913 11 12.9913C10.45 12.9913 10 12.5413 10 11.9913V5.99128H6.41L7.7 7.28128C8.09 7.67128 8.09 8.30128 7.7 8.69128C7.5 8.89128 7.25 8.98128 6.99 8.98128C6.73 8.98128 6.48 8.88128 6.28 8.69128L3.28 5.69128C3.19 5.60128 3.11 5.49128 3.06 5.36128C2.96 5.12128 2.96 4.84128 3.06 4.60128L3.08 4.62128ZM15 13.0013C14.45 13.0013 14 13.4513 14 14.0013V15.0013H2V14.0013C2 13.4513 1.55 13.0013 1 13.0013C0.45 13.0013 0 13.4513 0 14.0013V16.0013C0 16.5513 0.45 17.0013 1 17.0013H15C15.55 17.0013 16 16.5513 16 16.0013V14.0013C16 13.4513 15.55 13.0013 15 13.0013Z" fill="currentColor" />
@@ -99,7 +101,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
         },
         {
             href: "/detalization",
-            label: "Historial de transacciones",
+            label: t('sidebar.transaction_history'),
             icon: (
                 <svg width="16" height="19" viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M16 11C16 15.41 12.41 19 8 19C3.59 19 0 15.41 0 11C0 10.45 0.45 10 1 10C1.55 10 2 10.45 2 11C2 14.31 4.69 17 8 17C11.31 17 14 14.31 14 11C14 7.69005 11.31 5.00005 8 5.00005H6.41L6.7 5.29005C7.09 5.68005 7.09 6.31005 6.7 6.70005C6.5 6.90005 6.25 6.99005 5.99 6.99005C5.73 6.99005 5.48 6.89005 5.28 6.70005L3.28 4.70005C3.19 4.61005 3.11 4.50005 3.06 4.37005C2.96 4.13005 2.96 3.85005 3.06 3.61005C3.11 3.49005 3.18 3.38005 3.28 3.28005L5.28 1.28005C5.67 0.890049 6.3 0.890049 6.69 1.28005C7.08 1.67005 7.08 2.30005 6.69 2.69005L6.4 2.98005H7.99C12.4 2.98005 15.99 6.57005 15.99 10.98L16 11ZM8 13V11H10C10.55 11 11 10.55 11 10C11 9.45005 10.55 9.00005 10 9.00005H7C6.45 9.00005 6 9.45005 6 10V13C6 13.55 6.45 14 7 14C7.55 14 8 13.55 8 13Z" fill="currentColor" />
@@ -108,7 +110,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
         },
         {
             href: "/bonuses",
-            label: "Bonificaciones",
+            label: t('sidebar.bonuses'),
             icon: (
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17 6H14.82C14.93 5.69 15 5.35 15 5C15 3.35 13.65 2 12 2C11.5 2 11.04 2.13 10.63 2.35C10 0.97 8.61 0 7 0C4.79 0 3 1.79 3 4C3 4.73 3.21 5.41 3.56 6H1C0.45 6 0 6.45 0 7V11C0 11.55 0.45 12 1 12V17C1 17.55 1.45 18 2 18H16C16.55 18 17 17.55 17 17V12C17.55 12 18 11.55 18 11V7C18 6.45 17.55 6 17 6ZM12 4C12.55 4 13 4.45 13 5C13 5.55 12.55 6 12 6C11.45 6 11 5.55 11 5C11 4.45 11.45 4 12 4ZM5 4C5 2.9 5.9 2 7 2C8.1 2 9 2.9 9 4C9 5.1 8.1 6 7 6C5.9 6 5 5.1 5 4ZM2 8H16V10H2V8ZM3 12H8V16H3V12ZM15 16H10V12H15V16Z" fill="currentColor" />
@@ -117,7 +119,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
         },
         {
             href: "/verification",
-            label: "Verificación",
+            label: t('sidebar.verification'),
             icon: (
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M8.00801 8C10.218 8 12.008 6.21 12.008 4C12.008 1.79 10.218 0 8.00801 0C5.79801 0 4.00801 1.79 4.00801 4C4.00801 6.21 5.79801 8 8.00801 8ZM8.00801 2C9.10802 2 10.008 2.9 10.008 4C10.008 5.1 9.10802 6 8.00801 6C6.90801 6 6.00801 5.1 6.00801 4C6.00801 2.9 6.90801 2 8.00801 2ZM15.478 15.88C15.328 15.96 15.168 16 15.008 16C14.648 16 14.298 15.81 14.128 15.47C14.058 15.33 12.198 12 8.00801 12C3.81801 12 1.90801 15.43 1.88801 15.47C1.70801 15.81 1.35801 16 1.00801 16C0.848014 16 0.688014 15.96 0.538014 15.88C0.0480143 15.62 -0.131986 15.02 0.118014 14.53C0.218014 14.35 2.57801 10 7.99801 10C13.418 10 15.788 14.35 15.878 14.53C16.138 15.02 15.948 15.62 15.458 15.88H15.478Z" fill="currentColor" />
@@ -190,7 +192,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
                     {/* Balance and User ID Section */}
                     <div className="grid grid-cols-2 gap-2 mb-2 relative z-10">
                         <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
-                            <span className="text-xs">Saldo:</span>
+                            <span className="text-xs">{t('sidebar.balance')}</span>
                             {balanceLoading ? (
                                 <DotsLoader className="mt-4" color="black" size="sm" />
                             ) : (
@@ -198,7 +200,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
                             )}
                         </div>
                         <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
-                            <span className="text-xs">ID de usuario:</span>
+                            <span className="text-xs">{t('sidebar.user_id')}</span>
                             {isLoading ? (
                                 <DotsLoader className="mt-4" color="black" size="sm" />
                             ) : (
@@ -209,7 +211,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
 
                     {/* Quick Recharge Button */}
                     <Link href="/deposit" className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-3 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 border-0 mb-2 relative z-10 block text-center">
-                    Recargar en 1 clic
+                    {t('sidebar.quick_recharge')}
                     </Link>
 
                     {/* Navigation */}
@@ -235,7 +237,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
 
                     <div className="grid grid-cols-2 gap-2 mb-3 relative z-10">
                         <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
-                            <span className="text-xs">Saldo:</span>
+                            <span className="text-xs">{t('sidebar.balance')}</span>
                             {balanceLoading ? (
                                 <DotsLoader className="mt-4" color="black" size="sm" />
                             ) : (
@@ -243,7 +245,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
                             )}
                         </div>
                         <div className="flex flex-col justify-between items-start text-lg font-semibold text-[#23223a]">
-                            <span className="text-xs">ID de usuario:</span>
+                            <span className="text-xs">{t('sidebar.user_id')}</span>
                             {isLoading ? (
                                 <DotsLoader className="mt-4" color="black" size="sm" />
                             ) : (
@@ -259,7 +261,7 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
                             className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-3 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 border-0 mb-4 block text-center"
                             onClick={() => setIsOpen(false)}
                         >
-                            Recargar en 1 clic
+                            {t('sidebar.quick_recharge')}
                         </Link>
 
                         {/* Navigation */}

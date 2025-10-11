@@ -40,18 +40,10 @@ const Footer: React.FC = () => {
           </div>
           <div className="text-sm text-gray-600 leading-relaxed">
             <p className="mb-2 text-xs">
-              La información en el sitio es proporcionada por el operador del
-              sitio - la empresa ValorBet N.V., registrada en la dirección: Palm
-              Avenue 10, Rosebank, Sint Maarten. La actividad de la empresa
-              ValorBet N.V. está licenciada y regulada por IslandGames N.V.
-              (número de licencia: No. 1234/JAZ2021-567; válida hasta el 31 de
-              diciembre de 2025) y por la legislación de Sint Maarten. Los pagos
-              son procesados por Global Invest Solutions Ltd (número de
-              registro: HE 654321, dirección: Ocean Drive 22, Mesa Verde, 5678,
-              Limassol, Chipre), una subsidiaria de ValorBet N.V.
+              {t("footer.company_info")}
             </p>
             <p className="text-xs">
-              © 2021 - 2025. ValorCasino. Derechos Reservados
+              {t("footer.copyright")}
             </p>
           </div>
         </div>
@@ -175,7 +167,7 @@ const Footer: React.FC = () => {
         {/* Información Legal - Expanded by default with all desktop links */}
         <Collapsible open={isLegalOpen} onOpenChange={setIsLegalOpen}>
           <CollapsibleTrigger className="w-full flex items-center justify-between px-3 py-1 hover:bg-gray-50 rounded-lg">
-            <span className="text-gray-800 font-bold text-sm">Información Legal</span>
+            <span className="text-gray-800 font-bold text-sm">{t("footer.legal_info")}</span>
             <svg 
               className={`w-4 h-4 transition-transform duration-200 ${isLegalOpen ? 'rotate-180' : ''}`}
               fill="none" 
