@@ -416,6 +416,22 @@ export default function AllGamesPage() {
   const router = useRouter();
   const { t } = useLanguage();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Function to generate game URL based on game name
+  const getGameUrl = (gameName: string) => {
+    // Special case for Chicken Road
+    if (gameName === "Chicken Road") {
+      return "/game/chicken-road";
+    }
+    
+    // Generate slug for other games
+    const slug = gameName
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+    
+    return `/game/${slug}`;
+  };
   const [selectedCategories, setSelectedCategories] = useState<string[]>([
     "All Games",
   ]);
@@ -939,7 +955,7 @@ export default function AllGamesPage() {
             >
               <div className="relative w-full h-40 sm:h-48 lg:h-60 2xl:h-72">
                 {isAuthenticated ? (
-                  <Link href="/game">
+                  <Link href={getGameUrl(game.name)}>
                     <img
                       src={game.img}
                       alt={game.name}
@@ -949,7 +965,7 @@ export default function AllGamesPage() {
                   </Link>
                 ) : (
                   <LoginDialog>
-                    <Link href="/game" tabIndex={-1} aria-disabled="true">
+                    <Link href={getGameUrl(game.name)} tabIndex={-1} aria-disabled="true">
                       <img
                         src={game.img}
                         alt={game.name}

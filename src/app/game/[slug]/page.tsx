@@ -2,15 +2,24 @@
 
 import { GameModeDialog } from "@/components/GameModeDialog";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import Loader from "@/components/Loader";
 
-export default function GamePage() {
+interface GamePageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
+export default function GamePage({ params }: GamePageProps) {
   const router = useRouter();
   const { t } = useLanguage();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const [showGameModeDialog, setShowGameModeDialog] = useState(true);
+  const { slug } = use(params);
+
+  const [showGameModeDialog, setShowGameModeDialog] = useState(slug === 'chicken-road');
   const [gameMode, setGameMode] = useState<'demo' | 'real' | null>(null);
   const [userInfo, setUserInfo] = useState<{
     id?: string;
@@ -56,12 +65,12 @@ export default function GamePage() {
     
     if (gameMode === 'real') {
       // Use data from API if available, otherwise fallback to localStorage or defaults
-      const userId = userInfo?.id || localStorage.getItem('user_id') || '12345';
-      const balance = userInfo?.deposit || localStorage.getItem('balance') || '1000';
-      const country = userInfo?.country || localStorage.getItem('country') || 'Venezuela';
-      const language = userInfo?.language || localStorage.getItem('language') || 'es';
+      // const userId = userInfo?.id || localStorage.getItem('user_id') || '12345';
+      // const balance = userInfo?.deposit || localStorage.getItem('balance') || '1000';
+      // const country = userInfo?.country || localStorage.getItem('country') || 'Venezuela';
+      // const language = userInfo?.language || localStorage.getItem('language') || 'es';
       
-      return `${baseUrl}/?user_id=${userId}&balance=${balance}&country=${country}&lang=${language}&access_token=${accessToken}`;
+      return `${baseUrl}/?access_token=${accessToken}`;
     }
     
     // Default URL if no mode selected
@@ -88,22 +97,29 @@ export default function GamePage() {
         {/* Desktop Sidebar */}
 
         {/* Desktop Content */}
-        <main className="flex-1 p-8 2xl:p-12">
+        <main className="flex-1 p-0 lg:p-8 2xl:p-12">
         <div className="bg-white rounded shadow border border-gray-200">
           
-            <div className="bg-black rounded flex items-center justify-center relative overflow-hidden" style={{ height: '800px' }}>
-              {gameMode ? (
-                <iframe
-                  src={getGameUrl()}
-                  className="w-full h-[800px] rounded"
-                  title="Game"
-                  allow="autoplay; fullscreen"
-                />
+            <div className="bg-black rounded-none lg:rounded flex items-center justify-center relative overflow-hidden h-[550px] lg:h-[800px]">
+              {slug === 'chicken-road' ? (
+                gameMode ? (
+                  <iframe
+                    src={getGameUrl()}
+                    className="w-full h-[550px] lg:h-[800px] rounded-none lg:rounded"
+                    title="Game"
+                    allow="autoplay; fullscreen"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-white">
+                    <div className="text-2xl mb-4">🎮</div>
+                    <p className="text-lg font-semibold">{t('game_mode.select_mode')}</p>
+                    <p className="text-sm text-gray-300 mt-2">{t('game_mode.please_select_mode')}</p>
+                  </div>
+                )
               ) : (
                 <div className="flex flex-col items-center justify-center text-white">
-                  <div className="text-2xl mb-4">🎮</div>
-                  <p className="text-lg font-semibold">{t('game_mode.select_mode')}</p>
-                  <p className="text-sm text-gray-300 mt-2">{t('game_mode.please_select_mode')}</p>
+                  <Loader size="lg" color="white" type="dots" />
+                  <p className="text-lg font-semibold mt-4">{t('common.loading')}</p>
                 </div>
               )}
             </div>
@@ -111,12 +127,14 @@ export default function GamePage() {
         </main>
       </div>
 
-      {/* Game Mode Dialog */}
-      <GameModeDialog
-        isOpen={showGameModeDialog}
-        onClose={() => setShowGameModeDialog(false)}
-        onSelectMode={handleGameModeSelect}
-      />
+      {/* Game Mode Dialog - only show for chicken-road */}
+      {slug === 'chicken-road' && (
+        <GameModeDialog
+          isOpen={showGameModeDialog}
+          onClose={() => setShowGameModeDialog(false)}
+          onSelectMode={handleGameModeSelect}
+        />
+      )}
     </div>
   );
 }

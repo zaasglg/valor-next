@@ -25,6 +25,7 @@ const translations = {
     'header.live_games': 'Juegos en vivo',
     'header.more': 'Más',
     'header.account': 'Cuenta',
+    'header.menu': 'Menú',
     
     // Profile page
     'profile.my_profile': 'Mi perfil',
@@ -196,7 +197,7 @@ const translations = {
     'nav.games': 'Juegos',
     'nav.casino': 'Casino',
     'nav.bonuses': 'Bonificaciones',
-    'nav.live_games': 'Juegos en vivo',
+    'nav.live_games': 'Juegos <br> en vivo',
     
     // Footer
     'footer.general_terms': 'Condiciones generales',
@@ -259,6 +260,7 @@ const translations = {
     'header.live_games': 'Live Games',
     'header.more': 'More',
     'header.account': 'Account',
+    'header.menu': 'Menu',
     
     // Profile page
     'profile.my_profile': 'My Profile',
@@ -493,6 +495,7 @@ const translations = {
     'header.live_games': 'Jogos ao Vivo',
     'header.more': 'Mais',
     'header.account': 'Conta',
+    'header.menu': 'Menu',
     
     // Profile page
     'profile.my_profile': 'Meu Perfil',
@@ -664,7 +667,7 @@ const translations = {
     'nav.games': 'Jogos',
     'nav.casino': 'Cassino',
     'nav.bonuses': 'Bônus',
-    'nav.live_games': 'Jogos ao Vivo',
+    'nav.live_games': 'Jogos <br> ao Vivo',
     
     // Footer
     'footer.general_terms': 'Termos e Condições Gerais',
@@ -727,6 +730,7 @@ const translations = {
     'header.live_games': 'الألعاب المباشرة',
     'header.more': 'المزيد',
     'header.account': 'الحساب',
+    'header.menu': 'القائمة',
     
     // Profile page
     'profile.my_profile': 'ملفي الشخصي',
@@ -961,6 +965,7 @@ const translations = {
     'header.live_games': 'Jeux en Direct',
     'header.more': 'Plus',
     'header.account': 'Compte',
+    'header.menu': 'Menu',
     
     // Profile page
     'profile.my_profile': 'Mon Profil',
@@ -1132,7 +1137,7 @@ const translations = {
     'nav.games': 'Jeux',
     'nav.casino': 'Casino',
     'nav.bonuses': 'Bonus',
-    'nav.live_games': 'Jeux en Direct',
+    'nav.live_games': 'Jeux <br> en Direct',
     
     // Footer
     'footer.general_terms': 'Conditions Générales',

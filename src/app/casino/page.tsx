@@ -386,6 +386,22 @@ export default function CasinoPage() {
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+    // Function to generate game URL based on game name
+    const getGameUrl = (gameName: string) => {
+        // Special case for Chicken Road
+        if (gameName === "Chicken Road") {
+            return "/game/chicken-road";
+        }
+        
+        // Generate slug for other games
+        const slug = gameName
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '');
+        
+        return `/game/${slug}`;
+    };
+
     useEffect(() => {
         const token = localStorage.getItem('access_token');
         setIsAuthenticated(!!token);
@@ -413,7 +429,7 @@ export default function CasinoPage() {
                             <div className="rounded-2xl overflow-hidden shadow-lg bg-white flex flex-col">
                                 <div className="relative w-full h-40 sm:h-48 lg:h-60">
                                     {isAuthenticated ? (
-                                        <a href="/game">
+                                        <a href={getGameUrl(game.name)}>
                                             <img 
                                                 src={game.img} 
                                                 alt={game.name} 
@@ -422,7 +438,7 @@ export default function CasinoPage() {
                                         </a>
                                     ) : (
                                         <LoginDialog>
-                                            <a href="/game" tabIndex={-1} aria-disabled="true">
+                                            <a href={getGameUrl(game.name)} tabIndex={-1} aria-disabled="true">
                                                 <img 
                                                     src={game.img} 
                                                     alt={game.name} 

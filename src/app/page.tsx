@@ -50,49 +50,49 @@ export default function Home() {
       id: 1,
       name: "Aviator",
       image: "/images/aviator.avif",
-      href: "/game"
+      href: "/game/aviator"
     },
     {
       id: 2,
       name: "Diver",
       image: "/images/diver.jpeg",
-      href: "/game"
+      href: "/game/diver"
     },
     {
       id: 3,
       name: "Wheel",
       image: "/images/wheel.jpeg",
-      href: "/game"
+      href: "/game/wheel"
     },
     {
       id: 4,
       name: "Mines",
       image: "/images/mines.jpeg",
-      href: "/game"
+      href: "/game/mines"
     },
     {
       id: 5,
       name: "Plinko",
       image: "/images/plinko.png",
-      href: "/game"
+      href: "/game/plinko"
     },
     {
       id: 6,
       name: "Crash",
       image: "/images/crash.jpeg",
-      href: "/game"
+      href: "/game/crash"
     },
     {
       id: 7,
       name: "Chicken Road",
       image: "/images/chicken_road.png",
-      href: "/game"
+      href: "/game/chicken-road"
     },
     {
       id: 8,
       name: "Plinko 1000",
       image: "/images/plinko_1000.png",
-      href: "/game"
+      href: "/game/plinko"
     }
   ];
 
@@ -102,49 +102,49 @@ export default function Home() {
       id: 1,
       name: "Blackjack",
       image: "/images/blackjack.jpeg",
-      href: "/game"
+      href: "/game/blackjack"
     },
     {
       id: 2,
       name: "Power Up",
       image: "/images/powerup.jpeg",
-      href: "/game"
+      href: "/game/powerup"
     },
     {
       id: 3,
       name: "Blackjack 2",
       image: "/images/blackjack-2.jpeg",
-      href: "/game"
+      href: "/game/blackjack-2"
     },
     {
       id: 4,
       name: "Blackjack 5",
       image: "/images/backjac-5.jpeg",
-      href: "/game"
+      href: "/game/backjac-5"
     },
     {
       id: 5,
       name: "32 Cards",
       image: "/images/32-cards.jpeg",
-      href: "/game"
+      href: "/game/32-cards"
     },
     {
       id: 6,
       name: "One Day",
       image: "/images/one-day.jpeg",
-      href: "/game"
+      href: "/game/one-day"
     },
     {
       id: 7,
       name: "Blackjack Salon",
       image: "/images/backjack-salon.jpeg",
-      href: "/game"
+      href: "/game/backjack-salon"
     },
     {
       id: 8,
       name: "Blackjack 4",
       image: "/images/backjack-4.jpeg",
-      href: "/game"
+      href: "/game/backjack-4"
     }
   ];
 

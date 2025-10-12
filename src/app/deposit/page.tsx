@@ -256,22 +256,22 @@ export default function DepositPage() {
             setCustomAmount(amount.toString());
         }
         
-        // Check minimum amount (should be LESS than minimum to show warning)
-        if (amount < minimumAmount) {
-            console.log(`Amount ${amount} is less than minimum ${minimumAmount}, showing warning`);
-            setShowWarning(true);
-            return;
-        }
-        
-        // Validate required fields
+        // Validate required fields FIRST
         if (!firstName || firstName.trim() === '') {
-            console.log('First name is required');
+            console.log('First name validation failed:', { firstName, isEmpty: !firstName, isTrimEmpty: firstName.trim() === '' });
             setShowWarning(true);
             return;
         }
         
         if (!lastName || lastName.trim() === '') {
-            console.log('Last name is required');
+            console.log('Last name validation failed:', { lastName, isEmpty: !lastName, isTrimEmpty: lastName.trim() === '' });
+            setShowWarning(true);
+            return;
+        }
+        
+        // Check minimum amount AFTER field validation
+        if (amount < minimumAmount) {
+            console.log(`Amount ${amount} is less than minimum ${minimumAmount}, showing warning`);
             setShowWarning(true);
             return;
         }
@@ -495,11 +495,22 @@ export default function DepositPage() {
                 <AlertDialog open={showWarning} onOpenChange={setShowWarning}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle className="text-red-500 text-2xl">{t('deposit.minimum_required')}</AlertDialogTitle>
+                            <AlertDialogTitle className="text-red-500 text-2xl">
+                                {(() => {
+                                    console.log('Modal title check:', { firstName, lastName, firstNameEmpty: !firstName || firstName.trim() === '', lastNameEmpty: !lastName || lastName.trim() === '' });
+                                    return null;
+                                })()}
+                                {(!firstName || firstName.trim() === '') ? 
+                                    'Campo requerido' :
+                                (!lastName || lastName.trim() === '') ?
+                                    'Campo requerido' :
+                                'Monto mínimo requerido'
+                                }
+                            </AlertDialogTitle>
                             <AlertDialogDescription className="text-lg">
-                                {!firstName || firstName.trim() === '' ? 
+                                {(!firstName || firstName.trim() === '') ? 
                                     'El nombre es obligatorio. Por favor, ingresa tu nombre.' :
-                                !lastName || lastName.trim() === '' ?
+                                (!lastName || lastName.trim() === '') ?
                                     'El apellido es obligatorio. Por favor, ingresa tu apellido.' :
                                 `El monto mínimo de depósito es ${minimumAmount.toLocaleString()} ${displayCurrency}. Por favor, ingresa un monto mayor o igual a este valor.`
                                 }
