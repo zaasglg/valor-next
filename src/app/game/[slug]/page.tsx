@@ -60,16 +60,11 @@ export default function GamePage({ params }: GamePageProps) {
     const accessToken = localStorage.getItem('access_token') || '';
     
     if (gameMode === 'demo') {
-      return `${baseUrl}/?demo=true&access_token=${accessToken}`;
+      const country = userInfo?.country || 'Venezuela';
+      return `${baseUrl}/?demo=true&country=${encodeURIComponent(country)}`;
     }
     
     if (gameMode === 'real') {
-      // Use data from API if available, otherwise fallback to localStorage or defaults
-      // const userId = userInfo?.id || localStorage.getItem('user_id') || '12345';
-      // const balance = userInfo?.deposit || localStorage.getItem('balance') || '1000';
-      // const country = userInfo?.country || localStorage.getItem('country') || 'Venezuela';
-      // const language = userInfo?.language || localStorage.getItem('language') || 'es';
-      
       return `${baseUrl}/?access_token=${accessToken}`;
     }
     
