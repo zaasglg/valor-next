@@ -111,6 +111,40 @@ class AuthService {
 
     return data;
   }
+
+  async refreshToken() {
+    const refreshToken = localStorage.getItem('refresh_token');
+    
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    const response = await fetch('/api/refresh', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refresh: refreshToken }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Error refreshing token');
+    }
+
+    const data = await response.json();
+
+    // Обновляем токены
+    if (data.access) {
+      localStorage.setItem('access_token', data.access);
+    }
+    if (data.refresh) {
+      localStorage.setItem('refresh_token', data.refresh);
+    }
+
+    window.dispatchEvent(new Event('storage'));
+    return data;
+  }
 }
 
 export const authService = new AuthService();

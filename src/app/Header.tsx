@@ -61,10 +61,11 @@ const Header: React.FC = () => {
 
     if (token) {
       // Basic token validation (check if it's not empty and looks like a JWT)
-      const isValidToken = token.length > 10 && token.includes(".");
+      // Более мягкая проверка - только проверяем что токен не пустой
+      const isValidToken = token.trim().length > 0;
 
       if (!isValidToken) {
-        console.log("Header - Invalid token format, clearing token");
+        console.log("Header - Empty token, clearing token");
         localStorage.removeItem("access_token");
         setIsAuthenticated(false);
         setUserInfo({
@@ -105,7 +106,56 @@ const Header: React.FC = () => {
               currency: currency,
             });
           } else if (response.status === 401) {
+            // Попытка обновить токен перед удалением
+            const refreshToken = localStorage.getItem("refresh_token");
+            if (refreshToken) {
+              try {
+                const refreshResponse = await fetch('/api/refresh', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ refresh: refreshToken }),
+                });
+                
+                if (refreshResponse.ok) {
+                  const refreshData = await refreshResponse.json();
+                  if (refreshData.access) {
+                    localStorage.setItem('access_token', refreshData.access);
+                    // Повторяем запрос с новым токеном
+                    const retryResponse = await fetch("/api/user/info", {
+                      headers: { Authorization: `Bearer ${refreshData.access}` },
+                    });
+                    
+                    if (retryResponse.ok) {
+                      const retryData = await retryResponse.json();
+                      const currencyFromCountry = retryData.country_info?.currency;
+                      const currencyFromUser = retryData.currency;
+                      const currency =
+                        (currencyFromCountry && currencyFromCountry.trim()) ||
+                        (currencyFromUser && currencyFromUser.trim()) ||
+                        "COP";
+                      const deposit = parseFloat(retryData.deposit || "0").toFixed(2);
+                      
+                      setUserInfo({
+                        user_id: retryData.user_id || "",
+                        deposit: deposit,
+                        currency: currency,
+                      });
+                      return; // Успешно обновили токен, выходим
+                    }
+                  }
+                }
+              } catch (refreshError) {
+                console.error("Header - Error refreshing token:", refreshError);
+              }
+            }
+            
+            // Если обновление не удалось, удаляем токены
+            console.log("Header - Token refresh failed, logging out");
             localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            localStorage.removeItem("user_id");
             setIsAuthenticated(false);
           }
         } catch (error) {

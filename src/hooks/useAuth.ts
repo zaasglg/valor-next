@@ -16,6 +16,7 @@ export function useAuth() {
     isAuthenticated: authState.isAuthenticated,
     login: authService.login.bind(authService),
     register: authService.register.bind(authService),
-    logout: authService.logout.bind(authService)
+    logout: authService.logout.bind(authService),
+    refreshToken: authService.refreshToken.bind(authService)
   };
 }
