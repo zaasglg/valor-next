@@ -38,7 +38,7 @@ const Header: React.FC = () => {
   const [userInfo, setUserInfo] = useState({
     user_id: "",
     deposit: "0.00",
-    currency: "COP",
+    currency: "$",
   });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -71,7 +71,7 @@ const Header: React.FC = () => {
         setUserInfo({
           user_id: "",
           deposit: formatAmount(0),
-          currency: "COP",
+          currency: "$",
         });
         return;
       }
@@ -88,14 +88,8 @@ const Header: React.FC = () => {
             const data = await response.json();
             console.log('User info with balance:', data);
             
-            // Используем currency из country_info, если он есть, иначе fallback на currency из user/info
-            const currencyFromCountry = data.country_info?.currency;
-            const currencyFromUser = data.currency;
-            // Проверяем, что валюта не пустая строка и не null/undefined
-            const currency =
-              (currencyFromCountry && currencyFromCountry.trim()) ||
-              (currencyFromUser && currencyFromUser.trim()) ||
-              "COP";
+            // Получаем валюту из API (как в ProfileSidebar)
+            const currency = data.country_info?.currency || data.currency || '$';
 
             // Получаем deposit из API и форматируем
             const deposit = parseFloat(data.deposit || "0").toFixed(2);
@@ -129,12 +123,7 @@ const Header: React.FC = () => {
                     
                     if (retryResponse.ok) {
                       const retryData = await retryResponse.json();
-                      const currencyFromCountry = retryData.country_info?.currency;
-                      const currencyFromUser = retryData.currency;
-                      const currency =
-                        (currencyFromCountry && currencyFromCountry.trim()) ||
-                        (currencyFromUser && currencyFromUser.trim()) ||
-                        "COP";
+                      const currency = retryData.country_info?.currency || retryData.currency || '$';
                       const deposit = parseFloat(retryData.deposit || "0").toFixed(2);
                       
                       setUserInfo({
@@ -175,6 +164,48 @@ const Header: React.FC = () => {
     const handleStorageChange = () => {
       const token = localStorage.getItem("access_token");
       setIsAuthenticated(!!token);
+      
+      // Если токен появился, обновляем информацию о пользователе
+      if (token) {
+        const fetchUserInfo = async () => {
+          setBalanceLoading(true);
+          try {
+            const response = await fetch("/api/user/info", {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              console.log('User info with balance (storage event):', data);
+              
+              // Получаем валюту из API (как в ProfileSidebar)
+              const currency = data.country_info?.currency || data.currency || '$';
+
+              // Получаем deposit из API и форматируем
+              const deposit = parseFloat(data.deposit || "0").toFixed(2);
+
+              setUserInfo({
+                user_id: data.user_id || "",
+                deposit: deposit,
+                currency: currency,
+              });
+            }
+          } catch (error) {
+            console.error("Error fetching user info (storage event):", error);
+          } finally {
+            setBalanceLoading(false);
+          }
+        };
+        
+        fetchUserInfo();
+      } else {
+        // Если токена нет, сбрасываем информацию
+        setUserInfo({
+          user_id: "",
+          deposit: formatAmount(0),
+          currency: "$",
+        });
+      }
     };
 
     window.addEventListener("storage", handleStorageChange);

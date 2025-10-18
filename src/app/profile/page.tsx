@@ -6,111 +6,29 @@ import { useState, useEffect } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-// Список стран с телефонными кодами
+// Список стран с телефонными кодами (только страны из RegisterDialog)
 const countryPhoneCodes: { [key: string]: string } = {
-  "Colombia": "+57",
   "Argentina": "+54",
-  "Mexico": "+52",
-  "Chile": "+56",
-  "Peru": "+51",
-  "Ecuador": "+593",
-  "Venezuela": "+58",
   "Bolivia": "+591",
-  "Paraguay": "+595",
-  "Uruguay": "+598",
   "Brazil": "+55",
-  "Spain": "+34",
-  "United States": "+1",
-  "Canada": "+1",
-  "United Kingdom": "+44",
-  "France": "+33",
-  "Germany": "+49",
-  "Italy": "+39",
-  "Portugal": "+351",
-  "Russia": "+7",
-  "China": "+86",
-  "Japan": "+81",
-  "South Korea": "+82",
-  "India": "+91",
-  "Australia": "+61",
-  "Vietnam": "+84",
-  "Thailand": "+66",
-  "Philippines": "+63",
-  "Indonesia": "+62",
-  "Malaysia": "+60",
-  "Singapore": "+65",
-  "Turkey": "+90",
-  "Egypt": "+20",
-  "South Africa": "+27",
-  "Nigeria": "+234",
-  "Kenya": "+254",
-  "Morocco": "+212",
-  "Algeria": "+213",
-  "Tunisia": "+216",
-  "Israel": "+972",
-  "Saudi Arabia": "+966",
-  "UAE": "+971",
-  "Qatar": "+974",
-  "Kuwait": "+965",
-  "Bahrain": "+973",
-  "Oman": "+968",
-  "Jordan": "+962",
-  "Lebanon": "+961",
-  "Syria": "+963",
-  "Iraq": "+964",
-  "Iran": "+98",
-  "Afghanistan": "+93",
-  "Pakistan": "+92",
-  "Bangladesh": "+880",
-  "Sri Lanka": "+94",
-  "Nepal": "+977",
-  "Bhutan": "+975",
-  "Myanmar": "+95",
-  "Cambodia": "+855",
-  "Laos": "+856",
-  "Mongolia": "+976",
-  "Kazakhstan": "+7",
-  "Uzbekistan": "+998",
-  "Kyrgyzstan": "+996",
-  "Tajikistan": "+992",
-  "Turkmenistan": "+993",
-  "Azerbaijan": "+994",
-  "Armenia": "+374",
-  "Georgia": "+995",
-  "Ukraine": "+380",
-  "Belarus": "+375",
-  "Moldova": "+373",
-  "Romania": "+40",
-  "Bulgaria": "+359",
-  "Greece": "+30",
-  "Albania": "+355",
-  "Macedonia": "+389",
-  "Serbia": "+381",
-  "Montenegro": "+382",
-  "Bosnia": "+387",
-  "Croatia": "+385",
-  "Slovenia": "+386",
-  "Slovakia": "+421",
-  "Czech Republic": "+420",
-  "Poland": "+48",
-  "Hungary": "+36",
-  "Austria": "+43",
-  "Switzerland": "+41",
-  "Liechtenstein": "+423",
-  "Netherlands": "+31",
-  "Belgium": "+32",
-  "Luxembourg": "+352",
-  "Denmark": "+45",
-  "Sweden": "+46",
-  "Norway": "+47",
-  "Finland": "+358",
-  "Iceland": "+354",
-  "Ireland": "+353",
-  "Malta": "+356",
-  "Cyprus": "+357",
-  "Estonia": "+372",
-  "Latvia": "+371",
-  "Lithuania": "+370"
+  "Chile": "+56",
+  "Colombia": "+57",
+  "Costa Rica": "+506",
+  "Cuba": "+53",
+  "Dominican Republic": "+1",
+  "Ecuador": "+593",
+  "El Salvador": "+503",
+  "Guatemala": "+502",
+  "Haiti": "+509",
+  "Honduras": "+504",
+  "Mexico": "+52",
+  "Nicaragua": "+505",
+  "Panama": "+507",
+  "Paraguay": "+595",
+  "Peru": "+51",
+  "Puerto Rico": "+1",
+  "Uruguay": "+598",
+  "Venezuela": "+58"
 };
 
 export default function ProfilePage() {
@@ -145,7 +63,7 @@ export default function ProfilePage() {
           
           // Парсим номер телефона для извлечения кода и номера
           let phoneNumber = data.numero_de_telefono || "";
-          let phoneCodeFromData = "+57"; // По умолчанию код Колумбии
+          let phoneCodeFromData = countryPhoneCodes[country] || "+57"; // Код на основе выбранной страны
           
           // Если номер начинается с кода, извлекаем его
           if (phoneNumber.startsWith("+")) {
@@ -383,11 +301,25 @@ export default function ProfilePage() {
                         <label className="text-sm text-[#a3a3b3] font-semibold">
                           {t("profile.country")}
                         </label>
-                        <Input
-                          className="rounded-lg border border-[#e3e6f0] bg-[#f7f7fa] px-3 lg:px-4 py-2 lg:py-3 text-base lg:text-lg"
+                        <select
+                          className="rounded-lg border border-[#e3e6f0] bg-white px-3 lg:px-4 py-2 lg:py-3 text-base lg:text-lg"
                           value={formData.country}
-                          readOnly
-                        />
+                          onChange={(e) => {
+                            const selectedCountry = e.target.value;
+                            const newPhoneCode = countryPhoneCodes[selectedCountry] || "+57";
+                            setFormData({
+                              ...formData,
+                              country: selectedCountry,
+                            });
+                            setPhoneCode(newPhoneCode);
+                          }}
+                        >
+                          {Object.keys(countryPhoneCodes).map((country) => (
+                            <option key={country} value={country}>
+                              {country}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <div className="flex flex-col gap-2">
                         <label className="text-sm text-[#a3a3b3] font-semibold">

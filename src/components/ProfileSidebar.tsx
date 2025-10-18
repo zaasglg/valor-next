@@ -68,7 +68,20 @@ export default function ProfileSidebar({ balance = "0", userId = "0" }: ProfileS
         // Автоматическое обновление баланса каждые 30 секунд
         const intervalId = setInterval(fetchUserInfo, 30000);
         
-        return () => clearInterval(intervalId);
+        // Слушаем события storage для обновления при регистрации/логине
+        const handleStorageChange = () => {
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                fetchUserInfo();
+            }
+        };
+        
+        window.addEventListener('storage', handleStorageChange);
+        
+        return () => {
+            clearInterval(intervalId);
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, [userId]);
 
     const navItems = [
