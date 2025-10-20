@@ -131,8 +131,6 @@ export default function WithdrawalPage() {
                     const amount = parseFloat(value);
                     if (isNaN(amount) || amount <= 0) {
                         error = 'El importe debe ser un número válido mayor que 0';
-                    } else if (amount < 150000) {
-                        error = 'El importe mínimo es 150,000 COP';
                     }
                 }
                 break;
