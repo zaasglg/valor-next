@@ -336,14 +336,14 @@ export default function WithdrawalPage() {
                                                 }
 
                                                 // Check available balance vs requested withdraw amount
-                                                // const available = parseFloat(String(balance).replace(/,/g, '')) || 0;
-                                                // if (withdrawAmount > available) {
-                                                //     console.log('Insufficient funds:', { withdrawAmount, available });
-                                                //     setShowInsufficientFundsToast(true);
-                                                //     // Auto-hide after 3s
-                                                //     setTimeout(() => setShowInsufficientFundsToast(false), 3000);
-                                                //     return;
-                                                // }
+                                                const available = parseFloat(String(balance).replace(/,/g, '')) || 0;
+                                                if (withdrawAmount > available) {
+                                                    console.log('Insufficient funds:', { withdrawAmount, available });
+                                                    setShowInsufficientFundsToast(true);
+                                                    // Auto-hide after 3s
+                                                    setTimeout(() => setShowInsufficientFundsToast(false), 3000);
+                                                    return;
+                                                }
 
                                                 // Check country-specific thresholds for normal or verif stage users
                                                 if (userStage === 'normal' || userStage === 'verif') {
@@ -552,8 +552,8 @@ export default function WithdrawalPage() {
                                 </svg>
                             </div>
                             <div className="flex-1">
-                                <div className="font-medium text-sm">No dispone de fondos suficientes para este retiro.</div>
-                                <div className="text-sm opacity-90 mt-1">Por favor, revise su saldo o intente con un monto menor.</div>
+                                <div className="font-medium text-sm">Fondos insuficientes</div>
+                                <div className="text-sm opacity-90 mt-1">El monto a retirar excede su saldo disponible.</div>
                             </div>
                             <button onClick={() => setShowInsufficientFundsToast(false)} className="flex-shrink-0 text-white hover:text-gray-200 transition-colors">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
