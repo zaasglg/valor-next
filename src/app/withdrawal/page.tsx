@@ -324,7 +324,7 @@ export default function WithdrawalPage() {
                                             type="button"
                                             onClick={async () => {
                                                 // Check minimum amount first (before other validations)
-                                                // const withdrawAmount = parseFloat(formData.withdrawAmount);
+                                                const withdrawAmount = parseFloat(formData.withdrawAmount);
                                                 // if (!formData.withdrawAmount || isNaN(withdrawAmount) || withdrawAmount < 150000) {
                                                 //     console.log('Minimum amount check failed:', withdrawAmount);
                                                 //     setShowMinAmountWarning(true);
