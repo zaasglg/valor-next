@@ -501,9 +501,33 @@ export default function WithdrawalPage() {
                             <h2 className="text-2xl font-bold relative z-10 text-white">Se requiere verificación</h2>
                         </div>
                         <div className="bg-white px-6 py-8 rounded-b-xl">
-                            <p className="text-gray-700 text-lg leading-relaxed text-center font-bold">
-                                Has superado el límite de juegos en una cuenta no verificada, tu cuenta está bloqueada hasta que sea verificada.
+                            <p className="text-gray-700 text-lg leading-relaxed text-center font-bold mb-6">
+                                Has superado el límite de juegos. Tu cuenta está bloqueada hasta que se verifique. Contacta con soporte para más información.
                             </p>
+                            
+                            <div className="flex flex-col sm:flex-row gap-4 mt-6">
+                                <button
+                                    onClick={() => {
+                                        // Contact support action
+                                        window.open('https://t.me/Caesar_Gomez_Bot', '_blank');
+                                    }}
+                                    className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg shadow-[0_6px_0_0_#c2410c,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#c2410c,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#c2410c,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
+                                >
+                                    CONTACTAR SOPORTE
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        setShowVerificationModal(false);
+                                        router.push('/deposit');
+                                    }}
+                                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-[0_6px_0_0_#15803d,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#15803d,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#15803d,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
+                                >
+                                    VERIFICAR CUENTA
+                                </button>
+                                
+                                
+                            </div>
                         </div>
                     </DialogContent>
                 </Dialog>
