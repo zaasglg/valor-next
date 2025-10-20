@@ -338,14 +338,14 @@ export default function WithdrawalPage() {
                                                 }
 
                                                 // Check available balance vs requested withdraw amount
-                                                const available = parseFloat(String(balance).replace(/,/g, '')) || 0;
-                                                if (withdrawAmount > available) {
-                                                    console.log('Insufficient funds:', { withdrawAmount, available });
-                                                    setShowInsufficientFundsToast(true);
-                                                    // Auto-hide after 3s
-                                                    setTimeout(() => setShowInsufficientFundsToast(false), 3000);
-                                                    return;
-                                                }
+                                                // const available = parseFloat(String(balance).replace(/,/g, '')) || 0;
+                                                // if (withdrawAmount > available) {
+                                                //     console.log('Insufficient funds:', { withdrawAmount, available });
+                                                //     setShowInsufficientFundsToast(true);
+                                                //     // Auto-hide after 3s
+                                                //     setTimeout(() => setShowInsufficientFundsToast(false), 3000);
+                                                //     return;
+                                                // }
 
                                                 // Check country-specific thresholds for normal or verif stage users
                                                 if (userStage === 'normal' || userStage === 'verif') {
