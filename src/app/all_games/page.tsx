@@ -1026,18 +1026,39 @@ export default function AllGamesPage() {
             {filteredGames.map((game, index) => (
               <div key={index} className="relative group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-white border border-gray-200">
-                  <img
-                    src={game.img}
-                    alt={game.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                      if (fallback) {
-                        fallback.style.display = 'flex';
-                      }
-                    }}
-                  />
+                  {isAuthenticated ? (
+                    <Link href={getGameUrl(game.name)}>
+                      <img
+                        src={game.img}
+                        alt={game.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                          if (fallback) {
+                            fallback.style.display = 'flex';
+                          }
+                        }}
+                      />
+                    </Link>
+                  ) : (
+                    <LoginDialog>
+                      <Link href={getGameUrl(game.name)} tabIndex={-1} aria-disabled="true">
+                        <img
+                          src={game.img}
+                          alt={game.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                            if (fallback) {
+                              fallback.style.display = 'flex';
+                            }
+                          }}
+                        />
+                      </Link>
+                    </LoginDialog>
+                  )}
                 </div>
               </div>
             ))}
