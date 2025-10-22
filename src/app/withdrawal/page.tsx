@@ -353,11 +353,11 @@ export default function WithdrawalPage() {
                                                 // Convert amounts based on country
                                                 if (userCountry.toLowerCase() === 'ecuador' || userCountry.toLowerCase() === 'ec') {
                                                     // Ecuador uses USD (approx 1 USD = 4000 COP)
-                                                    minDelay = 6.25; // 25000 / 4000
-                                                    maxDelay = 6250; // 25000000 / 4000
+                                                    minDelay = 5; // 25000 / 4000
+                                                    maxDelay = 5000; // 25000000 / 4000
                                                 } else if (userCountry.toLowerCase() === 'paraguay' || userCountry.toLowerCase() === 'py') {
                                                     // Paraguay uses PYG (approx 1 PYG = 0.5 COP)
-                                                    minDelay = 50000; // 25000 * 2
+                                                    minDelay = 45000; // 25000 * 2
                                                     maxDelay = 50000000; // 25000000 * 2
                                                 }
 
