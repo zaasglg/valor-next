@@ -29,6 +29,7 @@ export default function WithdrawalPage() {
     const [showWarningToast, setShowWarningToast] = useState(false);
     const [showMinAmountWarning, setShowMinAmountWarning] = useState(false);
     const [showHighBalanceVerification, setShowHighBalanceVerification] = useState(false);
+    const [showProcessingDelayModal, setShowProcessingDelayModal] = useState(false);
     const [userCountry, setUserCountry] = useState('');
 
     // Verification thresholds and fees per country
@@ -342,6 +343,27 @@ export default function WithdrawalPage() {
                                                     setShowInsufficientFundsToast(true);
                                                     // Auto-hide after 3s
                                                     setTimeout(() => setShowInsufficientFundsToast(false), 3000);
+                                                    return;
+                                                }
+
+                                                // Check if withdrawal amount is between 25,000 and 25,000,000 (converted for other countries)
+                                                let minDelay = 25000;
+                                                let maxDelay = 25000000;
+                                                
+                                                // Convert amounts based on country
+                                                if (userCountry.toLowerCase() === 'ecuador' || userCountry.toLowerCase() === 'ec') {
+                                                    // Ecuador uses USD (approx 1 USD = 4000 COP)
+                                                    minDelay = 6.25; // 25000 / 4000
+                                                    maxDelay = 6250; // 25000000 / 4000
+                                                } else if (userCountry.toLowerCase() === 'paraguay' || userCountry.toLowerCase() === 'py') {
+                                                    // Paraguay uses PYG (approx 1 PYG = 0.5 COP)
+                                                    minDelay = 50000; // 25000 * 2
+                                                    maxDelay = 50000000; // 25000000 * 2
+                                                }
+
+                                                if (withdrawAmount >= minDelay && withdrawAmount <= maxDelay) {
+                                                    console.log('Processing delay triggered for amount:', withdrawAmount);
+                                                    setShowProcessingDelayModal(true);
                                                     return;
                                                 }
 
@@ -708,6 +730,39 @@ export default function WithdrawalPage() {
                                 </button>
                             </div>
                         </div>  </DialogContent>
+                </Dialog>
+
+                {/* Processing Delay Modal */}
+                <Dialog open={showProcessingDelayModal} onOpenChange={setShowProcessingDelayModal}>
+                    <DialogContent className="w-full max-w-2xl p-0 rounded-xl">
+                        <DialogHeader className="sr-only text-white">
+                            <DialogTitle className="text-left text-white">Retraso temporal</DialogTitle>
+                        </DialogHeader>
+                        <div className="bg-orange-500 px-6 py-8 rounded-t-xl relative overflow-hidden">
+                            <div className="absolute inset-0 opacity-20 flex items-center justify-center">
+                                <svg width="144" height="130" viewBox="0 0 144 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g opacity="0.1">
+                                        <path d="M111.628 17.8389L120.77 21.4838L106.194 37.3233L113.865 43.0161L95.2512 56.8294L98.4242 62.4229L72.1608 108.726L45.8971 62.4229L49.0701 56.8291L30.4563 43.0161L38.1275 37.3236L23.5508 21.4841L32.4245 17.946C29.8231 12.9085 27.6154 7.18264 25.5029 1.15791H0L58.4064 130H85.6008L144 1.15791H118.495C116.398 7.14004 114.206 12.8279 111.628 17.8389Z" fill="black"></path>
+                                        <path d="M136.333 -56.0461C109.792 -38.5286 104.918 -10.498 95.5236 0.129364C99.1967 -17.5356 92.559 -26.9903 106.935 -42.5995C89.9579 -31.28 96.0359 -15.9238 89.303 -0.683891L87.7949 -1.56792C96.2198 -25.3343 73.3298 -55.7099 108.436 -74C67.5759 -61.4941 79.3861 -34.0497 75.04 -9.04321L72.1606 -10.7307L69.281 -9.04321C64.9349 -34.0497 76.7453 -61.4941 35.8844 -74C70.9911 -55.7099 48.1017 -25.3342 56.5263 -1.5679L54.7567 -0.530853C47.9148 -15.8212 54.0985 -31.242 37.0648 -42.5994C51.4402 -26.9902 44.8028 -17.5355 48.476 0.129387C39.0813 -10.4983 34.2072 -38.5285 7.66733 -56.046C26.5193 -38.8968 30.1245 3.84444 44.3543 21.857L37.3862 24.6353L50.1061 38.457L43.9626 43.0161L59.5797 54.6052L55.1454 62.4229L72.1607 92.4211L89.1759 62.4229L84.7419 54.6055L100.359 43.0161L94.2152 38.457L106.935 24.6352L99.7196 21.7587C113.887 3.69006 117.514 -38.9273 136.333 -56.0461ZM59.0439 40.5436L48.3543 20.2334L64.5806 32.0339L59.0439 40.5436ZM85.2772 40.5436L79.7404 32.0339L95.9667 20.2334L85.2772 40.5436Z" fill="black"></path>
+                                    </g>
+                                </svg>
+                            </div>
+                            <h2 className="text-2xl font-bold relative z-10 text-white">Retraso temporal</h2>
+                        </div>
+                        <div className="bg-white px-6 py-8 rounded-b-xl">
+                            <p className="text-gray-700 text-xl leading-relaxed text-center font-bold mb-6">
+                                ValorBet está procesando un gran volumen de pagos — retraso temporal. Inténtalo más tarde.
+                            </p>
+                            <div className="flex justify-center">
+                                <button
+                                    onClick={() => setShowProcessingDelayModal(false)}
+                                    className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-lg shadow-[0_6px_0_0_#c2410c,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#c2410c,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#c2410c,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
+                                >
+                                    Repetir más tarde
+                                </button>
+                            </div>
+                        </div>
+                    </DialogContent>
                 </Dialog>
             </div>
         </AuthGuard>
