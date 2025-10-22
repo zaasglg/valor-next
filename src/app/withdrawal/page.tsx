@@ -531,7 +531,7 @@ export default function WithdrawalPage() {
                                 <button
                                     onClick={() => {
                                         // Contact support action
-                                        window.open('https://t.me/Caesar_Gomez_Bot', '_blank');
+                                        document.dispatchEvent(new CustomEvent("popups:open"));
                                     }}
                                     className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-[0_6px_0_0_#15803d,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#15803d,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#15803d,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
                                 >
