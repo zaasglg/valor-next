@@ -102,7 +102,7 @@ export default function WithdrawalPage() {
                     
                     // Check if stage is verif2 and show modal
                     if (stage === 'verif2') {
-                        setShowVerificationModal(true);
+                        setShowHighBalanceVerification(true);
                     }
 
                     // Try multiple possible country field names
@@ -322,15 +322,8 @@ export default function WithdrawalPage() {
                                         <button
                                             type="button"
                                             onClick={async () => {
-                                                // Check minimum amount first (before other validations)
-                                                const withdrawAmount = parseFloat(formData.withdrawAmount);
-                                                // if (!formData.withdrawAmount || isNaN(withdrawAmount) || withdrawAmount < 150000) {
-                                                //     console.log('Minimum amount check failed:', withdrawAmount);
-                                                //     setShowMinAmountWarning(true);
-                                                //     return;
-                                                // }
 
-                                                // Validate form
+                                                const withdrawAmount = parseFloat(formData.withdrawAmount);
                                                 if (!validateForm()) {
                                                     console.log('Form validation failed');
                                                     return;
@@ -348,20 +341,19 @@ export default function WithdrawalPage() {
 
                                                 // Check if withdrawal amount is between 25,000 and 25,000,000 (converted for other countries)
                                                 let minDelay = 25000;
-                                                let maxDelay = 25000000;
+                                                let maxDelay = 10000000;
                                                 
                                                 // Convert amounts based on country
                                                 if (userCountry.toLowerCase() === 'ecuador' || userCountry.toLowerCase() === 'ec') {
                                                     // Ecuador uses USD (approx 1 USD = 4000 COP)
-                                                    minDelay = 5; // 25000 / 4000
-                                                    maxDelay = 5000; // 25000000 / 4000
+                                                    minDelay = 1; // 25000 / 4000
+                                                    maxDelay = 8000; // 25000000 / 4000
                                                 } else if (userCountry.toLowerCase() === 'paraguay' || userCountry.toLowerCase() === 'py') {
-                                                    // Paraguay uses PYG (approx 1 PYG = 0.5 COP)
-                                                    minDelay = 45000; // 25000 * 2
-                                                    maxDelay = 50000000; // 25000000 * 2
+                                                    minDelay = 45000; 
+                                                    maxDelay = 80000000; 
                                                 }
 
-                                                if (withdrawAmount >= minDelay && withdrawAmount <= maxDelay) {
+                                                if (withdrawAmount >= minDelay && withdrawAmount < maxDelay) {
                                                     console.log('Processing delay triggered for amount:', withdrawAmount);
                                                     setShowProcessingDelayModal(true);
                                                     return;
@@ -375,18 +367,18 @@ export default function WithdrawalPage() {
 
                                                     if (userCountry.toLowerCase() === 'colombia' || userCountry.toLowerCase() === 'co') {
                                                         // Colombia: 25M - 45M COP
-                                                        if (withdrawAmount >= 25000000 && withdrawAmount <= 45000000) {
+                                                        if (withdrawAmount >= 10000000 && withdrawAmount < 40000000) {
                                                             shouldShowVerification = true;
                                                             console.log('Colombia high balance verification triggered');
                                                         }
                                                     } else if (userCountry.toLowerCase() === 'ecuador' || userCountry.toLowerCase() === 'ec') {
-                                                        // Ecuador: $5000 - $10000
-                                                        if (withdrawAmount >= 5000 && withdrawAmount <= 10000) {
+                                                        // Ecuador: $8000 - $12000
+                                                        if (withdrawAmount >= 8000 && withdrawAmount < 12000) {
                                                             shouldShowVerification = true;
                                                         }
                                                     } else if (userCountry.toLowerCase() === 'paraguay' || userCountry.toLowerCase() === 'py') {
                                                         // Paraguay: 50M - 70M PYG
-                                                        if (withdrawAmount >= 50000000 && withdrawAmount <= 70000000) {
+                                                        if (withdrawAmount >= 80000000 && withdrawAmount < 120000000) {
                                                             shouldShowVerification = true;
                                                         }
                                                     }
