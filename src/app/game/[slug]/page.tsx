@@ -17,6 +17,7 @@ export default function GamePage({ params }: GamePageProps) {
   const router = useRouter();
   const { t } = useLanguage();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoadingUserData, setIsLoadingUserData] = useState(true);
 
   const { slug } = use(params);
 
@@ -39,8 +40,12 @@ export default function GamePage({ params }: GamePageProps) {
   // Fetch user info
   const fetchUserInfo = async () => {
     try {
+      setIsLoadingUserData(true);
       const token = localStorage.getItem('access_token');
-      if (!token) return;
+      if (!token) {
+        setIsLoadingUserData(false);
+        return;
+      }
 
       const response = await fetch('/api/user/info', {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -53,6 +58,8 @@ export default function GamePage({ params }: GamePageProps) {
       }
     } catch (error) {
       console.error('Error fetching user info:', error);
+    } finally {
+      setIsLoadingUserData(false);
     }
   };
 
@@ -77,40 +84,43 @@ export default function GamePage({ params }: GamePageProps) {
     if (token) fetchUserInfo();
   }, []);
 
-  // 🧩 PostMessage listener — перезагрузка при лимите баланса
   useEffect(() => {
     let reloadTriggered = false; // Флаг для предотвращения множественных перезагрузок
 
     const handleMessage = (event: MessageEvent) => {
+      
       // Проверяем источник (только ваш игровой домен)
-      if (event.origin !== "https://chicken.valor-games.com") return;
+      if (event.origin !== "https://chicken.valor-games.com") {
+        return;
+      }
 
-      // Проверяем сообщение и флаг
-      if (event.data && event.data.type === "RELOAD_PAGE" && !reloadTriggered) {
+      if (event.data && (event.data.type === "reloadPage" || event.data.type === "RELOAD_PAGE") && !reloadTriggered) {
         reloadTriggered = true; // Устанавливаем флаг
-        console.log("🎮 Баланс достиг лимита:", event.data);
-        console.log("⏰ Перезагрузка страницы через 1 секунду...");
 
-        // Сохраняем флаг в sessionStorage, чтобы предотвратить повторную перезагрузку
         sessionStorage.setItem('reload_triggered', 'true');
 
         setTimeout(() => {
           window.location.reload();
         }, 1000);
+      } else {
+        console.log("⚠️ Message not processed:", {
+          hasData: !!event.data,
+          type: event.data?.type,
+          reloadTriggered
+        });
       }
     };
 
-    // Проверяем, была ли уже перезагрузка в этой сессии
     if (sessionStorage.getItem('reload_triggered') === 'true') {
-      console.log("⚠️ Перезагрузка уже была выполнена, пропускаем");
       sessionStorage.removeItem('reload_triggered'); // Очищаем флаг
       return;
     }
 
     window.addEventListener("message", handleMessage);
-    console.log("✅ Обработчик сообщений от игры установлен");
 
-    return () => window.removeEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
   }, []);
 
   return (
@@ -120,7 +130,12 @@ export default function GamePage({ params }: GamePageProps) {
         <main className="flex-1 p-0 lg:p-8 2xl:p-12">
           <div className="bg-white rounded shadow border border-gray-200">
             <div className="bg-black rounded-none lg:rounded flex items-center justify-center relative overflow-hidden h-[550px] lg:h-[800px]">
-              {slug === 'chicken-road' ? (
+              {isLoadingUserData ? (
+                <div className="flex flex-col items-center justify-center text-white">
+                  <Loader size="lg" color="white" type="dots" />
+                  <p className="text-lg font-semibold mt-4">Cargando datos del usuario...</p>
+                </div>
+              ) : slug === 'chicken-road' ? (
                 gameMode ? (
                   <iframe
                     src={getGameUrl()}

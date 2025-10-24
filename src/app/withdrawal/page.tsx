@@ -34,9 +34,9 @@ export default function WithdrawalPage() {
 
     // Verification thresholds and fees per country
     const verificationConfig: Record<string, { min: number; max: number; fee: number; currency: string; feeLabel: string }> = {
-        colombia: { min: 25000000, max: 45000000, fee: 300000, currency: 'COP', feeLabel: 'pesos' },
-        ecuador: { min: 5000, max: 10000, fee: 120, currency: 'USD', feeLabel: '$' },
-        paraguay: { min: 50000000, max: 70000000, fee: 600000, currency: 'PYG', feeLabel: 'PYG' }
+        colombia: { min: 10000000, max: 40000000, fee: 300000, currency: 'COP', feeLabel: 'pesos' },
+        ecuador: { min: 8000, max: 12000, fee: 120, currency: 'USD', feeLabel: '$' },
+        paraguay: { min: 80000000, max: 120000000, fee: 600000, currency: 'PYG', feeLabel: 'PYG' }
     };
 
     const formatAmount = (value: number, currency: string) => {
