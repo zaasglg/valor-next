@@ -50,27 +50,61 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json()
-        const { userId, newBalance, transactionId } = body
+        const authHeader = request.headers.get('authorization')
         
-        if (!userId || newBalance === undefined) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+        if (!authHeader) {
+            return NextResponse.json({ error: 'Authorization header is required' }, { status: 401 })
         }
 
-        // Здесь можно добавить логику для обновления баланса в БД
-        // и отправки уведомлений через WebSocket или Server-Sent Events
+        const body = await request.json()
+        const { newBalance, transactionId, type } = body
+        
+        if (newBalance === undefined) {
+            return NextResponse.json({ error: 'Missing newBalance field' }, { status: 400 })
+        }
+
+        // Actualizar el balance en el servidor Ubuntu
+        const response = await fetch('https://api.valor-games.co/api/user/update_balance/', {
+            method: 'POST',
+            headers: {
+                'Authorization': authHeader,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                deposit: newBalance,
+                transaction_id: transactionId,
+                type: type || 'manual_update'
+            })
+        })
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}))
+            console.error('External API error:', response.status, response.statusText, errorData)
+            return NextResponse.json(
+                { 
+                    error: 'Failed to update balance on external API',
+                    details: errorData
+                },
+                { status: response.status }
+            )
+        }
+
+        const data = await response.json()
         
         return NextResponse.json({
             success: true,
-            userId: userId,
-            newBalance: newBalance,
+            userId: data.user_id,
+            newBalance: data.deposit || newBalance,
             transactionId: transactionId,
             updatedAt: Date.now()
         })
     } catch (error) {
         console.error('Error updating balance:', error)
         return NextResponse.json(
-            { error: 'Failed to update balance' },
+            { 
+                error: 'Failed to update balance',
+                message: error instanceof Error ? error.message : 'Unknown error'
+            },
             { status: 500 }
         )
     }
