@@ -21,7 +21,7 @@ export default function GamePage({ params }: GamePageProps) {
 
   const { slug } = use(params);
 
-  const [showGameModeDialog, setShowGameModeDialog] = useState(slug === 'chicken-road');
+  const [showGameModeDialog, setShowGameModeDialog] = useState(false);
   const [gameMode, setGameMode] = useState<'demo' | 'real' | null>(null);
   const [userInfo, setUserInfo] = useState<{
     id?: string;
@@ -44,6 +44,10 @@ export default function GamePage({ params }: GamePageProps) {
       const token = localStorage.getItem('access_token');
       if (!token) {
         setIsLoadingUserData(false);
+        // Después de cargar datos, mostrar modal si es chicken-road
+        if (slug === 'chicken-road') {
+          setShowGameModeDialog(true);
+        }
         return;
       }
 
@@ -54,12 +58,17 @@ export default function GamePage({ params }: GamePageProps) {
       if (response.ok) {
         const data = await response.json();
         setUserInfo(data);
-        if (data.stage === 'verif2') setShowVerificationModal(true);
+        if (data.stage === 'verif2') {
+          setShowVerificationModal(true);
+        }
       }
     } catch (error) {
       console.error('Error fetching user info:', error);
     } finally {
       setIsLoadingUserData(false);
+      if (slug === 'chicken-road') {
+        setShowGameModeDialog(true);
+      }
     }
   };
 
@@ -81,11 +90,22 @@ export default function GamePage({ params }: GamePageProps) {
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     setIsAuthenticated(!!token);
-    if (token) fetchUserInfo();
+    
+    // Verificar si fue una recarga desde el iframe
+    const wasReloaded = sessionStorage.getItem('reload_triggered') === 'true';
+    
+    if (wasReloaded) {
+      // Limpiar el flag
+      sessionStorage.removeItem('reload_triggered');
+      console.log('✅ Página recargada desde iframe, cargando datos del usuario...');
+    }
+    
+    // Siempre cargar datos del usuario (incluso después de recarga)
+    fetchUserInfo();
   }, []);
 
   useEffect(() => {
-    let reloadTriggered = false; // Флаг для предотвращения множественных перезагрузок
+    let reloadTriggered = false;
 
     const handleMessage = (event: MessageEvent) => {
       
@@ -95,10 +115,12 @@ export default function GamePage({ params }: GamePageProps) {
       }
 
       if (event.data && (event.data.type === "reloadPage" || event.data.type === "RELOAD_PAGE") && !reloadTriggered) {
-        reloadTriggered = true; // Устанавливаем флаг
+        reloadTriggered = true;
 
         sessionStorage.setItem('reload_triggered', 'true');
 
+        console.log('🔄 Recibido mensaje de recarga, recargando página...');
+        
         setTimeout(() => {
           window.location.reload();
         }, 1000);
@@ -110,11 +132,6 @@ export default function GamePage({ params }: GamePageProps) {
         });
       }
     };
-
-    if (sessionStorage.getItem('reload_triggered') === 'true') {
-      sessionStorage.removeItem('reload_triggered'); // Очищаем флаг
-      return;
-    }
 
     window.addEventListener("message", handleMessage);
 
