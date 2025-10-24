@@ -3,25 +3,26 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const policyTabs = [
-    { id: 'user-agreement', label: 'Acuerdo de usuario', href: '/policies?tab=user-agreement' },
-    { id: 'responsible-gambling', label: 'Juego responsable', href: '/policies?tab=responsible-gambling' },
-    { id: 'responsible-gaming', label: 'Juego responsable', href: '/policies?tab=responsible-gaming' },
-    { id: 'general-terms', label: 'Condiciones generales', href: '/policies?tab=general-terms' },
-    { id: 'risk-disclosure', label: 'Divulgación de riesgos', href: '/policies?tab=risk-disclosure' },
-    { id: 'deposits-withdrawals', label: 'Reposición y retirada de fondos', href: '/policies?tab=deposits-withdrawals' },
-    { id: 'cancellation-policy', label: 'Política de cancelación', href: '/policies?tab=cancellation-policy' },
-    { id: 'refund-policy', label: 'Política de reembolso', href: '/policies?tab=refund-policy' },
-    { id: 'privacy-policy', label: 'Política de privacidad', href: '/policies?tab=privacy-policy' },
-    { id: 'about-us', label: 'Sobre nosotros', href: '/policies?tab=about-us' },
-    { id: 'contact', label: 'Contacto', href: '/policies?tab=contact' },
-    { id: 'fairness', label: 'Métodos de prueba de imparcialidad y RNG', href: '/policies?tab=fairness' },
-    { id: 'account-payments', label: 'Cuenta, Pagos y Bonos', href: '/policies?tab=account-payments' },
-    { id: 'aml', label: 'Políticas AML', href: '/policies?tab=aml' },
-    { id: 'self-exclusion', label: 'Autoexclusión', href: '/policies?tab=self-exclusion' },
-    { id: 'kyc', label: 'Política de KYC', href: '/policies?tab=kyc' },
-    { id: 'dispute-resolution', label: 'Resolución de Disputas', href: '/policies?tab=dispute-resolution' }
+    { id: 'user-agreement', labelKey: 'policies.user_agreement', href: '/policies?tab=user-agreement' },
+    { id: 'responsible-gambling', labelKey: 'policies.responsible_gambling', href: '/policies?tab=responsible-gambling' },
+    { id: 'responsible-gaming', labelKey: 'policies.responsible_gaming', href: '/policies?tab=responsible-gaming' },
+    { id: 'general-terms', labelKey: 'policies.general_terms', href: '/policies?tab=general-terms' },
+    { id: 'risk-disclosure', labelKey: 'policies.risk_disclosure', href: '/policies?tab=risk-disclosure' },
+    { id: 'deposits-withdrawals', labelKey: 'policies.deposits_withdrawals', href: '/policies?tab=deposits-withdrawals' },
+    { id: 'cancellation-policy', labelKey: 'policies.cancellation_policy', href: '/policies?tab=cancellation-policy' },
+    { id: 'refund-policy', labelKey: 'policies.refund_policy', href: '/policies?tab=refund-policy' },
+    { id: 'privacy-policy', labelKey: 'policies.privacy_policy', href: '/policies?tab=privacy-policy' },
+    { id: 'about-us', labelKey: 'policies.about_us', href: '/policies?tab=about-us' },
+    { id: 'contact', labelKey: 'policies.contact', href: '/policies?tab=contact' },
+    { id: 'fairness', labelKey: 'policies.fairness', href: '/policies?tab=fairness' },
+    { id: 'account-payments', labelKey: 'policies.account_payments', href: '/policies?tab=account-payments' },
+    { id: 'aml', labelKey: 'policies.aml', href: '/policies?tab=aml' },
+    { id: 'self-exclusion', labelKey: 'policies.self_exclusion', href: '/policies?tab=self-exclusion' },
+    { id: 'kyc', labelKey: 'policies.kyc', href: '/policies?tab=kyc' },
+    { id: 'dispute-resolution', labelKey: 'policies.dispute_resolution', href: '/policies?tab=dispute-resolution' }
 ];
 
 const policyContent = {
@@ -160,6 +161,7 @@ El Usuario debe enviar los documentos para su verificación al menos un día ant
 function PoliciesContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
+    const { t } = useLanguage();
     const [activeTab, setActiveTab] = useState('user-agreement');
 
     useEffect(() => {
@@ -180,10 +182,10 @@ function PoliciesContent() {
         <div className="min-h-screen bg-[#f5f6fa]">
             {/* Mobile Header */}
             <div className="lg:hidden bg-white shadow-sm border-b border-gray-200 px-4 py-3">
-                <h1 className="text-lg font-semibold text-gray-900">Políticas</h1>
+                <h1 className="text-lg font-semibold text-gray-900">{t('page.policies')}</h1>
             </div>
 
-            <div className="flex flex-col lg:flex-row lg:items-start lg:m-4 lg:m-8 bg-white lg:py-24 lg:rounded-2xl">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:m-8 bg-white lg:py-24 lg:rounded-2xl">
                 {/* Mobile Sidebar - Collapsible */}
                 <div className="lg:hidden bg-white border-b border-gray-200">
                     <div className="px-4 py-3">
@@ -198,7 +200,7 @@ function PoliciesContent() {
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                                 >
-                                    {tab.label}
+                                    {t(tab.labelKey)}
                                 </button>
                             ))}
                         </div>
@@ -214,11 +216,11 @@ function PoliciesContent() {
                             onClick={() => handleTabChange(tab.id)}
                                 className={`w-full text-left px-4 py-3 rounded-lg text-sm font-black transition-colors ${
                                 activeTab === tab.id
-                                        ? 'bg-[#202040] text-purple-800 text-white'
+                                        ? 'bg-[#202040] text-white'
                                         : 'text-white hover:bg-gray-100 hover:text-gray-800'
                             }`}
                         >
-                            {tab.label}
+                            {t(tab.labelKey)}
                         </button>
                     ))}
                 </div>

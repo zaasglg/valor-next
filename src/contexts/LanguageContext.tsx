@@ -247,6 +247,25 @@ const translations = {
     'footer.company_info': 'La información en el sitio es proporcionada por el operador del sitio - la empresa ValorBet N.V., registrada en la dirección: Palm Avenue 10, Rosebank, Sint Maarten. La actividad de la empresa ValorBet N.V. está licenciada y regulada por IslandGames N.V. (número de licencia: No. 1234/JAZ2021-567; válida hasta el 31 de diciembre de 2025) y por la legislación de Sint Maarten. Los pagos son procesados por Global Invest Solutions Ltd (número de registro: HE 654321, dirección: Ocean Drive 22, Mesa Verde, 5678, Limassol, Chipre), una subsidiaria de ValorBet N.V.',
     'footer.copyright': '© 2021 - 2025. ValorCasino. Derechos Reservados',
     'footer.legal_info': 'Información Legal',
+    
+    // Policies page
+    'policies.user_agreement': 'Acuerdo de usuario',
+    'policies.responsible_gambling': 'Juego responsable',
+    'policies.responsible_gaming': 'Juego responsable',
+    'policies.general_terms': 'Condiciones generales',
+    'policies.risk_disclosure': 'Divulgación de riesgos',
+    'policies.deposits_withdrawals': 'Reposición y retirada de fondos',
+    'policies.cancellation_policy': 'Política de cancelación',
+    'policies.refund_policy': 'Política de reembolso',
+    'policies.privacy_policy': 'Política de privacidad',
+    'policies.about_us': 'Sobre nosotros',
+    'policies.contact': 'Contacto',
+    'policies.fairness': 'Métodos de prueba de imparcialidad y RNG',
+    'policies.account_payments': 'Cuenta, Pagos y Bonos',
+    'policies.aml': 'Políticas AML',
+    'policies.self_exclusion': 'Autoexclusión',
+    'policies.kyc': 'Política de KYC',
+    'policies.dispute_resolution': 'Resolución de Disputas',
   },
   en: {
     // Header
@@ -482,6 +501,25 @@ const translations = {
     'footer.company_info': 'The information on the site is provided by the site operator - ValorBet N.V. company, registered at: Palm Avenue 10, Rosebank, Sint Maarten. The activity of ValorBet N.V. company is licensed and regulated by IslandGames N.V. (license number: No. 1234/JAZ2021-567; valid until December 31, 2025) and by Sint Maarten legislation. Payments are processed by Global Invest Solutions Ltd (registration number: HE 654321, address: Ocean Drive 22, Mesa Verde, 5678, Limassol, Cyprus), a subsidiary of ValorBet N.V.',
     'footer.copyright': '© 2021 - 2025. ValorCasino. All Rights Reserved',
     'footer.legal_info': 'Legal Information',
+    
+    // Policies page
+    'policies.user_agreement': 'User Agreement',
+    'policies.responsible_gambling': 'Responsible Gambling',
+    'policies.responsible_gaming': 'Responsible Gaming',
+    'policies.general_terms': 'General Terms and Conditions',
+    'policies.risk_disclosure': 'Risk Disclosure',
+    'policies.deposits_withdrawals': 'Deposits and Withdrawals',
+    'policies.cancellation_policy': 'Cancellation Policy',
+    'policies.refund_policy': 'Refund Policy',
+    'policies.privacy_policy': 'Privacy Policy',
+    'policies.about_us': 'About Us',
+    'policies.contact': 'Contact',
+    'policies.fairness': 'Fairness Methods and RNG Proof',
+    'policies.account_payments': 'Account, Payments and Bonuses',
+    'policies.aml': 'AML Policies',
+    'policies.self_exclusion': 'Self-Exclusion',
+    'policies.kyc': 'KYC Policy',
+    'policies.dispute_resolution': 'Dispute Resolution',
   },
   pt: {
     // Header
@@ -717,6 +755,25 @@ const translations = {
     'footer.company_info': 'As informações no site são fornecidas pelo operador do site - a empresa ValorBet N.V., registrada no endereço: Palm Avenue 10, Rosebank, Sint Maarten. A atividade da empresa ValorBet N.V. é licenciada e regulamentada pela IslandGames N.V. (número da licença: No. 1234/JAZ2021-567; válida até 31 de dezembro de 2025) e pela legislação de Sint Maarten. Os pagamentos são processados pela Global Invest Solutions Ltd (número de registro: HE 654321, endereço: Ocean Drive 22, Mesa Verde, 5678, Limassol, Chipre), uma subsidiária da ValorBet N.V.',
     'footer.copyright': '© 2021 - 2025. ValorCasino. Todos os Direitos Reservados',
     'footer.legal_info': 'Informações Legais',
+    
+    // Policies page
+    'policies.user_agreement': 'Acordo do Usuário',
+    'policies.responsible_gambling': 'Jogo Responsável',
+    'policies.responsible_gaming': 'Jogo Responsável',
+    'policies.general_terms': 'Termos e Condições Gerais',
+    'policies.risk_disclosure': 'Divulgação de Riscos',
+    'policies.deposits_withdrawals': 'Depósitos e Saques',
+    'policies.cancellation_policy': 'Política de Cancelamento',
+    'policies.refund_policy': 'Política de Reembolso',
+    'policies.privacy_policy': 'Política de Privacidade',
+    'policies.about_us': 'Sobre Nós',
+    'policies.contact': 'Contato',
+    'policies.fairness': 'Métodos de Prova de Imparcialidade e RNG',
+    'policies.account_payments': 'Conta, Pagamentos e Bônus',
+    'policies.aml': 'Políticas AML',
+    'policies.self_exclusion': 'Autoexclusão',
+    'policies.kyc': 'Política KYC',
+    'policies.dispute_resolution': 'Resolução de Disputas',
   },
   ar: {
     // Header
@@ -952,6 +1009,25 @@ const translations = {
     'footer.company_info': 'المعلومات على الموقع مقدمة من قبل مشغل الموقع - شركة ValorBet N.V.، المسجلة في العنوان: Palm Avenue 10، Rosebank، Sint Maarten. نشاط شركة ValorBet N.V. مرخص ومنظم من قبل IslandGames N.V. (رقم الترخيص: No. 1234/JAZ2021-567؛ صالح حتى 31 ديسمبر 2025) ومن قبل تشريعات Sint Maarten. المدفوعات تتم معالجتها من قبل Global Invest Solutions Ltd (رقم التسجيل: HE 654321، العنوان: Ocean Drive 22، Mesa Verde، 5678، Limassol، قبرص)، شركة تابعة لـ ValorBet N.V.',
     'footer.copyright': '© 2021 - 2025. ValorCasino. جميع الحقوق محفوظة',
     'footer.legal_info': 'المعلومات القانونية',
+    
+    // Policies page
+    'policies.user_agreement': 'اتفاقية المستخدم',
+    'policies.responsible_gambling': 'المقامرة المسؤولة',
+    'policies.responsible_gaming': 'اللعب المسؤول',
+    'policies.general_terms': 'الشروط والأحكام العامة',
+    'policies.risk_disclosure': 'الإفصاح عن المخاطر',
+    'policies.deposits_withdrawals': 'الإيداعات والسحوبات',
+    'policies.cancellation_policy': 'سياسة الإلغاء',
+    'policies.refund_policy': 'سياسة الاسترداد',
+    'policies.privacy_policy': 'سياسة الخصوصية',
+    'policies.about_us': 'معلومات عنا',
+    'policies.contact': 'اتصل بنا',
+    'policies.fairness': 'طرق إثبات النزاهة و RNG',
+    'policies.account_payments': 'الحساب والمدفوعات والمكافآت',
+    'policies.aml': 'سياسات مكافحة غسل الأموال',
+    'policies.self_exclusion': 'الاستبعاد الذاتي',
+    'policies.kyc': 'سياسة اعرف عميلك',
+    'policies.dispute_resolution': 'حل النزاعات',
   },
   fr: {
     // Header
@@ -1187,6 +1263,25 @@ const translations = {
     'footer.company_info': 'Les informations sur le site sont fournies par l\'opérateur du site - la société ValorBet N.V., enregistrée à l\'adresse: Palm Avenue 10, Rosebank, Sint Maarten. L\'activité de la société ValorBet N.V. est licenciée et réglementée par IslandGames N.V. (numéro de licence: No. 1234/JAZ2021-567; valide jusqu\'au 31 décembre 2025) et par la législation de Sint Maarten. Les paiements sont traités par Global Invest Solutions Ltd (numéro d\'enregistrement: HE 654321, adresse: Ocean Drive 22, Mesa Verde, 5678, Limassol, Chypre), une filiale de ValorBet N.V.',
     'footer.copyright': '© 2021 - 2025. ValorCasino. Tous Droits Réservés',
     'footer.legal_info': 'Informations Légales',
+    
+    // Policies page
+    'policies.user_agreement': 'Accord d\'Utilisateur',
+    'policies.responsible_gambling': 'Jeu Responsable',
+    'policies.responsible_gaming': 'Jeu Responsable',
+    'policies.general_terms': 'Conditions Générales',
+    'policies.risk_disclosure': 'Divulgation des Risques',
+    'policies.deposits_withdrawals': 'Dépôts et Retraits',
+    'policies.cancellation_policy': 'Politique d\'Annulation',
+    'policies.refund_policy': 'Politique de Remboursement',
+    'policies.privacy_policy': 'Politique de Confidentialité',
+    'policies.about_us': 'À Propos de Nous',
+    'policies.contact': 'Contact',
+    'policies.fairness': 'Méthodes de Preuve d\'Équité et RNG',
+    'policies.account_payments': 'Compte, Paiements et Bonus',
+    'policies.aml': 'Politiques Anti-Blanchiment',
+    'policies.self_exclusion': 'Auto-Exclusion',
+    'policies.kyc': 'Politique KYC',
+    'policies.dispute_resolution': 'Résolution des Litiges',
   }
 };
 
