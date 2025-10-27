@@ -36,6 +36,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("datos-personales");
   const [phoneCode, setPhoneCode] = useState("+57"); // По умолчанию код Колумбии
+  const [emailVerified, setEmailVerified] = useState<boolean | null>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -60,6 +61,13 @@ export default function ProfilePage() {
         if (response.ok) {
           const data = await response.json();
           const country = data.country || "Colombia";
+          // Устанавливаем статус верификации email (защита от разных типов значений)
+          const ev = data.email_verified;
+          let verified = false;
+          if (typeof ev === "boolean") verified = ev;
+          else if (typeof ev === "string") verified = ev.toLowerCase() === "true" || ev === "1" || ev.toLowerCase() === "yes";
+          else if (typeof ev === "number") verified = ev === 1;
+          setEmailVerified(verified);
           
           // Парсим номер телефона для извлечения кода и номера
           let phoneNumber = data.numero_de_telefono || "";
@@ -201,19 +209,21 @@ export default function ProfilePage() {
               {activeTab === "datos-personales" && (
                 <>
                   {/* Email Verification Alert */}
-                  <div className="w-full bg-white rounded-lg border border-gray-200 shadow-sm p-4 lg:p-6 mb-4">
-                    <div className="text-left">
-                      <p className="text-gray-700 text-base lg:text-sm mb-4 font-black">
-                        {t("profile.email_not_verified")}
-                      </p>
-                      <button
-                        type="button"
-                        className="bg-[#14532d] hover:bg-[#0f3d20] text-white font-medium px-3 py-1 rounded-md shadow-[0_1px_0_0_#14532d] active:shadow-[0_0.5px_0_0_#14532d] active:translate-y-0.5 transition-all text-sm"
-                      >
-                        {t("profile.resend_email")}
-                      </button>
+                  {emailVerified === false && (
+                    <div className="w-full bg-white rounded-lg border border-gray-200 shadow-sm p-4 lg:p-6 mb-4">
+                      <div className="text-left">
+                        <p className="text-gray-700 text-base lg:text-sm mb-4 font-black">
+                          {t("profile.email_not_verified")}
+                        </p>
+                        <button
+                          type="button"
+                          className="bg-[#14532d] hover:bg-[#0f3d20] text-white font-medium px-3 py-1 rounded-md shadow-[0_1px_0_0_#14532d] active:shadow-[0_0.5px_0_0_#14532d] active:translate-y-0.5 transition-all text-sm"
+                        >
+                          {t("profile.resend_email")}
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <section className="w-full bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-xl p-4 lg:p-10 flex flex-col gap-4 lg:gap-8 border-0 lg:border border-[#ececf1]">
                     <h2 className="text-xl lg:text-xl font-black text-[#23223a] mb-2">
