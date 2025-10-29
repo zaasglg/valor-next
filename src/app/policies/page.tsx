@@ -161,7 +161,7 @@ El Usuario debe enviar los documentos para su verificación al menos un día ant
 function PoliciesContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { t, language } = useLanguage();
+    const { t } = useLanguage();
     const [activeTab, setActiveTab] = useState('user-agreement');
 
     useEffect(() => {
@@ -176,7 +176,7 @@ function PoliciesContent() {
         router.push(`/policies?tab=${tabId}`);
     };
 
-    const currentContent = policyContent[activeTab as keyof typeof policyContent]?.[language] || policyContent[activeTab as keyof typeof policyContent]?.['es'];
+    const currentContent = policyContent[activeTab as keyof typeof policyContent];
 
     return (
         <div className="min-h-screen bg-[#f5f6fa]">
@@ -194,11 +194,10 @@ function PoliciesContent() {
                                 <button
                                     key={tab.id}
                                     onClick={() => handleTabChange(tab.id)}
-                                    className={`px-3 py-2 rounded-full text-xs font-medium transition-colors ${
-                                        activeTab === tab.id
+                                    className={`px-3 py-2 rounded-full text-xs font-medium transition-colors ${activeTab === tab.id
                                             ? 'bg-[#202040] text-white'
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
+                                        }`}
                                 >
                                     {t(tab.labelKey)}
                                 </button>
@@ -209,39 +208,38 @@ function PoliciesContent() {
 
                 {/* Desktop Sidebar */}
                 <aside className="hidden lg:block w-3/12 bg-[#8888a6] border-r border-gray-200 px-3 py-5 rounded-2xl">
-                <div className="space-y-2">
-                    {policyTabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => handleTabChange(tab.id)}
-                                className={`w-full text-left px-4 py-3 rounded-lg text-sm font-black transition-colors ${
-                                activeTab === tab.id
+                    <div className="space-y-2">
+                        {policyTabs.map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => handleTabChange(tab.id)}
+                                className={`w-full text-left px-4 py-3 rounded-lg text-sm font-black transition-colors ${activeTab === tab.id
                                         ? 'bg-[#202040] text-white'
                                         : 'text-white hover:bg-gray-100 hover:text-gray-800'
-                            }`}
-                        >
-                            {t(tab.labelKey)}
-                        </button>
-                    ))}
-                </div>
-            </aside>
+                                    }`}
+                            >
+                                {t(tab.labelKey)}
+                            </button>
+                        ))}
+                    </div>
+                </aside>
 
-            {/* Main Content */}
+                {/* Main Content */}
                 <main className="flex-1 p-4 lg:p-8">
-                <div className="max-w-4xl mx-auto">
-                    <div className="mb-6">
+                    <div className="max-w-4xl mx-auto">
+                        <div className="mb-6">
                             <p className="text-orange-500 text-sm font-medium mb-2">Descargar política</p>
                             <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">{currentContent.title}</h1>
-                    </div>
-                    
+                        </div>
+
                         <div>
-                        <div 
+                            <div
                                 className="prose prose-gray max-w-none prose-sm lg:prose-base"
-                            dangerouslySetInnerHTML={{ __html: currentContent.content }}
-                        />
+                                dangerouslySetInnerHTML={{ __html: currentContent.content }}
+                            />
+                        </div>
                     </div>
-                </div>
-            </main>
+                </main>
             </div>
         </div>
     );
