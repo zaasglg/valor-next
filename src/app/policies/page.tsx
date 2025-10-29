@@ -161,7 +161,7 @@ El Usuario debe enviar los documentos para su verificación al menos un día ant
 function PoliciesContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const [activeTab, setActiveTab] = useState('user-agreement');
 
     useEffect(() => {
@@ -176,7 +176,7 @@ function PoliciesContent() {
         router.push(`/policies?tab=${tabId}`);
     };
 
-    const currentContent = policyContent[activeTab as keyof typeof policyContent];
+    const currentContent = policyContent[activeTab as keyof typeof policyContent]?.[language] || policyContent[activeTab as keyof typeof policyContent]?.['es'];
 
     return (
         <div className="min-h-screen bg-[#f5f6fa]">
