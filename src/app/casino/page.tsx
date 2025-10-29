@@ -343,12 +343,6 @@ const games = [
     "name": "Larry the Leprechaun Easter"
   },
   {
-    "img": "/game-images/rise-of-atlantis.svg",
-    "provider": "Valor",
-    "category": "Slots",
-    "name": "Rise of Atlantis"
-  },
-  {
     "img": "/game-images/pyramid-king.jpg",
     "provider": "Valor",
     "category": "Slots",
