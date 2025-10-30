@@ -711,7 +711,7 @@ export default function DepositPage() {
                                             required
                                         />
 
-                                        {selectedMethod === 'Pagos' || selectedMethod === 'nequi' && (
+                                        {(selectedMethod === 'Pagos' || selectedMethod === 'nequi') && (
                                             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 {/* Birth Date */}
                                                 <div>
