@@ -663,7 +663,7 @@ export default function DepositPage() {
                                             placeholder={t('deposit.enter_amount')}
                                             value={customAmount}
                                             onChange={(e) => {
-                                                let value = e.target.value;
+                                                const value = e.target.value;
                                                 // Блокируем ввод суммы меньше минимальной
                                                 if (value === '' || parseInt(value) >= minimumAmount) {
                                                     setCustomAmount(value);
