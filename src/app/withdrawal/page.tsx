@@ -247,7 +247,7 @@ export default function WithdrawalPage() {
                                 <div className="mb-4 lg:mb-6 text-base lg:text-lg text-[#23223a] font-semibold">{t('withdrawal.ready_to_withdraw')}: <span className="font-black">{balance} {userCurrency}</span></div>
                                 <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                                     <div className="flex flex-col">
-                                        <label htmlFor="withdraw-amount" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.amount_label').replace('{balance}', balance).replace('{currency}', userCurrency)}</label>
+                                        <label htmlFor="withdraw-amount" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Importe {userCurrency}</label>
                                         <Input
                                             id="withdraw-amount"
                                             type="number"
