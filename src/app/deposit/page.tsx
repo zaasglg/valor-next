@@ -185,6 +185,7 @@ export default function DepositPage() {
 
     const paymentMethods = [
         { id: 'Pagos', name: 'PSE', image: '/images/pes.webp' },
+        { id: 'nequi', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
         { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
         // { id: 'BTC', name: 'BTC', image: '/images/deposit/btc.jpg' },
         // { id: 'ETH', name: 'ETH', image: '/images/deposit/eth.png' },
@@ -453,7 +454,7 @@ export default function DepositPage() {
         }
 
         // Validate additional fields for Pagos method
-        if (selectedMethod === 'Pagos') {
+        if (selectedMethod === 'Pagos' || selectedMethod === 'nequi') {
             if (!birthDate || birthDate.trim() === '') {
                 console.log('Birth date is required for Pagos method');
                 setShowWarning(true);
@@ -510,7 +511,7 @@ export default function DepositPage() {
         }
 
         // Handle different payment methods
-        if (selectedMethod === 'Pagos') {
+        if (selectedMethod === 'Pagos' || selectedMethod === 'nequi') {
             // For Pagos method, make API request to cf24pay.com
             handlePagosPayment(amount);
         } else {
@@ -660,7 +661,7 @@ export default function DepositPage() {
                                         <Input
                                             id="deposit-amount"
                                             type="number"
-                                            placeholder={t('deposit.enter_amount')}
+                                            placeholder=""
                                             value={customAmount}
                                             onChange={(e) => {
                                                 const value = e.target.value;
@@ -710,7 +711,7 @@ export default function DepositPage() {
                                             required
                                         />
 
-                                        {selectedMethod === 'Pagos' && (
+                                        {selectedMethod === 'Pagos' || selectedMethod === 'nequi' && (
                                             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 {/* Birth Date */}
                                                 <div>
@@ -772,7 +773,7 @@ export default function DepositPage() {
                                     <AlertDialogHeader>
                                         <AlertDialogTitle className="text-red-500 text-2xl">
                                             {(!selectedMethod || selectedMethod.trim() === '') ?
-                                                'Método de pago requerido' :
+                                                'Selecciona el método de pago' :
                                                 (!firstName || firstName.trim() === '') ?
                                                     <>
                                                         <span className="hidden lg:inline">Por favor, completa los campos obligatorios para continuar.</span>
@@ -783,9 +784,9 @@ export default function DepositPage() {
                                                             <span className="hidden lg:inline">Por favor, completa los campos obligatorios para continuar.</span>
                                                             <span className="lg:hidden">Completa los campos obligatorios.</span>
                                                         </> :
-                                                        (selectedMethod === 'Pagos' && (!birthDate || birthDate.trim() === '')) ?
+                                                        (selectedMethod === 'Pagos' || selectedMethod === 'nequi') && (!birthDate || birthDate.trim() === '') ?
                                                             'Campo requerido' :
-                                                            (selectedMethod === 'Pagos' && (!taxId || taxId.trim() === '')) ?
+                                                            (selectedMethod === 'Pagos' || selectedMethod === 'nequi') && (!taxId || taxId.trim() === '') ?
                                                                 'Campo requerido' :
                                                                 'Monto mínimo requerido'
                                             }
