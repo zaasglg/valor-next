@@ -58,6 +58,17 @@ export default function WithdrawalPage() {
     };
 
     // Form validation states
+    // Минимальные суммы для стран
+    const minWithdrawByCountry: Record<string, number> = {
+        colombia: 150000,
+        ecuador: 50,
+        paraguay: 300000
+    };
+
+    // Получить ключ страны
+    const countryKey = getCountryKey(userCountry) || '';
+    const minWithdraw = minWithdrawByCountry[countryKey] || 1;
+
     const [formData, setFormData] = useState({
         withdrawAmount: '',
         clientPhone: '',
@@ -171,8 +182,16 @@ export default function WithdrawalPage() {
     };
 
     const handleInputChange = (name: string, value: string) => {
-        setFormData(prev => ({ ...prev, [name]: value }));
-
+        // Блокируем ввод суммы меньше минимальной
+        if (name === 'withdrawAmount') {
+            if (value === '' || parseFloat(value) >= minWithdraw) {
+                setFormData(prev => ({ ...prev, [name]: value }));
+            } else if (parseFloat(value) < minWithdraw) {
+                setFormData(prev => ({ ...prev, [name]: minWithdraw.toString() }));
+            }
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
         // Clear error when user starts typing
         if (errors[name as keyof typeof errors]) {
             setErrors(prev => ({ ...prev, [name]: '' }));
@@ -235,6 +254,8 @@ export default function WithdrawalPage() {
                                             placeholder={t('withdrawal.minimum_amount')}
                                             value={formData.withdrawAmount}
                                             onChange={(e) => handleInputChange('withdrawAmount', e.target.value)}
+                                            min={minWithdraw}
+                                            step="1"
                                             className={`mb-0 ${errors.withdrawAmount ? 'border-red-500' : ''}`}
                                         />
                                         {errors.withdrawAmount && <span className="text-red-500 text-xs mt-1">{errors.withdrawAmount}</span>}
@@ -722,7 +743,8 @@ export default function WithdrawalPage() {
                                     VERIFICAR CUENTA
                                 </button>
                             </div>
-                        </div>  </DialogContent>
+                        </div>  
+                        </DialogContent>
                 </Dialog>
 
                 {/* Processing Delay Modal */}
