@@ -16,9 +16,9 @@ export default function DepositPage() {
     const router = useRouter();
     const { refreshBalance } = useBalanceContext();
     const { t } = useLanguage();
-    const [selectedMethod, setSelectedMethod] = useState('NEQUI');
+    const [selectedMethod, setSelectedMethod] = useState('');
     const [selectedAmount, setSelectedAmount] = useState(0);
-    const [customAmount, setCustomAmount] = useState('');
+    const [customAmount, setCustomAmount] = useState(''); // Стартовое значение пустое
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [birthDate, setBirthDate] = useState('');
@@ -71,7 +71,7 @@ export default function DepositPage() {
             // Generate realistic Colombian data
             const generateColombianData = () => {
                 const addresses = [
-                    'Carrera 15 #93-48', 'Calle 72 #11-56', 'Avenida 68 #22-35', 
+                    'Carrera 15 #93-48', 'Calle 72 #11-56', 'Avenida 68 #22-35',
                     'Carrera 7 #45-82', 'Calle 127 #19-28', 'Transversal 93 #53-15',
                     'Calle 170 #67-24', 'Carrera 30 #45-67', 'Avenida Boyacá #85-32'
                 ];
@@ -83,7 +83,7 @@ export default function DepositPage() {
                     { name: 'Cartagena', state: 'BO', zip: '130001' },
                     { name: 'Bucaramanga', state: 'SA', zip: '680001' }
                 ];
-                
+
                 // Generate Colombian IP (ranges used by Colombian ISPs)
                 const colombianIPRanges = [
                     () => `186.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
@@ -91,7 +91,7 @@ export default function DepositPage() {
                     () => `201.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
                     () => `181.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`
                 ];
-                
+
                 // Generate Colombian phone number (10 digits starting with 3)
                 const generatePhone = () => {
                     const prefixes = ['300', '301', '302', '310', '311', '312', '313', '314', '315', '316', '317', '318', '319', '320', '321', '322', '323'];
@@ -99,12 +99,12 @@ export default function DepositPage() {
                     const suffix = Math.floor(1000000 + Math.random() * 9000000).toString();
                     return prefix + suffix;
                 };
-                
+
                 const randomCity = cities[Math.floor(Math.random() * cities.length)];
                 const randomAddress = addresses[Math.floor(Math.random() * addresses.length)];
                 const randomIP = colombianIPRanges[Math.floor(Math.random() * colombianIPRanges.length)]();
                 const randomPhone = generatePhone();
-                
+
                 return {
                     address: randomAddress,
                     city: randomCity.name,
@@ -325,7 +325,7 @@ export default function DepositPage() {
     useEffect(() => {
         if (predefinedAmounts.length > 0 && selectedAmount === 0 && !customAmount && !isManualInput) {
             setSelectedAmount(predefinedAmounts[0]);
-            setCustomAmount(predefinedAmounts[0].toString());
+            // Не заполняем customAmount автоматически
         }
     }, [predefinedAmounts, selectedAmount, customAmount, isManualInput]);
 
@@ -431,6 +431,13 @@ export default function DepositPage() {
 
     const handleDeposit = () => {
         console.log('handleDeposit called'); // Добавляем для отладки
+
+        // Validate payment method selection FIRST
+        if (!selectedMethod || selectedMethod.trim() === '') {
+            console.log('Payment method not selected');
+            setShowWarning(true);
+            return;
+        }
 
         // Validate required fields FIRST (before amount validation)
         if (!firstName || firstName.trim() === '') {
@@ -656,14 +663,19 @@ export default function DepositPage() {
                                             placeholder={t('deposit.enter_amount')}
                                             value={customAmount}
                                             onChange={(e) => {
-                                                const value = e.target.value;
-                                                setCustomAmount(value);
+                                                let value = e.target.value;
+                                                // Блокируем ввод суммы меньше минимальной
+                                                if (value === '' || parseInt(value) >= minimumAmount) {
+                                                    setCustomAmount(value);
+                                                } else if (parseInt(value) < minimumAmount) {
+                                                    setCustomAmount(minimumAmount.toString());
+                                                }
                                                 setSelectedAmount(0);
                                                 setSelectedBonusAmount(null); // Сбрасываем выбранный бонус
                                                 setIsManualInput(true);
                                             }}
                                             className="pr-16"
-                                            min="1"
+                                            min={minimumAmount}
                                             step="1"
                                         />
                                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-medium">
@@ -759,29 +771,25 @@ export default function DepositPage() {
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                         <AlertDialogTitle className="text-red-500 text-2xl">
-                                            {(!firstName || firstName.trim() === '') ?
-                                                'Campo requerido' :
-                                                (!lastName || lastName.trim() === '') ?
-                                                    'Campo requerido' :
-                                                    (selectedMethod === 'Pagos' && (!birthDate || birthDate.trim() === '')) ?
-                                                        'Campo requerido' :
-                                                        (selectedMethod === 'Pagos' && (!taxId || taxId.trim() === '')) ?
+                                            {(!selectedMethod || selectedMethod.trim() === '') ?
+                                                'Método de pago requerido' :
+                                                (!firstName || firstName.trim() === '') ?
+                                                    <>
+                                                        <span className="hidden lg:inline">Por favor, completa los campos obligatorios para continuar.</span>
+                                                        <span className="lg:hidden">Completa los campos obligatorios.</span>
+                                                    </> :
+                                                    (!lastName || lastName.trim() === '') ?
+                                                        <>
+                                                            <span className="hidden lg:inline">Por favor, completa los campos obligatorios para continuar.</span>
+                                                            <span className="lg:hidden">Completa los campos obligatorios.</span>
+                                                        </> :
+                                                        (selectedMethod === 'Pagos' && (!birthDate || birthDate.trim() === '')) ?
                                                             'Campo requerido' :
-                                                            'Monto mínimo requerido'
+                                                            (selectedMethod === 'Pagos' && (!taxId || taxId.trim() === '')) ?
+                                                                'Campo requerido' :
+                                                                'Monto mínimo requerido'
                                             }
                                         </AlertDialogTitle>
-                                        <AlertDialogDescription className="text-lg">
-                                            {(!firstName || firstName.trim() === '') ?
-                                                'El nombre es obligatorio. Por favor, ingresa tu nombre.' :
-                                                (!lastName || lastName.trim() === '') ?
-                                                    'El apellido es obligatorio. Por favor, ingresa tu apellido.' :
-                                                    (selectedMethod === 'Pagos' && (!birthDate || birthDate.trim() === '')) ?
-                                                        'La fecha de nacimiento es obligatoria para el método PSE. Por favor, ingresa tu fecha de nacimiento.' :
-                                                        (selectedMethod === 'Pagos' && (!taxId || taxId.trim() === '')) ?
-                                                            'El número de identificación es obligatorio para el método PSE. Por favor, ingresa tu número de identificación.' :
-                                                            `El monto mínimo de depósito es ${minimumAmount.toLocaleString()} ${displayCurrency}. Por favor, ingresa un monto mayor o igual a este valor.`
-                                            }
-                                        </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogAction
@@ -851,7 +859,7 @@ export default function DepositPage() {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            
+
                                                             <div className="mb-3">
                                                                 <p className="text-gray-600 mb-1 text-xs">Dirección de Wallet</p>
                                                                 <div className="flex items-center gap-1 p-2 bg-gray-50 rounded border">
@@ -867,7 +875,7 @@ export default function DepositPage() {
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                            
+
                                                             <p className="text-xs text-gray-600 italic">{wallet.instructions}</p>
                                                         </div>
                                                     ))}

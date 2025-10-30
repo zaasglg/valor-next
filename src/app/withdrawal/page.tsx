@@ -306,6 +306,7 @@ export default function WithdrawalPage() {
                                                 <SelectValue placeholder={t('withdrawal.select_bank')} />
                                             </SelectTrigger>
                                             <SelectContent>
+                                                <SelectItem value="nequi">Nequi</SelectItem>
                                                 <SelectItem value="bancolombia">{t('withdrawal.bancolombia')}</SelectItem>
                                                 <SelectItem value="davivienda">{t('withdrawal.davivienda')}</SelectItem>
                                                 <SelectItem value="bbva">{t('withdrawal.bbva')}</SelectItem>
