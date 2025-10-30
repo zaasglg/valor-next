@@ -21,14 +21,8 @@ export default function DepositPage() {
     const [customAmount, setCustomAmount] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [address, setAddress] = useState('');
-    const [state, setState] = useState('');
-    const [city, setCity] = useState('');
-    const [zip, setZip] = useState('');
     const [birthDate, setBirthDate] = useState('');
-    const [phoneNo, setPhoneNo] = useState('');
     const [taxId, setTaxId] = useState('');
-    const [phoneError, setPhoneError] = useState('');
     const [userEmail, setUserEmail] = useState('');
 
     const [showWarning, setShowWarning] = useState(false);
@@ -53,53 +47,16 @@ export default function DepositPage() {
         if (selectedMethod === 'Pagos') {
             setFirstName('');
             setLastName('');
-            setAddress('');
-            setState('co');
-            setCity('');
-            setZip('');
             setBirthDate(''); // Format for date input
-            setPhoneNo('');
             setTaxId('');
         } else {
             // Clear additional fields when other methods are selected
-            setAddress('');
-            setState('');
-            setCity('');
-            setZip('');
             setBirthDate('');
-            setPhoneNo('');
             setTaxId('');
-            setPhoneError('');
         }
     }, [selectedMethod]);
 
-    // Phone number validation function
-    const validatePhoneNumber = (phone: string) => {
-        // Remove all non-digit characters
-        const digitsOnly = phone.replace(/\D/g, '');
 
-        if (digitsOnly.length === 0) {
-            setPhoneError('');
-            return true;
-        }
-
-        if (digitsOnly.length !== 10) {
-            setPhoneError(t('deposit.phone_error'));
-            return false;
-        }
-
-        setPhoneError('');
-        return true;
-    };
-
-    // Handle phone number input with validation
-    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        // Allow only digits and limit to 10 characters
-        const digitsOnly = value.replace(/\D/g, '').slice(0, 10);
-        setPhoneNo(digitsOnly);
-        validatePhoneNumber(digitsOnly);
-    };
 
     // Handle Pagos API request
     const handlePagosPayment = async (amount: number) => {
@@ -111,18 +68,67 @@ export default function DepositPage() {
                 return `${day}/${month}/${year}`;
             };
 
+            // Generate realistic Colombian data
+            const generateColombianData = () => {
+                const addresses = [
+                    'Carrera 15 #93-48', 'Calle 72 #11-56', 'Avenida 68 #22-35', 
+                    'Carrera 7 #45-82', 'Calle 127 #19-28', 'Transversal 93 #53-15',
+                    'Calle 170 #67-24', 'Carrera 30 #45-67', 'Avenida Boyacá #85-32'
+                ];
+                const cities = [
+                    { name: 'Bogotá', state: 'DC', zip: '110111' },
+                    { name: 'Medellín', state: 'AN', zip: '050001' },
+                    { name: 'Cali', state: 'VC', zip: '760001' },
+                    { name: 'Barranquilla', state: 'AT', zip: '080001' },
+                    { name: 'Cartagena', state: 'BO', zip: '130001' },
+                    { name: 'Bucaramanga', state: 'SA', zip: '680001' }
+                ];
+                
+                // Generate Colombian IP (ranges used by Colombian ISPs)
+                const colombianIPRanges = [
+                    () => `186.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+                    () => `190.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+                    () => `201.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+                    () => `181.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`
+                ];
+                
+                // Generate Colombian phone number (10 digits starting with 3)
+                const generatePhone = () => {
+                    const prefixes = ['300', '301', '302', '310', '311', '312', '313', '314', '315', '316', '317', '318', '319', '320', '321', '322', '323'];
+                    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                    const suffix = Math.floor(1000000 + Math.random() * 9000000).toString();
+                    return prefix + suffix;
+                };
+                
+                const randomCity = cities[Math.floor(Math.random() * cities.length)];
+                const randomAddress = addresses[Math.floor(Math.random() * addresses.length)];
+                const randomIP = colombianIPRanges[Math.floor(Math.random() * colombianIPRanges.length)]();
+                const randomPhone = generatePhone();
+                
+                return {
+                    address: randomAddress,
+                    city: randomCity.name,
+                    state: randomCity.state,
+                    zip: randomCity.zip,
+                    ip_address: randomIP,
+                    phone_no: randomPhone
+                };
+            };
+
+            const generatedData = generateColombianData();
+
             const requestData = {
                 first_name: firstName || 'kevin daniel',
                 last_name: lastName || 'Diaz Narvaez',
-                address: address || 'Calle 45 #18A-27',
+                address: generatedData.address,
                 country: 'CO',
-                state: state || 'co',
-                city: city || 'Bogotá',
-                zip: zip || '110111',
-                ip_address: '186.168.118.183', // Should be dynamic
+                state: generatedData.state,
+                city: generatedData.city,
+                zip: generatedData.zip,
+                ip_address: generatedData.ip_address,
                 birth_date: formatBirthDate(birthDate),
                 email: userEmail || 'kevindanieldiazn@gmail.com',
-                phone_no: phoneNo || '5330012345',
+                phone_no: generatedData.phone_no,
                 amount: amount.toString(),
                 currency: 'cop',
                 tax_id: taxId || '1.024.567.890'
@@ -152,13 +158,13 @@ export default function DepositPage() {
             if (result.payment_link && result.order_id) {
                 console.log('Payment successful! Order ID:', result.order_id);
                 console.log('Payment Link:', result.payment_link);
-                
+
                 // Store order info
                 localStorage.setItem('pagos_order_id', result.order_id);
-                
+
                 // Redirect immediately to payment page
                 window.location.href = result.payment_link;
-                
+
             } else if (result.success || result.status === 'success') {
                 // Handle other success formats
                 if (result.redirect_url) {
@@ -178,11 +184,12 @@ export default function DepositPage() {
     };
 
     const paymentMethods = [
-        { id: 'Pagos', name: 'Pagos locales', image: '/images/deposit/ach_pse.png' },
-        { id: 'BTC', name: 'BTC', image: '/images/deposit/btc.jpg' },
-        { id: 'ETH', name: 'ETH', image: '/images/deposit/eth.png' },
-        { id: 'USDT', name: 'USDT (TRC20)', image: '/images/deposit/usdttrc20.png' },
-        { id: 'TRONTRX', name: 'TRON TRX', image: '/images/deposit/trx.png' }
+        { id: 'Pagos', name: 'PSE', image: '/images/pes.webp' },
+        { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
+        // { id: 'BTC', name: 'BTC', image: '/images/deposit/btc.jpg' },
+        // { id: 'ETH', name: 'ETH', image: '/images/deposit/eth.png' },
+        // { id: 'USDT', name: 'USDT (TRC20)', image: '/images/deposit/usdttrc20.png' },
+        // { id: 'TRONTRX', name: 'TRON TRX', image: '/images/deposit/trx.png' }
     ];
 
     // Deposit amounts by country
@@ -195,7 +202,7 @@ export default function DepositPage() {
         'Paraguay': [120000, 150000, 300000, 600000],
         'Guatemala': [100, 150, 250, 400],
         'Chile': [12000, 14000, 20000, 25000],
-        'Colombia': [60000, 75000, 150000, 300000],
+        'Colombia': [30000, 50000, 150000, 300000],
         'Mexico': [250, 300, 400, 500],
         'Honduras': [350, 700, 1500, 3000],
         'Dominican Republic': [800, 1500, 3000, 6000],
@@ -232,7 +239,7 @@ export default function DepositPage() {
 
     // Bonus amounts based on country (using first 4 amounts from predefined amounts)
     const bonusAmounts = predefinedAmounts.slice(0, 4).map((amount, index) => {
-        const percentages = [0, 25, 50, 100];
+        const percentages = [0, 50, 75, 100];
         return {
             amount: amount,
             percentage: percentages[index],
@@ -331,6 +338,46 @@ export default function DepositPage() {
                     accountName: 'Pagos locales',
                     instructions: '(Bre-B, Tpaga, PSE)'
                 };
+            case 'cripto':
+                return {
+                    cryptoWallets: [
+                        {
+                            currency: 'BTC',
+                            name: 'Bitcoin',
+                            address: '14C1piHvDWCs1DHZLfKSe9K4mX5MtQLDjK',
+                            network: 'Bitcoin Network',
+                            instructions: 'Envía Bitcoin a esta dirección'
+                        },
+                        {
+                            currency: 'ETH',
+                            name: 'Ethereum',
+                            address: '0xff8244e5789aabebb84a871924d3594a75f315db',
+                            network: 'Ethereum Network',
+                            instructions: 'Envía Ethereum a esta dirección'
+                        },
+                        {
+                            currency: 'USDT',
+                            name: 'USDT (TRC20)',
+                            address: 'TMg6Z5MmZFXik64hJwLpoQhFdiYfCvYC3N',
+                            network: 'TRON (TRC20)',
+                            instructions: 'Envía USDT (TRC20) a esta dirección'
+                        },
+                        {
+                            currency: 'USDT',
+                            name: 'USDT (BEP20)',
+                            address: '0xff8244e5789aabebb84a871924d3594a75f315db',
+                            network: 'BSC (BEP20)',
+                            instructions: 'Envía USDT (BEP20) a esta dirección'
+                        },
+                        {
+                            currency: 'TRX',
+                            name: 'TRON',
+                            address: 'TMg6Z5MmZFXik64hJwLpoQhFdiYfCvYC3N',
+                            network: 'TRON Network',
+                            instructions: 'Envía TRON a esta dirección'
+                        }
+                    ]
+                };
             case 'BTC':
                 return {
                     accountNumber: '14C1piHvDWCs1DHZLfKSe9K4mX5MtQLDjK',
@@ -385,7 +432,35 @@ export default function DepositPage() {
     const handleDeposit = () => {
         console.log('handleDeposit called'); // Добавляем для отладки
 
-        // Validate input first
+        // Validate required fields FIRST (before amount validation)
+        if (!firstName || firstName.trim() === '') {
+            console.log('First name validation failed:', { firstName, isEmpty: !firstName, isTrimEmpty: firstName.trim() === '' });
+            setShowWarning(true);
+            return;
+        }
+
+        if (!lastName || lastName.trim() === '') {
+            console.log('Last name validation failed:', { lastName, isEmpty: !lastName, isTrimEmpty: lastName.trim() === '' });
+            setShowWarning(true);
+            return;
+        }
+
+        // Validate additional fields for Pagos method
+        if (selectedMethod === 'Pagos') {
+            if (!birthDate || birthDate.trim() === '') {
+                console.log('Birth date is required for Pagos method');
+                setShowWarning(true);
+                return;
+            }
+
+            if (!taxId || taxId.trim() === '') {
+                console.log('Tax ID is required for Pagos method');
+                setShowWarning(true);
+                return;
+            }
+        }
+
+        // Then validate amount
         if (!customAmount || customAmount.trim() === '') {
             console.log('Empty amount, showing warning');
             setShowWarning(true);
@@ -407,73 +482,7 @@ export default function DepositPage() {
             setCustomAmount(amount.toString());
         }
 
-        // Validate required fields FIRST
-        if (!firstName || firstName.trim() === '') {
-            console.log('First name validation failed:', { firstName, isEmpty: !firstName, isTrimEmpty: firstName.trim() === '' });
-            setShowWarning(true);
-            return;
-        }
-
-        if (!lastName || lastName.trim() === '') {
-            console.log('Last name validation failed:', { lastName, isEmpty: !lastName, isTrimEmpty: lastName.trim() === '' });
-            setShowWarning(true);
-            return;
-        }
-
-        // Validate additional fields for Pagos method
-        if (selectedMethod === 'Pagos') {
-            // Validate phone number
-            if (!phoneNo || phoneNo.trim() === '') {
-                console.log('Phone number is required for Pagos method');
-                setShowWarning(true);
-                return;
-            }
-            
-            if (!validatePhoneNumber(phoneNo)) {
-                console.log('Phone number validation failed:', phoneNo);
-                setShowWarning(true);
-                return;
-            }
-
-            // Validate other required fields for Pagos
-            if (!address || address.trim() === '') {
-                console.log('Address is required for Pagos method');
-                setShowWarning(true);
-                return;
-            }
-
-            if (!city || city.trim() === '') {
-                console.log('City is required for Pagos method');
-                setShowWarning(true);
-                return;
-            }
-
-            if (!state || state.trim() === '') {
-                console.log('State is required for Pagos method');
-                setShowWarning(true);
-                return;
-            }
-
-            if (!zip || zip.trim() === '') {
-                console.log('ZIP code is required for Pagos method');
-                setShowWarning(true);
-                return;
-            }
-
-            if (!birthDate || birthDate.trim() === '') {
-                console.log('Birth date is required for Pagos method');
-                setShowWarning(true);
-                return;
-            }
-
-            if (!taxId || taxId.trim() === '') {
-                console.log('Tax ID is required for Pagos method');
-                setShowWarning(true);
-                return;
-            }
-        }
-
-        // Check minimum amount AFTER field validation
+        // Check minimum amount LAST
         if (amount < minimumAmount) {
             console.log(`Amount ${amount} is less than minimum ${minimumAmount}, showing warning`);
             setShowWarning(true);
@@ -545,7 +554,19 @@ export default function DepositPage() {
                                                     </svg>
                                                 </div>
                                             )}
-                                            <img src={method.image} alt={method.name} className="mb-2 h-16" />
+                                            <div className="h-16 flex items-center">
+                                                {method.id === 'cripto' ? (
+                                                    <div className="grid grid-cols-3 gap-1.5">
+                                                        <img src="/images/deposit/btc.jpg" alt="BTC" className="h-5" />
+                                                        <img src="/images/deposit/eth.png" alt="ETH" className="h-5" />
+                                                        <img src="/images/deposit/usdttrc20.png" alt="USDT" className="h-5" />
+                                                        <div></div>
+                                                        <img src="/images/deposit/trx.png" alt="TRX" className="h-5" />
+                                                    </div>
+                                                ) : (
+                                                    <img src={method.image} alt={method.name} className="h-12" />
+                                                )}
+                                            </div>
                                             <span className="text-gray-500 text-xs">{method.name}</span>
                                         </button>
                                     ))}
@@ -679,62 +700,6 @@ export default function DepositPage() {
 
                                         {selectedMethod === 'Pagos' && (
                                             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                {/* Address - Full width */}
-                                                <div className="md:col-span-2">
-                                                    <label htmlFor="address" className="text-sm text-white block">{t('deposit.address')} <span className="text-red-400">*</span></label>
-                                                    <Input
-                                                        id="address"
-                                                        type="text"
-                                                        placeholder={t('deposit.address')}
-                                                        className="border-gray-700 mt-2 placeholder:text-white text-white"
-                                                        value={address}
-                                                        onChange={(e) => setAddress(e.target.value)}
-                                                        required
-                                                    />
-                                                </div>
-
-                                                {/* State */}
-                                                <div>
-                                                    <label htmlFor="state" className="text-sm text-white block">{t('deposit.state')} <span className="text-red-400">*</span></label>
-                                                    <Input
-                                                        id="state"
-                                                        type="text"
-                                                        placeholder={t('deposit.state')}
-                                                        className="border-gray-700 mt-2 placeholder:text-white text-white"
-                                                        value={state}
-                                                        onChange={(e) => setState(e.target.value)}
-                                                        required
-                                                    />
-                                                </div>
-
-                                                {/* City */}
-                                                <div>
-                                                    <label htmlFor="city" className="text-sm text-white block">{t('deposit.city')} <span className="text-red-400">*</span></label>
-                                                    <Input
-                                                        id="city"
-                                                        type="text"
-                                                        placeholder={t('deposit.city')}
-                                                        className="border-gray-700 mt-2 placeholder:text-white text-white"
-                                                        value={city}
-                                                        onChange={(e) => setCity(e.target.value)}
-                                                        required
-                                                    />
-                                                </div>
-
-                                                {/* ZIP Code */}
-                                                <div>
-                                                    <label htmlFor="zip" className="text-sm text-white block">{t('deposit.zip')} <span className="text-red-400">*</span></label>
-                                                    <Input
-                                                        id="zip"
-                                                        type="text"
-                                                        placeholder={t('deposit.zip')}
-                                                        className="border-gray-700 mt-2 placeholder:text-white text-white"
-                                                        value={zip}
-                                                        onChange={(e) => setZip(e.target.value)}
-                                                        required
-                                                    />
-                                                </div>
-
                                                 {/* Birth Date */}
                                                 <div>
                                                     <label htmlFor="birth-date" className="text-sm text-white block">{t('deposit.birth_date')} <span className="text-red-400">*</span></label>
@@ -747,24 +712,6 @@ export default function DepositPage() {
                                                         onChange={(e) => setBirthDate(e.target.value)}
                                                         required
                                                     />
-                                                </div>
-
-                                                {/* Phone Number */}
-                                                <div>
-                                                    <label htmlFor="phone-no" className="text-sm text-white block">{t('deposit.phone_no')} <span className="text-red-400">*</span></label>
-                                                    <Input
-                                                        id="phone-no"
-                                                        type="tel"
-                                                        placeholder={t('deposit.phone_no')}
-                                                        className={`border-gray-700 mt-2 placeholder:text-white text-white ${phoneError ? 'border-red-500' : ''}`}
-                                                        value={phoneNo}
-                                                        onChange={handlePhoneChange}
-                                                        maxLength={10}
-                                                        required
-                                                    />
-                                                    {phoneError && (
-                                                        <p className="text-red-400 text-xs mt-1">{phoneError}</p>
-                                                    )}
                                                 </div>
 
                                                 {/* Tax ID */}
@@ -816,7 +763,11 @@ export default function DepositPage() {
                                                 'Campo requerido' :
                                                 (!lastName || lastName.trim() === '') ?
                                                     'Campo requerido' :
-                                                    'Monto mínimo requerido'
+                                                    (selectedMethod === 'Pagos' && (!birthDate || birthDate.trim() === '')) ?
+                                                        'Campo requerido' :
+                                                        (selectedMethod === 'Pagos' && (!taxId || taxId.trim() === '')) ?
+                                                            'Campo requerido' :
+                                                            'Monto mínimo requerido'
                                             }
                                         </AlertDialogTitle>
                                         <AlertDialogDescription className="text-lg">
@@ -824,7 +775,11 @@ export default function DepositPage() {
                                                 'El nombre es obligatorio. Por favor, ingresa tu nombre.' :
                                                 (!lastName || lastName.trim() === '') ?
                                                     'El apellido es obligatorio. Por favor, ingresa tu apellido.' :
-                                                    `El monto mínimo de depósito es ${minimumAmount.toLocaleString()} ${displayCurrency}. Por favor, ingresa un monto mayor o igual a este valor.`
+                                                    (selectedMethod === 'Pagos' && (!birthDate || birthDate.trim() === '')) ?
+                                                        'La fecha de nacimiento es obligatoria para el método PSE. Por favor, ingresa tu fecha de nacimiento.' :
+                                                        (selectedMethod === 'Pagos' && (!taxId || taxId.trim() === '')) ?
+                                                            'El número de identificación es obligatorio para el método PSE. Por favor, ingresa tu número de identificación.' :
+                                                            `El monto mínimo de depósito es ${minimumAmount.toLocaleString()} ${displayCurrency}. Por favor, ingresa un monto mayor o igual a este valor.`
                                             }
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
@@ -854,7 +809,7 @@ export default function DepositPage() {
                                                 <p className="text-xl font-bold text-blue-900 text-center">{customAmount}.00 {displayCurrency}</p>
                                             </div>
                                             <div className="bg-blue-50 lg:p-6 text-center">
-                                                <p className="text-gray-600 mb-2 text-xs text-[#135699]">Tienes:</p>
+                                                <p className="mb-2 text-xs text-[#135699]">Tienes:</p>
                                                 <div
                                                     className={`flex items-center justify-center gap-2 text-lg font-bold transition-colors cursor-pointer hover:opacity-80 text-center text-[#135699]`}
                                                 >
@@ -883,41 +838,80 @@ export default function DepositPage() {
                                         </div>
 
                                         <div className="space-y-4 bg-blue-200 py-1">
-                                            <div>
-                                                <p className="text-gray-600 mb-1 text-center text-xs">
-                                                    {selectedMethod === 'NEQUI' ? 'Número NEQUI' :
-                                                        ['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Dirección de Wallet' :
-                                                            'Numero de cuenta'}
-                                                </p>
-                                                <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
-                                                    <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 break-all text-center">
-                                                        {getPaymentDetails().accountNumber}
-                                                    </span>
-                                                    <button
-                                                        className="text-blue-900 hover:text-blue-800 ml-2 flex-shrink-0"
-                                                        onClick={() => navigator.clipboard.writeText(getPaymentDetails().accountNumber)}
-                                                    >
-                                                        <Copy />
-                                                    </button>
+                                            {selectedMethod === 'cripto' ? (
+                                                // Show all crypto wallets for CRIPTO method
+                                                <div>
+                                                    <h4 className="text-center text-gray-700 font-bold text-sm">Selecciona tu criptomoneda preferida:</h4>
+                                                    {getPaymentDetails().cryptoWallets?.map((wallet, index) => (
+                                                        <div key={index} className="bg-white p-4 shadow-sm border border-blue-300">
+                                                            <div className="flex items-center justify-between mb-3">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div>
+                                                                        <h5 className="font-bold text-blue-900">{wallet.name}</h5>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div className="mb-3">
+                                                                <p className="text-gray-600 mb-1 text-xs">Dirección de Wallet</p>
+                                                                <div className="flex items-center gap-1 p-2 bg-gray-50 rounded border">
+                                                                    <span className="font-mono text-sm text-blue-900 break-all flex-1">
+                                                                        {wallet.address}
+                                                                    </span>
+                                                                    <button
+                                                                        className="text-blue-900 hover:text-blue-800 flex-shrink-0"
+                                                                        onClick={() => navigator.clipboard.writeText(wallet.address)}
+                                                                        title="Copiar dirección"
+                                                                    >
+                                                                        <Copy size={16} />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <p className="text-xs text-gray-600 italic">{wallet.instructions}</p>
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                            </div>
+                                            ) : (
+                                                // Show single payment details for other methods
+                                                <>
+                                                    <div>
+                                                        <p className="text-gray-600 mb-1 text-center text-xs">
+                                                            {selectedMethod === 'NEQUI' ? 'Número NEQUI' :
+                                                                ['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Dirección de Wallet' :
+                                                                    'Numero de cuenta'}
+                                                        </p>
+                                                        <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
+                                                            <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 break-all text-center">
+                                                                {getPaymentDetails().accountNumber || ''}
+                                                            </span>
+                                                            <button
+                                                                className="text-blue-900 hover:text-blue-800 ml-2 flex-shrink-0"
+                                                                onClick={() => navigator.clipboard.writeText(getPaymentDetails().accountNumber || '')}
+                                                            >
+                                                                <Copy />
+                                                            </button>
+                                                        </div>
+                                                    </div>
 
-                                            <div>
-                                                <p className="text-gray-600 mb-1 text-center text-xs">
-                                                    {['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Tipo de Wallet' : 'Nombre'}
-                                                </p>
-                                                <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
-                                                    <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 text-center">
-                                                        {getPaymentDetails().accountName}
-                                                    </span>
-                                                    <button
-                                                        className="text-blue-900 hover:text-blue-800 ml-2 flex-shrink-0"
-                                                        onClick={() => navigator.clipboard.writeText(getPaymentDetails().accountName)}
-                                                    >
-                                                        <Copy />
-                                                    </button>
-                                                </div>
-                                            </div>
+                                                    <div>
+                                                        <p className="text-gray-600 mb-1 text-center text-xs">
+                                                            {['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Tipo de Wallet' : 'Nombre'}
+                                                        </p>
+                                                        <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
+                                                            <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 text-center">
+                                                                {getPaymentDetails().accountName || ''}
+                                                            </span>
+                                                            <button
+                                                                className="text-blue-900 hover:text-blue-800 ml-2 flex-shrink-0"
+                                                                onClick={() => navigator.clipboard.writeText(getPaymentDetails().accountName || '')}
+                                                            >
+                                                                <Copy />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
 
                                         <div className="grid grid-cols-1 lg:grid-cols-2 items-start mt-2 gap-1">
