@@ -3,7 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { authService } from "@/lib/auth"
 
 
@@ -19,6 +19,7 @@ export function LoginDialog({ children, isOpen = false, onOpenChange, onRegister
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleRegisterClick = () => {
     onOpenChange?.(false);
@@ -109,15 +110,27 @@ export function LoginDialog({ children, isOpen = false, onOpenChange, onRegister
                   <label className="block text-lg font-medium text-[#23223a] mb-2">Contraseña</label>
                   <div className="relative">
                     <Input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Contraseña"
                       className="bg-white shadow-lg"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#a3a3b3] cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="#a3a3b3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12s3.6-7 9-7 9 7 9 7-3.6 7-9 7-9-7-9-7Zm9 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" /><path stroke="#a3a3b3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m3 3 18 18" /></svg>
+                    <span 
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#a3a3b3] cursor-pointer hover:text-[#8a8a9a] transition-colors"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12s3.6-7 9-7 9 7 9 7-3.6 7-9 7-9-7-9-7Zm9 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12s3.6-7 9-7 9 7 9 7-3.6 7-9 7-9-7-9-7Zm9 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m3 3 18 18" />
+                        </svg>
+                      )}
                     </span>
                   </div>
                 </div>
