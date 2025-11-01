@@ -146,7 +146,7 @@ export default function GamePage({ params }: GamePageProps) {
       <div className="min-h-screen">
         <main className="flex-1 p-0 lg:p-8 2xl:p-12">
           <div className="bg-white rounded shadow border border-gray-200">
-            <div className="bg-black rounded-none lg:rounded flex items-center justify-center relative overflow-hidden h-[550px] lg:h-[800px]">
+            <div className="bg-black rounded-none lg:rounded flex items-center justify-center relative overflow-hidden h-[650px] lg:h-[800px]">
               {isLoadingUserData ? (
                 <div className="flex flex-col items-center justify-center text-white">
                   <Loader size="lg" color="white" type="dots" />
@@ -156,7 +156,7 @@ export default function GamePage({ params }: GamePageProps) {
                 gameMode ? (
                   <iframe
                     src={getGameUrl()}
-                    className="w-full h-[550px] lg:h-[800px] rounded-none lg:rounded"
+                    className="w-full h-[650px] lg:h-[800px] rounded-none lg:rounded"
                     title="Game"
                     allow="autoplay; fullscreen"
                   />
