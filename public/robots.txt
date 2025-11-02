@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://valorbetxxl.top/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
+
+# Allow important pages
+Allow: /games/
+Allow: /casino/
+Allow: /slots/
+Allow: /bonuses/
+Allow: /about/
+Allow: /contact/
+
+# Crawl delay
+Crawl-delay: 1

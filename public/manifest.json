@@ -1,0 +1,32 @@
+{
+  "name": "Valor Casino - Las mejores tragamonedas online",
+  "short_name": "Valor Casino",
+  "description": "Juega en Valor Casino - el mejor casino online con tragamonedas, juegos de mesa y bonos exclusivos.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f1f3f6",
+  "theme_color": "#1f2937",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["games", "entertainment"],
+  "lang": "es",
+  "dir": "ltr"
+}

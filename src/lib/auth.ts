@@ -28,13 +28,30 @@ class AuthService {
     this.listeners.forEach(listener => listener(this.state));
   }
 
+  private setTokens(data: any) {
+    if (typeof window !== 'undefined') {
+      if (data.access) {
+        localStorage.setItem('access_token', data.access);
+      }
+      if (data.refresh) {
+        localStorage.setItem('refresh_token', data.refresh);
+      }
+      if (data.user_id) {
+        localStorage.setItem('user_id', data.user_id);
+      }
+      window.dispatchEvent(new Event('storage'));
+    }
+  }
+
   logout() {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('user_id');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user_id');
+      window.dispatchEvent(new Event('storage'));
+    }
     this.state = { user: null, isAuthenticated: false };
     this.notify();
-    window.dispatchEvent(new Event('storage'));
   }
 
   async register(email: string, password: string, country: string) {
@@ -58,19 +75,10 @@ class AuthService {
     const data = await response.json();
 
     // Сохраняем токены
-    if (data.access) {
-      localStorage.setItem('access_token', data.access);
-    }
-    if (data.refresh) {
-      localStorage.setItem('refresh_token', data.refresh);
-    }
-    if (data.user_id) {
-      localStorage.setItem('user_id', data.user_id);
-    }
+    this.setTokens(data);
 
     this.state = { user: data, isAuthenticated: true };
     this.notify();
-    window.dispatchEvent(new Event('storage'));
 
     return data;
   }
@@ -95,24 +103,19 @@ class AuthService {
     const data = await response.json();
 
     // Сохраняем токены
-    if (data.access) {
-      localStorage.setItem('access_token', data.access);
-    }
-    if (data.refresh) {
-      localStorage.setItem('refresh_token', data.refresh);
-    }
-    if (data.user_id) {
-      localStorage.setItem('user_id', data.user_id);
-    }
+    this.setTokens(data);
 
     this.state = { user: data, isAuthenticated: true };
     this.notify();
-    window.dispatchEvent(new Event('storage'));
 
     return data;
   }
 
   async refreshToken() {
+    if (typeof window === 'undefined') {
+      throw new Error('Cannot refresh token on server side');
+    }
+
     const refreshToken = localStorage.getItem('refresh_token');
     
     if (!refreshToken) {
@@ -135,14 +138,8 @@ class AuthService {
     const data = await response.json();
 
     // Обновляем токены
-    if (data.access) {
-      localStorage.setItem('access_token', data.access);
-    }
-    if (data.refresh) {
-      localStorage.setItem('refresh_token', data.refresh);
-    }
+    this.setTokens(data);
 
-    window.dispatchEvent(new Event('storage'));
     return data;
   }
 }

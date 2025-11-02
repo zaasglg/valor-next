@@ -56,6 +56,8 @@ const Header: React.FC = () => {
   };
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const token = localStorage.getItem("access_token");
     setIsAuthenticated(!!token);
 

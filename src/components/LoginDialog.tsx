@@ -3,9 +3,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
-import { authService } from "@/lib/auth"
-
+import { PasswordInput } from "@/components/ui/PasswordInput"
+import { useState, useCallback, memo } from "react"
+import { useAuthForm } from "@/hooks/useAuthForm"
 
 interface LoginDialogProps {
   children?: React.ReactNode
@@ -14,43 +14,44 @@ interface LoginDialogProps {
   onRegisterClick?: () => void
 }
 
-export function LoginDialog({ children, isOpen = false, onOpenChange, onRegisterClick }: LoginDialogProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+export const LoginDialog = memo(function LoginDialog({ children, isOpen = false, onOpenChange, onRegisterClick }: LoginDialogProps) {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  
+  // Мемоизируем колбэки для предотвращения лишних ререндеров
+  const onSuccess = useCallback(() => {
+    onOpenChange?.(false)
+    setEmail('')
+    setPassword('')
+  }, [onOpenChange])
 
-  const handleRegisterClick = () => {
-    onOpenChange?.(false);
-    onRegisterClick?.();
-  };
+  const { isLoading, error, handleLogin } = useAuthForm({
+    onSuccess
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-      setError('Todos los campos son obligatorios');
-      return;
-    }
+  const handleRegisterClick = useCallback(() => {
+    onOpenChange?.(false)
+    onRegisterClick?.()
+  }, [onOpenChange, onRegisterClick])
 
-    setIsLoading(true);
-    setError('');
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault()
+    await handleLogin(email, password)
+  }, [handleLogin, email, password])
 
-    try {
-      await authService.login(email, password);
-      onOpenChange?.(false);
-      setEmail('');
-      setPassword('');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value)
+  }, [])
+
+  const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value)
+  }, [])
+
+
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <Dialog open={isOpen} onOpenChange={onOpenChange || (() => {})}>
         {children && (
           <DialogTrigger asChild>
             {children}
@@ -102,37 +103,17 @@ export function LoginDialog({ children, isOpen = false, onOpenChange, onRegister
                     placeholder="Correo electrónico o teléfono"
                     className="bg-white shadow-lg"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleEmailChange}
                     required
                   />
                 </div>
                 <div>
                   <label className="block text-lg font-medium text-[#23223a] mb-2">Contraseña</label>
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Contraseña"
-                      className="bg-white shadow-lg"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                    <span 
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#a3a3b3] cursor-pointer hover:text-[#8a8a9a] transition-colors"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12s3.6-7 9-7 9 7 9 7-3.6 7-9 7-9-7-9-7Zm9 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                        </svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12s3.6-7 9-7 9 7 9 7-3.6 7-9 7-9-7-9-7Zm9 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m3 3 18 18" />
-                        </svg>
-                      )}
-                    </span>
-                  </div>
+                  <PasswordInput
+                    value={password}
+                    onChange={handlePasswordChange}
+                    required
+                  />
                 </div>
 
                 <div>
@@ -162,4 +143,4 @@ export function LoginDialog({ children, isOpen = false, onOpenChange, onRegister
       </Dialog>
     </>
   )
-}
+})

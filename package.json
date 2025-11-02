@@ -6,6 +6,7 @@
     "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev --turbopack",
     "dev:no-turbo": "NODE_OPTIONS='--max-old-space-size=4096' next dev",
     "build": "next build --turbopack",
+    "build:analyze": "ANALYZE=true npm run build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -18,6 +19,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "critters": "^0.0.23",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "lucide": "^0.544.0",
@@ -25,10 +27,13 @@
     "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "tailwind-merge": "^3.3.1"
+    "swr": "^2.3.6",
+    "tailwind-merge": "^3.3.1",
+    "web-vitals": "^5.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@next/bundle-analyzer": "^16.0.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

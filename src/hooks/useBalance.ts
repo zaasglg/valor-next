@@ -23,7 +23,7 @@ export function useBalance() {
     setError(null)
 
     try {
-      const token = localStorage.getItem('access_token')
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
       const response = await fetch('/api/balance', {
         method: 'GET',
         headers: {
@@ -47,8 +47,10 @@ export function useBalance() {
       setBalance(balanceData)
       
       // Сохраняем в кэш
-      localStorage.setItem('cached_balance', JSON.stringify(balanceData))
-      localStorage.setItem('balance_cache_timestamp', Date.now().toString())
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('cached_balance', JSON.stringify(balanceData))
+        localStorage.setItem('balance_cache_timestamp', Date.now().toString())
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
       console.error('Error fetching balance:', err)
@@ -59,7 +61,7 @@ export function useBalance() {
 
   // Загружаем баланс только при первом входе
   useEffect(() => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated || typeof window === 'undefined') return
 
     // Проверяем, есть ли кэшированный баланс и не устарел ли он
     const cachedBalance = localStorage.getItem('cached_balance')
@@ -82,6 +84,8 @@ export function useBalance() {
 
   // Обновление баланса при изменении localStorage (между вкладками)
   useEffect(() => {
+    if (typeof window === 'undefined') return
+
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'balance_updated') {
         fetchBalance()
@@ -109,11 +113,13 @@ export function useBalance() {
       setBalance(updatedBalance)
       
       // Обновляем кэш
-      localStorage.setItem('cached_balance', JSON.stringify(updatedBalance))
-      localStorage.setItem('balance_cache_timestamp', Date.now().toString())
-      
-      // Уведомляем другие вкладки
-      localStorage.setItem('balance_updated', Date.now().toString())
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('cached_balance', JSON.stringify(updatedBalance))
+        localStorage.setItem('balance_cache_timestamp', Date.now().toString())
+        
+        // Уведомляем другие вкладки
+        localStorage.setItem('balance_updated', Date.now().toString())
+      }
     }
   }, [balance])
 
