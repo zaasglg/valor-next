@@ -74,7 +74,7 @@ export default function GamePage({ params }: GamePageProps) {
 
   // Generate game URL
   const getGameUrl = () => {
-    const baseUrl = "https://chicken.valor-games.com";
+    const baseUrl = "https://chicken.valor-games.co";
     const accessToken = localStorage.getItem('access_token') || '';
     
     if (gameMode === 'demo') {
