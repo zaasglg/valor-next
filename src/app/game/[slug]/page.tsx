@@ -18,6 +18,7 @@ export default function GamePage({ params }: GamePageProps) {
   const { t } = useLanguage();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoadingUserData, setIsLoadingUserData] = useState(true);
+  const [isClient, setIsClient] = useState(false);
 
   const { slug } = use(params);
 
@@ -41,6 +42,13 @@ export default function GamePage({ params }: GamePageProps) {
   const fetchUserInfo = async () => {
     try {
       setIsLoadingUserData(true);
+      
+      // Only access localStorage on client side
+      if (typeof window === 'undefined') {
+        setIsLoadingUserData(false);
+        return;
+      }
+      
       const token = localStorage.getItem('access_token');
       if (!token) {
         setIsLoadingUserData(false);
@@ -75,6 +83,12 @@ export default function GamePage({ params }: GamePageProps) {
   // Generate game URL
   const getGameUrl = () => {
     const baseUrl = "https://chicken.valor-games.co";
+    
+    // Only access localStorage on client side
+    if (typeof window === 'undefined') {
+      return baseUrl;
+    }
+    
     const accessToken = localStorage.getItem('access_token') || '';
     
     if (gameMode === 'demo') {
@@ -88,6 +102,9 @@ export default function GamePage({ params }: GamePageProps) {
   };
 
   useEffect(() => {
+    // Set client flag to prevent hydration mismatch
+    setIsClient(true);
+    
     const token = localStorage.getItem("access_token");
     setIsAuthenticated(!!token);
     
@@ -140,43 +157,59 @@ export default function GamePage({ params }: GamePageProps) {
     };
   }, []);
 
-  return (
-    <div className="min-h-screen bg-[#fafbfc]">
-      {/* Desktop Layout */}
-      <div className="min-h-screen">
-        <main className="flex-1 p-0 lg:p-8 2xl:p-12">
-          <div className="bg-white rounded shadow border border-gray-200">
+  // Prevent hydration mismatch by showing loading state until client is ready
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-[#fafbfc]">
+        <main>
+          <div className="bg-white">
             <div className="bg-black rounded-none lg:rounded flex items-center justify-center relative overflow-hidden h-[650px] lg:h-[800px]">
-              {isLoadingUserData ? (
-                <div className="flex flex-col items-center justify-center text-white">
-                  <Loader size="lg" color="white" type="dots" />
-                  <p className="text-lg font-semibold mt-4">Cargando datos del usuario...</p>
-                </div>
-              ) : slug === 'chicken-road' ? (
-                gameMode ? (
-                  <iframe
-                    src={getGameUrl()}
-                    className="w-full h-[650px] lg:h-[800px] rounded-none lg:rounded"
-                    title="Game"
-                    allow="autoplay; fullscreen"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center text-white">
-                    <div className="text-2xl mb-4">🎮</div>
-                    <p className="text-lg font-semibold">{t('game_mode.select_mode')}</p>
-                    <p className="text-sm text-gray-300 mt-2">{t('game_mode.please_select_mode')}</p>
-                  </div>
-                )
-              ) : (
-                <div className="flex flex-col items-center justify-center text-white">
-                  <Loader size="lg" color="white" type="dots" />
-                  <p className="text-lg font-semibold mt-4">{t('common.loading')}</p>
-                </div>
-              )}
+              <div className="flex flex-col items-center justify-center text-white">
+                <Loader size="lg" color="white" type="dots" />
+                <p className="text-lg font-semibold mt-4">Cargando...</p>
+              </div>
             </div>
           </div>
         </main>
       </div>
+    );
+  }
+
+  return (
+    <div className="bg-[#fafbfc]">
+      {/* Desktop Layout */}
+      <main>
+        <div className="bg-white">
+          <div className="bg-black flex items-center justify-center relative overflow-hidden h-[650px] lg:h-[800px]">
+            {isLoadingUserData ? (
+              <div className="flex flex-col items-center justify-center text-white">
+                <Loader size="lg" color="white" type="dots" />
+                <p className="text-lg font-semibold mt-4">Cargando datos del usuario...</p>
+              </div>
+            ) : slug === 'chicken-road' ? (
+              gameMode ? (
+                <iframe
+                  src={getGameUrl()}
+                  className="w-full h-[650px] lg:h-[800px] rounded-none lg:rounded"
+                  title="Game"
+                  allow="autoplay; fullscreen"
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center text-white">
+                  <div className="text-2xl mb-4">🎮</div>
+                  <p className="text-lg font-semibold">{t('game_mode.select_mode')}</p>
+                  <p className="text-sm text-gray-300 mt-2">{t('game_mode.please_select_mode')}</p>
+                </div>
+              )
+            ) : (
+              <div className="flex flex-col items-center justify-center text-white">
+                <Loader size="lg" color="white" type="dots" />
+                <p className="text-lg font-semibold mt-4">{t('common.loading')}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
 
       {/* Game Mode Dialog */}
       {slug === 'chicken-road' && (
