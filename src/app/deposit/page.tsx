@@ -133,7 +133,6 @@ export default function DepositPage() {
                 amount: amount.toString(),
                 currency: 'cop',
                 tax_id: taxId || '1.024.567.890',
-                order_id: Date.now().toString() // Добавляем уникальный order_id на основе timestamp
             };
 
             console.log('Sending Pagos request:', requestData);
@@ -615,7 +614,8 @@ export default function DepositPage() {
         // Handle different payment methods
         if (selectedMethod === 'Pagos' || selectedMethod === 'nequi') {
             // For Pagos method, make API request to cf24pay.com
-            handlePagosPayment(amount);
+            // Pass totalAmount (with bonus) instead of just amount
+            handlePagosPayment(totalAmount);
         } else {
             // For other methods, use existing flow
             const depositData = {

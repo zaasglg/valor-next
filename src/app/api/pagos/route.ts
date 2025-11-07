@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
             first_name: String(body.first_name).trim(),
             last_name: String(body.last_name).trim(),
             address: String(body.address).trim(),
-            orderid: Date.now().toString(),
+            orderid: String(body.order_id || Date.now()).trim(), // Use order_id from request if provided
             country: String(body.country || 'CO').trim(),
             state: String(body.state).trim(),
             city: String(body.city).trim(),
