@@ -249,13 +249,13 @@ export default function DepositPage() {
                 }
 
                 // Open payment page in new tab
-                // window.open(result.payment_link, '_blank');
+                window.open(result.payment_link, '_blank');
 
             } else if (result.success || result.status === 'success') {
                 // Handle other success formats
-                // if (result.redirect_url) {
-                //     window.open(result.redirect_url, '_blank');
-                // }
+                if (result.redirect_url) {
+                    window.open(result.redirect_url, '_blank');
+                }
                 setShowSuccess(true);
             } else {
                 // Handle error response
