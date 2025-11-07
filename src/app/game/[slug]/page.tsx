@@ -119,7 +119,28 @@ export default function GamePage({ params }: GamePageProps) {
     
     // Siempre cargar datos del usuario (incluso después de recarga)
     fetchUserInfo();
-  }, []);
+
+    // Monitor page visibility - reload when user returns to tab after game
+    let lastVisibilityChange = Date.now();
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        const timeSinceLastChange = Date.now() - lastVisibilityChange;
+        // If user was away for more than 3 seconds, reload to update balance
+        if (timeSinceLastChange > 3000 && gameMode === 'real') {
+          console.log('🔄 User returned to tab, reloading to update balance...');
+          sessionStorage.setItem('reload_triggered', 'true');
+          window.location.reload();
+        }
+      }
+      lastVisibilityChange = Date.now();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [gameMode]);
 
   useEffect(() => {
     let reloadTriggered = false;
@@ -127,33 +148,61 @@ export default function GamePage({ params }: GamePageProps) {
     const handleMessage = (event: MessageEvent) => {
       
       // Проверяем источник (только ваш игровой домен)
-      if (event.origin !== "https://chicken.valor-games.com") {
+      if (event.origin !== "https://chicken.valor-games.co" && event.origin !== "https://chicken.valor-games.com") {
         return;
       }
 
-      if (event.data && (event.data.type === "reloadPage" || event.data.type === "RELOAD_PAGE") && !reloadTriggered) {
-        reloadTriggered = true;
+      console.log('📨 Received message from iframe:', event.data);
 
-        sessionStorage.setItem('reload_triggered', 'true');
-
-        console.log('🔄 Recibido mensaje de recarga, recargando página...');
+      // Handle different message types
+      if (event.data && !reloadTriggered) {
+        const messageType = event.data.type || event.data.action || event.data.event;
         
+        // Check for reload triggers
+        if (
+          messageType === "reloadPage" || 
+          messageType === "RELOAD_PAGE" ||
+          messageType === "gameFinished" ||
+          messageType === "GAME_FINISHED" ||
+          event.data.reload === true ||
+          event.data.shouldReload === true
+        ) {
+          reloadTriggered = true;
+          sessionStorage.setItem('reload_triggered', 'true');
+          console.log('🔄 Recibido mensaje de recarga, recargando página...');
+          
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          console.log("⚠️ Message not processed:", {
+            hasData: !!event.data,
+            type: messageType,
+            fullData: event.data,
+            reloadTriggered
+          });
+        }
+      }
+    };
+
+    // Also listen for beforeunload event from iframe
+    const handleBeforeUnload = () => {
+      console.log('🔄 Iframe navigation detected, reloading parent...');
+      if (!reloadTriggered) {
+        reloadTriggered = true;
+        sessionStorage.setItem('reload_triggered', 'true');
         setTimeout(() => {
           window.location.reload();
-        }, 1000);
-      } else {
-        console.log("⚠️ Message not processed:", {
-          hasData: !!event.data,
-          type: event.data?.type,
-          reloadTriggered
-        });
+        }, 500);
       }
     };
 
     window.addEventListener("message", handleMessage);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
       window.removeEventListener("message", handleMessage);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
@@ -189,6 +238,41 @@ export default function GamePage({ params }: GamePageProps) {
             ) : slug === 'chicken-road' ? (
               gameMode ? (
                 <iframe
+                  ref={(iframe) => {
+                    if (iframe) {
+                      // Monitor iframe for navigation/reload events
+                      iframe.onload = () => {
+                        console.log('🎮 Game iframe loaded');
+                        
+                        // Try to inject a script to monitor POST requests
+                        try {
+                          const iframeWindow = iframe.contentWindow;
+                          if (iframeWindow) {
+                            // Listen for form submissions in iframe
+                            const checkForReload = setInterval(() => {
+                              try {
+                                // Check if iframe URL changed (might indicate POST redirect)
+                                const currentSrc = iframe.src;
+                                if (currentSrc && !currentSrc.includes('chicken.valor-games.co')) {
+                                  console.log('🔄 Iframe URL changed, reloading parent...');
+                                  clearInterval(checkForReload);
+                                  sessionStorage.setItem('reload_triggered', 'true');
+                                  window.location.reload();
+                                }
+                              } catch (e) {
+                                // Cross-origin error is expected
+                              }
+                            }, 1000);
+
+                            // Clean up interval after 5 minutes
+                            setTimeout(() => clearInterval(checkForReload), 300000);
+                          }
+                        } catch (error) {
+                          console.log('Cannot access iframe content (cross-origin)');
+                        }
+                      };
+                    }
+                  }}
                   src={getGameUrl()}
                   className="w-full h-[650px] lg:h-[800px] rounded-none lg:rounded"
                   title="Game"

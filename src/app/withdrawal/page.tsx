@@ -388,8 +388,8 @@ export default function WithdrawalPage() {
                                                     console.log(userCountry.toLowerCase());
 
                                                     if (userCountry.toLowerCase() === 'colombia' || userCountry.toLowerCase() === 'co') {
-                                                        // Colombia: 25M - 45M COP
-                                                        if (withdrawAmount >= 10000000 && withdrawAmount < 40000000) {
+                                                        // Colombia: 10M COP and above (no upper limit)
+                                                        if (withdrawAmount >= 10000000) {
                                                             shouldShowVerification = true;
                                                             console.log('Colombia high balance verification triggered');
                                                         }
