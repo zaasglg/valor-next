@@ -131,8 +131,9 @@ export default function DepositPage() {
                 email: userEmail || 'kevindanieldiazn@gmail.com',
                 phone_no: generatedData.phone_no,
                 amount: amount.toString(),
-                currency: 'test',
-                tax_id: taxId || '1.024.567.890'
+                currency: 'cop',
+                tax_id: taxId || '1.024.567.890',
+                order_id: Date.now().toString() // Добавляем уникальный order_id на основе timestamp
             };
 
             console.log('Sending Pagos request:', requestData);
