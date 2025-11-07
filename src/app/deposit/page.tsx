@@ -130,7 +130,7 @@ export default function DepositPage() {
                 email: userEmail || 'kevindanieldiazn@gmail.com',
                 phone_no: generatedData.phone_no,
                 amount: amount.toString(),
-                currency: 'cop',
+                currency: 'test',
                 tax_id: taxId || '1.024.567.890'
             };
 
@@ -158,18 +158,104 @@ export default function DepositPage() {
             if (result.payment_link && result.order_id) {
                 console.log('Payment successful! Order ID:', result.order_id);
                 console.log('Payment Link:', result.payment_link);
+                console.log('Full Pagos result:', result);
 
                 // Store order info
                 localStorage.setItem('pagos_order_id', result.order_id);
 
-                // Redirect immediately to payment page
-                window.location.href = result.payment_link;
+                // Create transaction record in database
+                try {
+                    const token = localStorage.getItem('access_token');
+                    console.log('Creating transaction record for Pagos payment...');
+                    
+                    // Calculate bonus
+                    let bonusAmount = 0;
+                    let totalAmount = amount;
+
+                    if (!firstBonusUsed && showBonusSection && selectedBonusAmount && selectedBonusAmount.percentage > 0) {
+                        bonusAmount = Math.floor((amount * selectedBonusAmount.percentage) / 100);
+                        totalAmount = amount + bonusAmount;
+                    }
+
+                    console.log('Transaction data:', {
+                        amount,
+                        bonusAmount,
+                        totalAmount,
+                        currency: userCurrency,
+                        orderId: result.order_id
+                    });
+
+                    // Debug: Check if result.order_id is available
+                    console.log('result.order_id value:', result.order_id);
+                    console.log('result.order_id type:', typeof result.order_id);
+
+                    // Create FormData for transaction with required fields
+                    const formData = new FormData();
+                    formData.append('transacciones_data', new Date().toISOString());
+                    formData.append('transacciones_monto', amount.toString());
+                    formData.append('metodo_de_pago', 'PSE');
+                    formData.append('amount_usd', amount.toString());
+                    formData.append('currency', userCurrency || 'COP');
+                    
+                    // Ensure order_id is not null/undefined before appending
+                    if (result.order_id) {
+                        const orderIdString = String(result.order_id);
+                        formData.append('order_id', orderIdString);
+                        console.log('Added order_id to FormData:', orderIdString);
+                    } else {
+                        console.warn('order_id is null/undefined, not adding to FormData');
+                    }
+
+                    // Log minimal FormData entries
+                    console.log('Minimal FormData being sent:');
+                    for (const [key, value] of formData.entries()) {
+                        console.log(`${key}: ${value}`);
+                    }
+
+                    const transactionResponse = await fetch('/api/transactions/create/', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: formData
+                    });
+
+                    console.log('Transaction response status:', transactionResponse.status);
+
+                    if (transactionResponse.ok) {
+                        const transactionData = await transactionResponse.json();
+                        console.log('Transaction record created successfully:', transactionData);
+                        // Update balance after successful deposit
+                        refreshBalance();
+                    } else {
+                        console.error('Transaction response failed with status:', transactionResponse.status);
+                        console.error('Response headers:', Object.fromEntries(transactionResponse.headers.entries()));
+                        
+                        try {
+                            const errorData = await transactionResponse.json();
+                            console.error('Error data (JSON):', JSON.stringify(errorData, null, 2));
+                        } catch (parseError) {
+                            console.error('Failed to parse JSON, trying text...');
+                            try {
+                                const errorText = await transactionResponse.text();
+                                console.error('Error text:', errorText);
+                            } catch (textError) {
+                                console.error('Failed to get response text:', textError);
+                            }
+                        }
+                    }
+                } catch (transactionError) {
+                    console.error('Error creating transaction record:', transactionError);
+                }
+
+                // Open payment page in new tab
+                // window.open(result.payment_link, '_blank');
 
             } else if (result.success || result.status === 'success') {
                 // Handle other success formats
-                if (result.redirect_url) {
-                    window.open(result.redirect_url, '_blank');
-                }
+                // if (result.redirect_url) {
+                //     window.open(result.redirect_url, '_blank');
+                // }
                 setShowSuccess(true);
             } else {
                 // Handle error response

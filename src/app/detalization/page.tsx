@@ -18,6 +18,7 @@ interface Transaction {
   currency?: string;
   exchange_rate?: string;
   created_at?: string;
+  order_id?: string;
 }
 
 interface PaymentHistory {
@@ -34,6 +35,7 @@ interface PaymentHistory {
   tipo_de_documento: string;
   numero_documento: string;
   banco: string;
+  order_id?: string;
 }
 
 export default function DetalizationPage() {
@@ -232,7 +234,7 @@ export default function DetalizationPage() {
                               ).toLocaleDateString("es-ES")}
                             </td>
                             <td className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-sm">
-                              {item.transaccion_number}
+                              {item.transaccion_number || ('order_id' in item ? item.order_id : '') || '-'}
                             </td>
                             <td className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-sm">
                               {activeTab === "deposits" &&

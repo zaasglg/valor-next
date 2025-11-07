@@ -5,7 +5,17 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const token = request.headers.get('authorization');
 
+    console.log('Transaction API called');
+    console.log('FormData entries:');
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}:`, value instanceof File ? `File: ${value.name}` : value);
+      if (key === 'order_id') {
+        console.log('order_id received:', value, 'type:', typeof value);
+      }
+    }
+
     if (!token) {
+      console.log('No authorization token provided');
       return NextResponse.json({ error: 'No authorization token' }, { status: 401 });
     }
 
@@ -62,6 +72,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(data);
     } else {
       // For non-file requests, proceed normally
+      console.log('Making request to external API for non-file transaction');
       const response = await fetch('https://api.valor-games.co/api/transactions/create/', {
         method: 'POST',
         headers: {
@@ -69,6 +80,8 @@ export async function POST(request: NextRequest) {
         },
         body: formData,
       });
+
+      console.log('External API response status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -80,6 +93,7 @@ export async function POST(request: NextRequest) {
       }
 
       const data = await response.json();
+      console.log('External API success:', data);
       return NextResponse.json(data);
     }
 
