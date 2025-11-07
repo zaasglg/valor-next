@@ -37,6 +37,7 @@ export default function DepositPage() {
     const [userCountry, setUserCountry] = useState('default');
     const [isLoading, setIsLoading] = useState(true);
     const [isManualInput, setIsManualInput] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false); // Новое состояние для блокировки кнопки
 
     // Timer states
     const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
@@ -517,12 +518,19 @@ export default function DepositPage() {
     };
 
     const handleDeposit = () => {
+        // Prevent multiple clicks
+        if (isProcessing) {
+            console.log('⚠️ Deposit already in progress, ignoring click');
+            return;
+        }
+
         console.log('handleDeposit called'); // Добавляем для отладки
 
         // Validate payment method selection FIRST
         if (!selectedMethod || selectedMethod.trim() === '') {
             console.log('Payment method not selected');
             setShowWarning(true);
+            setIsProcessing(false);
             return;
         }
 
@@ -530,12 +538,14 @@ export default function DepositPage() {
         if (!firstName || firstName.trim() === '') {
             console.log('First name validation failed:', { firstName, isEmpty: !firstName, isTrimEmpty: firstName.trim() === '' });
             setShowWarning(true);
+            setIsProcessing(false);
             return;
         }
 
         if (!lastName || lastName.trim() === '') {
             console.log('Last name validation failed:', { lastName, isEmpty: !lastName, isTrimEmpty: lastName.trim() === '' });
             setShowWarning(true);
+            setIsProcessing(false);
             return;
         }
 
@@ -544,12 +554,14 @@ export default function DepositPage() {
             if (!birthDate || birthDate.trim() === '') {
                 console.log('Birth date is required for Pagos method');
                 setShowWarning(true);
+                setIsProcessing(false);
                 return;
             }
 
             if (!taxId || taxId.trim() === '') {
                 console.log('Tax ID is required for Pagos method');
                 setShowWarning(true);
+                setIsProcessing(false);
                 return;
             }
         }
@@ -585,6 +597,9 @@ export default function DepositPage() {
 
         // If we get here, proceed with deposit
         console.log('Proceeding with deposit...');
+        
+        // Set processing state to disable button
+        setIsProcessing(true);
 
         // Рассчитываем бонус и итоговую сумму
         let bonusAmount = 0;
@@ -841,9 +856,17 @@ export default function DepositPage() {
 
                                 <button
                                     onClick={handleDeposit}
-                                    className="mt-4 lg:mt-8 w-full font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg bg-green-700 hover:bg-green-800 text-white"
+                                    disabled={isProcessing}
+                                    className={`mt-4 lg:mt-8 w-full font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg ${
+                                        isProcessing 
+                                            ? 'bg-gray-400 cursor-not-allowed opacity-70' 
+                                            : 'bg-green-700 hover:bg-green-800 text-white'
+                                    }`}
                                 >
                                     {(() => {
+                                        if (isProcessing) {
+                                            return '⏳ Procesando...';
+                                        }
                                         if (showBonusSection && selectedBonusAmount) {
                                             return `${t('deposit.deposit_button')} ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}${selectedBonusAmount.percentage > 0 ? ` +${selectedBonusAmount.percentage}%` : ''}`;
                                         } else {
@@ -854,7 +877,10 @@ export default function DepositPage() {
                                 </button>
                             </div>
 
-                            <AlertDialog open={showWarning} onOpenChange={setShowWarning}>
+                            <AlertDialog open={showWarning} onOpenChange={(open) => {
+                                setShowWarning(open);
+                                if (!open) setIsProcessing(false); // Reset processing state when dialog closes
+                            }}>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                         <AlertDialogTitle className="text-red-500 text-2xl">
