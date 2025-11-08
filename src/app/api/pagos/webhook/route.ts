@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import crypto from 'crypto'
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,9 +11,21 @@ export async function POST(req: NextRequest) {
     } catch (_) {
     }
 
-    console.log('Webhook received:', json?.order_id, json?.status)
+    console.log('Webhook received:', json?.orderid, json?.status)
 
-    if (json && json.order_id && json.status === 'paid') {
+    if (json && json.orderid && (json.status === 'finished' || json.status === 'paid')) {
+      const secret = 'gzcaz1b4_yhb9nl7f'
+      const receivedSign = json.sign
+      delete json.sign
+      
+      const sortedKeys = Object.keys(json).sort()
+      const signString = sortedKeys.map(key => json[key]).join(':')
+      const calculatedSign = crypto.createHmac('sha256', signString, secret).digest('hex')
+      
+      if (receivedSign !== calculatedSign) {
+        console.error('Invalid signature')
+        return new NextResponse('Invalid signature', { status: 403 })
+      }
       try {
         const callbackResponse = await fetch('https://api.valor-games.co/api/payment-callback/', {
           method: 'POST',
@@ -20,11 +33,11 @@ export async function POST(req: NextRequest) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            orderid: json.order_id,
-            status: 'finished',
+            orderid: json.orderid,
+            status: json.status === 'finished' ? 'finished' : 'paid',
             amount: json.amount?.toString() || '0',
             currency: json.currency || 'COP',
-            time: Date.now().toString()
+            time: json.time?.toString() || Date.now().toString()
           })
         })
 
