@@ -38,6 +38,7 @@ export default function DepositPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isManualInput, setIsManualInput] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false); // Новое состояние для блокировки кнопки
+    const [amountError, setAmountError] = useState(''); // Ошибка валидации суммы
 
     // Timer states
     const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
@@ -565,13 +566,7 @@ export default function DepositPage() {
             return;
         }
 
-        // If bonus section is shown and user selected a bonus amount, use that amount
-        if (showBonusSection && selectedBonusAmount) {
-            amount = selectedBonusAmount.amount;
-            setCustomAmount(amount.toString());
-        }
-
-        // Check minimum amount LAST
+        // Check minimum amount
         if (amount < minimumAmount) {
             console.log(`Amount ${amount} is less than minimum ${minimumAmount}, showing warning`);
             setShowWarning(true);
@@ -750,27 +745,41 @@ export default function DepositPage() {
                                             value={customAmount}
                                             onChange={(e) => {
                                                 const value = e.target.value;
-                                                // Блокируем ввод суммы меньше минимальной
-                                                if (value === '' || parseInt(value) >= minimumAmount) {
-                                                    setCustomAmount(value);
-                                                } else if (parseInt(value) < minimumAmount) {
-                                                    setCustomAmount(minimumAmount.toString());
-                                                }
+                                                setCustomAmount(value);
                                                 setSelectedAmount(0);
                                                 setSelectedBonusAmount(null); // Сбрасываем выбранный бонус
                                                 setIsManualInput(true);
+                                                setAmountError(''); // Сбрасываем ошибку при вводе
                                             }}
-                                            className="pr-16"
-                                            min={minimumAmount}
+                                            onBlur={(e) => {
+                                                const value = e.target.value;
+                                                if (value !== '') {
+                                                    const amount = parseInt(value);
+                                                    if (isNaN(amount) || amount < minimumAmount) {
+                                                        setCustomAmount(minimumAmount.toString());
+                                                        setAmountError(`Monto mínimo: ${minimumAmount.toLocaleString()} ${displayCurrency}`);
+                                                    } else {
+                                                        setAmountError('');
+                                                    }
+                                                }
+                                            }}
+                                            className={`pr-16 ${amountError ? 'border-red-500' : ''}`}
                                             step="1"
                                         />
                                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-medium">
                                             {displayCurrency}
                                         </div>
                                     </div>
-                                    <div className="mt-2 text-sm text-gray-600">
-                                        {t('deposit.minimum_amount')}: {minimumAmount.toLocaleString()} {displayCurrency}
-                                    </div>
+                                    {amountError && (
+                                        <div className="mt-2 text-sm text-red-600">
+                                            {amountError}
+                                        </div>
+                                    )}
+                                    {!amountError && (
+                                        <div className="mt-2 text-sm text-gray-600">
+                                            {t('deposit.minimum_amount')}: {minimumAmount.toLocaleString()} {displayCurrency}
+                                        </div>
+                                    )}
 
                                     <div className="mt-10 bg-cover bg-[#2d1259] px-5 py-5 rounded-2xl" style={{
                                         backgroundImage: "url('images/deposit.svg')"
