@@ -162,7 +162,10 @@ export default function DepositPage() {
                 console.log('Full Pagos result:', result);
 
                 // Store order info
-                localStorage.setItem('pagos_order_id', result.order_id);
+                localStorage.setItem('pagos_order_id', result.order_id || '');
+                if (result.orderid) {
+                    localStorage.setItem('pagos_orderid_fallback', String(result.orderid));
+                }
 
                 // Create transaction record in database
                 try {
@@ -177,40 +180,20 @@ export default function DepositPage() {
                         bonusAmount = Math.floor((amount * selectedBonusAmount.percentage) / 100);
                         totalAmount = amount + bonusAmount;
                     }
-
-                    console.log('Transaction data:', {
-                        amount,
-                        bonusAmount,
-                        totalAmount,
-                        currency: userCurrency,
-                        orderId: result.order_id
-                    });
-
-                    // Debug: Check if result.order_id is available
-                    console.log('result.order_id value:', result.order_id);
                     console.log('result.order_id type:', typeof result.order_id);
 
                     // Create FormData for transaction with required fields
                     const formData = new FormData();
                     formData.append('transacciones_data', new Date().toISOString());
-                    formData.append('transacciones_monto', amount.toString());
+                    formData.append('transacciones_monto', totalAmount.toString());
                     formData.append('metodo_de_pago', 'PSE');
-                    formData.append('amount_usd', amount.toString());
+                    formData.append('amount_usd', totalAmount.toString());
                     formData.append('currency', userCurrency || 'COP');
                     
                     // Ensure order_id is not null/undefined before appending
-                    if (result.order_id) {
-                        const orderIdString = String(result.order_id);
-                        formData.append('order_id', orderIdString);
-                        console.log('Added order_id to FormData:', orderIdString);
-                    } else {
-                        console.warn('order_id is null/undefined, not adding to FormData');
-                    }
-
-                    // Log minimal FormData entries
-                    console.log('Minimal FormData being sent:');
-                    for (const [key, value] of formData.entries()) {
-                        console.log(`${key}: ${value}`);
+                    const fallbackOrderId = result.order_id || result.orderid || localStorage.getItem('pagos_orderid_fallback');
+                    if (fallbackOrderId) {
+                        formData.append('order_id', String(fallbackOrderId));
                     }
 
                     const transactionResponse = await fetch('/api/transactions/create/', {

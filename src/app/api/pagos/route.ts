@@ -70,13 +70,6 @@ export async function POST(request: NextRequest) {
             co_sign: signature
         };
 
-        console.log('=== PAGOS API DEBUG ===');
-        console.log('Original Body:', JSON.stringify(body, null, 2));
-        console.log('Request Params:', JSON.stringify(requestParam, null, 2));
-        console.log('Sorted Keys:', sortedKeys);
-        console.log('Sign String:', signString);
-        console.log('Signature:', signature);
-        console.log('Final Request:', JSON.stringify(finalRequestParam, null, 2));
 
         // Make request to CF24Pay API
         const response = await fetch('https://wallet.cf24pay.com/createorder', {
@@ -88,12 +81,9 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify(finalRequestParam)
         });
 
-        console.log('CF24Pay Response Status:', response.status);
-        console.log('CF24Pay Response Headers:', Object.fromEntries(response.headers.entries()));
-
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('CF24Pay API Error Response:', errorText);
+            console.error('CF24Pay error:', response.status, errorText);
 
             return NextResponse.json(
                 {
@@ -106,9 +96,11 @@ export async function POST(request: NextRequest) {
         }
 
         const result = await response.json();
-        console.log('CF24Pay API Response:', result);
 
-        return NextResponse.json(result);
+        return NextResponse.json({
+            ...result,
+            orderid: requestParam.orderid
+        });
 
     } catch (error) {
         console.error('Pagos API Error:', error);
