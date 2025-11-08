@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       
       const sortedKeys = Object.keys(json).sort()
       const signString = sortedKeys.map(key => json[key]).join(':')
-      const calculatedSign = crypto.createHmac('sha256', signString, secret).digest('hex')
+      const calculatedSign = crypto.createHmac('sha256', secret).update(signString).digest('hex')
       
       if (receivedSign !== calculatedSign) {
         console.error('Invalid signature')
