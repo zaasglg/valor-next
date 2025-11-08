@@ -557,7 +557,7 @@ export default function DepositPage() {
             return;
         }
 
-        let amount = parseInt(customAmount);
+        const amount = parseInt(customAmount);
 
         // Check if amount is valid number
         if (isNaN(amount) || amount <= 0) {
