@@ -52,6 +52,8 @@ export async function POST(req: NextRequest) {
       try {
         const callbackPayload = {
           orderid: json.orderid,
+          transaccion_number: json.orderid,
+          order_id: json.order_id || json.orderid,
           status: json.status,
           amount: json.amount?.toString() || '0',
           currency: json.currency || 'COP',
