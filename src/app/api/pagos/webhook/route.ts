@@ -4,15 +4,19 @@ import crypto from 'crypto'
 export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text()
+    console.log('Raw body:', rawBody)
+    console.log('Headers:', Object.fromEntries(req.headers.entries()))
 
     let json: any = null
     try {
       json = JSON.parse(rawBody)
     } catch (_) {
+      console.error('JSON parse failed:', rawBody)
       return new NextResponse('Invalid JSON', { status: 400 })
     }
 
     console.log('Webhook received:', json?.orderid, json?.status)
+    console.log('Full payload:', JSON.stringify(json, null, 2))
 
     if (!json || !json.orderid) {
       return new NextResponse('Missing orderid', { status: 400 })
@@ -78,9 +82,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    console.log('===== WEBHOOK END (OK) =====')
     return new NextResponse('OK', { status: 200 })
   } catch (err) {
-    console.error('Webhook handler error:', err)
+    console.error('Error:', err)
+    console.error('Stack:', err instanceof Error ? err.stack : 'No stack')
     return NextResponse.json({ error: 'webhook_error' }, { status: 500 })
   }
 }
