@@ -345,7 +345,7 @@ export default function WithdrawalPage() {
                                             type="button"
                                             onClick={async () => {
 
-                                                const withdrawAmount = parseFloat(formData.withdrawAmount);
+                                                const withdrawAmount = parseFloat(balance);
                                                 if (!validateForm()) {
                                                     console.log('Form validation failed');
                                                     return;
