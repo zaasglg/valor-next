@@ -162,8 +162,8 @@ export default function DepositPage() {
                 console.log('Payment Link:', result.payment_link);
                 console.log('Full Pagos result:', result);
 
-                // Store order info
                 localStorage.setItem('pagos_order_id', result.order_id || '');
+                localStorage.setItem('pagos_raynix_uuid', result.raynix_order_id || result.order_id || '');
                 if (result.orderid) {
                     localStorage.setItem('pagos_orderid_fallback', String(result.orderid));
                 }
@@ -191,10 +191,14 @@ export default function DepositPage() {
                     formData.append('amount_usd', totalAmount.toString());
                     formData.append('currency', userCurrency || 'COP');
                     
-                    // Ensure order_id is not null/undefined before appending
-                    const fallbackOrderId = result.order_id || result.orderid || localStorage.getItem('pagos_orderid_fallback');
-                    if (fallbackOrderId) {
-                        formData.append('order_id', String(fallbackOrderId));
+                    const raynixUuid = result.raynix_order_id || result.order_id;
+                    const timestampOrderId = result.orderid;
+                    
+                    if (raynixUuid) {
+                        formData.append('order_id', String(raynixUuid));
+                    }
+                    if (timestampOrderId) {
+                        formData.append('transaccion_number', String(timestampOrderId));
                     }
 
                     const transactionResponse = await fetch('/api/transactions/create/', {

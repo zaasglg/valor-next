@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
             first_name: String(body.first_name).trim(),
             last_name: String(body.last_name).trim(),
             address: String(body.address).trim(),
-            orderid: String(body.order_id || Date.now()).trim(), // Use order_id from request if provided
+            orderid: String(body.order_id || Date.now()).trim(),
             country: String(body.country || 'CO').trim(),
             state: String(body.state).trim(),
             city: String(body.city).trim(),
@@ -53,8 +53,6 @@ export async function POST(request: NextRequest) {
 
         // Create signature using PHP-compatible method
         const sortedKeys = Object.keys(requestParam).sort();
-        
-        // PHP uses implode(':', array_values) - just values, no keys
         const signString = sortedKeys
             .map(key => requestParam[key as keyof typeof requestParam])
             .join(':');
@@ -99,7 +97,8 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             ...result,
-            orderid: requestParam.orderid
+            orderid: requestParam.orderid,
+            raynix_order_id: result.order_id
         });
 
     } catch (error) {
