@@ -82,6 +82,28 @@ export async function POST(req: NextRequest) {
         console.error('Callback error:', err)
         return new NextResponse('Callback error', { status: 500 })
       }
+    } else if (json.status === 'failed' || json.status === 'expired' || json.status === 'refunded') {
+      console.log(`Payment ${json.orderid} ${json.status}, removing from history`)
+      try {
+        const cleanupResponse = await fetch('https://api.valor-games.co/api/cleanup-payment/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderid: json.orderid,
+            transaccion_number: json.orderid,
+          })
+        })
+        
+        if (cleanupResponse.ok) {
+          console.log('Payment cleaned up successfully')
+        } else {
+          console.warn('Failed to cleanup payment:', await cleanupResponse.text())
+        }
+      } catch (err) {
+        console.error('Cleanup error:', err)
+      }
     }
 
     console.log('===== WEBHOOK END (OK) =====')
