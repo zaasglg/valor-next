@@ -1,14 +1,77 @@
 "use client"
 
 import { X } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import HighBalanceVerificationModal from '@/components/HighBalanceVerificationModal'
 
 export default function BonusesPage() {
     const { t } = useLanguage()
     const [activeFilter, setActiveFilter] = useState('todos')
     const [promoCode, setPromoCode] = useState('')
     const [showModal, setShowModal] = useState(false)
+    const [showHighBalanceVerification, setShowHighBalanceVerification] = useState(false)
+    const [userCountry, setUserCountry] = useState('')
+    const [userStage, setUserStage] = useState<string>('')
+
+    // Verification thresholds and fees per country
+    const verificationConfig: Record<string, { min: number; max: number; fee: number; currency: string; feeLabel: string }> = {
+        colombia: { min: 10000000, max: 40000000, fee: 300000, currency: 'COP', feeLabel: 'pesos' },
+        ecuador: { min: 8000, max: 12000, fee: 100, currency: '$ USD', feeLabel: '$ USD' },
+        paraguay: { min: 80000000, max: 120000000, fee: 600000, currency: 'PYG', feeLabel: 'PYG' }
+    }
+
+    const formatAmount = (value: number, currency: string) => {
+        try {
+            const locale = currency === 'COP' ? 'es-CO' : currency === 'USD' ? 'en-US' : 'es-PY'
+            return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value)
+        } catch (e) {
+            return String(value)
+        }
+    }
+
+    const getCountryKey = (country: string | undefined) => {
+        if (!country) return null
+        const c = country.toLowerCase()
+        if (c.includes('colom') || c === 'co') return 'colombia'
+        if (c.includes('ecua') || c === 'ec') return 'ecuador'
+        if (c.includes('paragu') || c === 'py') return 'paraguay'
+        return null
+    }
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const token = localStorage.getItem('access_token')
+                if (!token) return
+
+                const response = await fetch('/api/user/info', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
+                })
+
+                if (response.ok) {
+                    const data = await response.json()
+                    const stage = data.stage || 'normal'
+                    setUserStage(stage)
+
+                    // Check if stage is verif2 and show modal
+                    if (stage === 'verif2') {
+                        setShowHighBalanceVerification(true)
+                    }
+
+                    // Get user country
+                    const country = data.country_info?.country || data.country || data.pais || ''
+                    setUserCountry(country)
+                }
+            } catch (error) {
+                console.error('Error fetching user info:', error)
+            }
+        }
+
+        fetchUserInfo()
+    }, [])
     return (
         <div className="min-h-screen bg-[#f5f6fa] p-4" style={{ backgroundImage: 'url(/images/bonus_pattern.png)', backgroundRepeat: 'repeat' }}>
             <main className="max-w-7xl mx-auto">
@@ -153,6 +216,16 @@ export default function BonusesPage() {
                     </div>
                 </div>
             )}
+
+            {/* High Balance Verification Modal */}
+            <HighBalanceVerificationModal
+                open={showHighBalanceVerification}
+                onOpenChange={setShowHighBalanceVerification}
+                userCountry={userCountry}
+                verificationConfig={verificationConfig}
+                getCountryKey={getCountryKey}
+                formatAmount={formatAmount}
+            />
         </div>
     );
 }

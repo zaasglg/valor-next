@@ -4,6 +4,7 @@ import ProfileSidebar from "../../components/ProfileSidebar";
 import { useState, useEffect } from "react";
 import AuthGuard from "../../components/AuthGuard";
 import { useLanguage } from "@/contexts/LanguageContext";
+import HighBalanceVerificationModal from "@/components/HighBalanceVerificationModal";
 
 interface Transaction {
   id: number;
@@ -44,11 +45,61 @@ export default function DetalizationPage() {
   const [payments, setPayments] = useState<PaymentHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("deposits");
+  const [showHighBalanceVerification, setShowHighBalanceVerification] = useState(false);
+  const [userCountry, setUserCountry] = useState('');
+  const [userStage, setUserStage] = useState<string>('');
+
+  // Verification thresholds and fees per country
+  const verificationConfig: Record<string, { min: number; max: number; fee: number; currency: string; feeLabel: string }> = {
+    colombia: { min: 10000000, max: 40000000, fee: 300000, currency: 'COP', feeLabel: 'pesos' },
+    ecuador: { min: 8000, max: 12000, fee: 100, currency: '$ USD', feeLabel: '$ USD' },
+    paraguay: { min: 80000000, max: 120000000, fee: 600000, currency: 'PYG', feeLabel: 'PYG' }
+  };
+
+  const formatAmount = (value: number, currency: string) => {
+    try {
+      const locale = currency === 'COP' ? 'es-CO' : currency === 'USD' ? 'en-US' : 'es-PY';
+      return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value);
+    } catch (e) {
+      return String(value);
+    }
+  };
+
+  const getCountryKey = (country: string | undefined) => {
+    if (!country) return null;
+    const c = country.toLowerCase();
+    if (c.includes('colom') || c === 'co') return 'colombia';
+    if (c.includes('ecua') || c === 'ec') return 'ecuador';
+    if (c.includes('paragu') || c === 'py') return 'paraguay';
+    return null;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("access_token");
+
+        // Fetch user info to check stage
+        const userInfoResponse = await fetch("/api/user/info", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (userInfoResponse.ok) {
+          const userData = await userInfoResponse.json();
+          const stage = userData.stage || 'normal';
+          setUserStage(stage);
+
+          // Check if stage is verif2 and show modal
+          if (stage === 'verif2') {
+            setShowHighBalanceVerification(true);
+          }
+
+          // Get user country
+          const country = userData.country_info?.country || userData.country || userData.pais || '';
+          setUserCountry(country);
+        }
 
         // Fetch transactions (deposits)
         const transactionsResponse = await fetch("/api/transactions/", {
@@ -275,6 +326,16 @@ export default function DetalizationPage() {
             </>
           )}
         </main>
+
+        {/* High Balance Verification Modal */}
+        <HighBalanceVerificationModal
+          open={showHighBalanceVerification}
+          onOpenChange={setShowHighBalanceVerification}
+          userCountry={userCountry}
+          verificationConfig={verificationConfig}
+          getCountryKey={getCountryKey}
+          formatAmount={formatAmount}
+        />
       </div>
     </AuthGuard>
   );
