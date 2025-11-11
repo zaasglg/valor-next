@@ -74,7 +74,8 @@ export default function GamePage({ params }: GamePageProps) {
       console.error('Error fetching user info:', error);
     } finally {
       setIsLoadingUserData(false);
-      if (slug === 'chicken-road') {
+      // Показываем модалку только если пользователь авторизован и это chicken-road
+      if (slug === 'chicken-road' && localStorage.getItem('access_token')) {
         setShowGameModeDialog(true);
       }
     }
