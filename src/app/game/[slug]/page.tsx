@@ -32,6 +32,7 @@ export default function GamePage({ params }: GamePageProps) {
     stage?: string;
   } | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [hasShownDialog, setHasShownDialog] = useState(false);
 
   const handleGameModeSelect = (mode: 'demo' | 'real') => {
     setGameMode(mode);
@@ -52,9 +53,10 @@ export default function GamePage({ params }: GamePageProps) {
       const token = localStorage.getItem('access_token');
       if (!token) {
         setIsLoadingUserData(false);
-        // Después de cargar datos, mostrar modal si es chicken-road
-        if (slug === 'chicken-road') {
+        // Después de cargar datos, mostrar modal si es chicken-road (solo una vez)
+        if (slug === 'chicken-road' && !hasShownDialog) {
           setShowGameModeDialog(true);
+          setHasShownDialog(true);
         }
         return;
       }
@@ -74,9 +76,10 @@ export default function GamePage({ params }: GamePageProps) {
       console.error('Error fetching user info:', error);
     } finally {
       setIsLoadingUserData(false);
-      // Показываем модалку только если пользователь авторизован и это chicken-road
-      if (slug === 'chicken-road' && localStorage.getItem('access_token')) {
+      // Показываем модалку только если пользователь авторизован и это chicken-road (solo una vez)
+      if (slug === 'chicken-road' && localStorage.getItem('access_token') && !hasShownDialog) {
         setShowGameModeDialog(true);
+        setHasShownDialog(true);
       }
     }
   };
