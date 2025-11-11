@@ -701,11 +701,11 @@ export default function WithdrawalPage() {
                                     </g>
                                 </svg>
                             </div>
-                            <h2 className="text-2xl font-bold relative z-10 text-white">Retraso temporal</h2>
+                            <h2 className="text-2xl font-bold relative z-10 text-white">Depósito reciente</h2>
                         </div>
                         <div className="bg-white px-6 py-8 rounded-b-xl">
                             <p className="text-gray-700 text-xl leading-relaxed text-center font-bold mb-6">
-                                ValorBet está procesando un gran volumen de pagos — retraso temporal. Inténtalo más tarde.
+                                Los retiros estarán disponibles después de confirmar la actividad real en la plataforma.
                             </p>
                             <div className="flex justify-center">
                                 <button
