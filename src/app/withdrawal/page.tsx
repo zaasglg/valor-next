@@ -182,16 +182,9 @@ export default function WithdrawalPage() {
     };
 
     const handleInputChange = (name: string, value: string) => {
-        // Блокируем ввод суммы меньше минимальной
-        if (name === 'withdrawAmount') {
-            if (value === '' || parseFloat(value) >= minWithdraw) {
-                setFormData(prev => ({ ...prev, [name]: value }));
-            } else if (parseFloat(value) < minWithdraw) {
-                setFormData(prev => ({ ...prev, [name]: minWithdraw.toString() }));
-            }
-        } else {
-            setFormData(prev => ({ ...prev, [name]: value }));
-        }
+        // Разрешаем свободный ввод, коррекция будет при потере фокуса
+        setFormData(prev => ({ ...prev, [name]: value }));
+        
         // Clear error when user starts typing
         if (errors[name as keyof typeof errors]) {
             setErrors(prev => ({ ...prev, [name]: '' }));
@@ -254,6 +247,12 @@ export default function WithdrawalPage() {
                                             placeholder={t('withdrawal.minimum_amount')}
                                             value={formData.withdrawAmount}
                                             onChange={(e) => handleInputChange('withdrawAmount', e.target.value)}
+                                            onBlur={(e) => {
+                                                const value = parseFloat(e.target.value);
+                                                if (value && value < minWithdraw) {
+                                                    setFormData(prev => ({ ...prev, withdrawAmount: minWithdraw.toString() }));
+                                                }
+                                            }}
                                             min={minWithdraw}
                                             step="1"
                                             className={`mb-0 ${errors.withdrawAmount ? 'border-red-500' : ''}`}
@@ -344,24 +343,56 @@ export default function WithdrawalPage() {
                                         <button
                                             type="button"
                                             onClick={async () => {
+                                                console.log('=== WITHDRAWAL BUTTON CLICKED ===');
+                                                // Check available balance FIRST before form validation
+                                                const available = parseFloat(String(balance).replace(/,/g, '')) || 0;
+                                                console.log('Available balance:', available);
+                                                
+                                                // Determine minimum withdrawal based on country
+                                                let minimumWithdraw = 150000; // Default for Colombia
+                                                const country = userCountry.toLowerCase();
+                                                if (country.includes('ecua') || country === 'ec') {
+                                                    minimumWithdraw = 50;
+                                                } else if (country.includes('paragu') || country === 'py') {
+                                                    minimumWithdraw = 300000;
+                                                }
+                                                
+                                                // Check if balance is less than minimum withdrawal amount
+                                                if (available < minimumWithdraw) {
+                                                    console.log('Insufficient funds - below minimum:', { available, minimumWithdraw, country: userCountry });
+                                                    setShowInsufficientFundsToast(true);
+                                                    setTimeout(() => setShowInsufficientFundsToast(false), 3000);
+                                                    return;
+                                                }
 
-                                                const withdrawAmount = parseFloat(balance);
+                                                // Get the requested withdrawal amount from form BEFORE validation
+                                                const withdrawAmount = parseFloat(formData.withdrawAmount);
+                                                
+                                                // Get the user's balance amount
+                                                const balanceAmount = parseFloat(balance);
+                                                
+                                                console.log('Withdrawal check:', { 
+                                                    withdrawAmount, 
+                                                    available, 
+                                                    balanceAmount,
+                                                    formDataAmount: formData.withdrawAmount,
+                                                    isNaN: isNaN(withdrawAmount)
+                                                });
+                                                
+                                                // FIRST: Check if requested amount exceeds available balance (only if valid number)
+                                                if (!isNaN(withdrawAmount) && withdrawAmount > 0 && withdrawAmount > available) {
+                                                    console.log('Insufficient funds - withdrawal exceeds balance:', { withdrawAmount, available });
+                                                    setShowInsufficientFundsToast(true);
+                                                    setTimeout(() => setShowInsufficientFundsToast(false), 3000);
+                                                    return;
+                                                }
+
                                                 if (!validateForm()) {
                                                     console.log('Form validation failed');
                                                     return;
                                                 }
 
-                                                // Check available balance vs requested withdraw amount
-                                                const available = parseFloat(String(balance).replace(/,/g, '')) || 0;
-                                                if (withdrawAmount > available) {
-                                                    console.log('Insufficient funds:', { withdrawAmount, available });
-                                                    setShowInsufficientFundsToast(true);
-                                                    // Auto-hide after 3s
-                                                    setTimeout(() => setShowInsufficientFundsToast(false), 3000);
-                                                    return;
-                                                }
-
-                                                // Check if withdrawal amount is between 25,000 and 25,000,000 (converted for other countries)
+                                                // SECOND: Check if balance is in delay range (only if withdrawal is valid)
                                                 let minDelay = 25000;
                                                 let maxDelay = 10000000;
                                                 
@@ -375,8 +406,8 @@ export default function WithdrawalPage() {
                                                     maxDelay = 80000000; 
                                                 }
 
-                                                if (withdrawAmount >= minDelay && withdrawAmount < maxDelay) {
-                                                    console.log('Processing delay triggered for amount:', withdrawAmount);
+                                                if (balanceAmount >= minDelay && balanceAmount < maxDelay) {
+                                                    console.log('Processing delay triggered for balance:', balanceAmount);
                                                     setShowProcessingDelayModal(true);
                                                     return;
                                                 }
@@ -389,18 +420,18 @@ export default function WithdrawalPage() {
 
                                                     if (userCountry.toLowerCase() === 'colombia' || userCountry.toLowerCase() === 'co') {
                                                         // Colombia: 10M COP and above (no upper limit)
-                                                        if (withdrawAmount >= 10000000) {
+                                                        if (balanceAmount >= 10000000) {
                                                             shouldShowVerification = true;
                                                             console.log('Colombia high balance verification triggered');
                                                         }
                                                     } else if (userCountry.toLowerCase() === 'ecuador' || userCountry.toLowerCase() === 'ec') {
                                                         // Ecuador: $8000 - $12000
-                                                        if (withdrawAmount >= 8000 && withdrawAmount < 12000) {
+                                                        if (balanceAmount >= 8000 && balanceAmount < 12000) {
                                                             shouldShowVerification = true;
                                                         }
                                                     } else if (userCountry.toLowerCase() === 'paraguay' || userCountry.toLowerCase() === 'py') {
                                                         // Paraguay: 50M - 70M PYG
-                                                        if (withdrawAmount >= 80000000 && withdrawAmount < 120000000) {
+                                                        if (balanceAmount >= 80000000 && balanceAmount < 120000000) {
                                                             shouldShowVerification = true;
                                                         }
                                                     }
@@ -690,7 +721,7 @@ export default function WithdrawalPage() {
                 <Dialog open={showProcessingDelayModal} onOpenChange={setShowProcessingDelayModal}>
                     <DialogContent className="w-full max-w-2xl p-0 rounded-xl">
                         <DialogHeader className="sr-only text-white">
-                            <DialogTitle className="text-left text-white">Retraso temporal</DialogTitle>
+                            <DialogTitle className="text-left text-white">Depósito reciente</DialogTitle>
                         </DialogHeader>
                         <div className="bg-orange-500 px-6 py-8 rounded-t-xl relative overflow-hidden">
                             <div className="absolute inset-0 opacity-20 flex items-center justify-center">
