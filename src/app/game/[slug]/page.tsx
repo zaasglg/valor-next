@@ -32,17 +32,53 @@ export default function GamePage({ params }: GamePageProps) {
     stage?: string;
   } | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [showAccountReviewModal, setShowAccountReviewModal] = useState(false);
   const [hasShownDialog, setHasShownDialog] = useState(false);
+  const [hasCheckedAccountReview, setHasCheckedAccountReview] = useState(false);
 
   const handleGameModeSelect = (mode: 'demo' | 'real') => {
     setGameMode(mode);
     setShowGameModeDialog(false);
   };
 
+  // Check if account review is needed
+  const checkAccountReview = (data: any) => {
+    // Don't check again if modal is already shown
+    if (showAccountReviewModal) {
+      return false;
+    }
+    
+    if (data.stage === 'meet') {
+      const balance = parseFloat(data.deposit) || 0;
+      const country = (data.country_info?.country || data.country || '').toLowerCase();
+      
+      let reviewThreshold = 44000000; // Default for Colombia (44M COP)
+      
+      // Convert for other countries
+      if (country.includes('ecua') || country === 'ec') {
+        reviewThreshold = 11000; // 44M COP / 4000 ≈ 11,000 USD
+      } else if (country.includes('paragu') || country === 'py') {
+        reviewThreshold = 330000000; // 44M COP * 7.5 ≈ 330M PYG
+      }
+      
+      console.log('🔍 Checking account review:', { balance, reviewThreshold, country, stage: data.stage });
+      
+      if (balance >= reviewThreshold) {
+        console.log('🚨 Account review required:', { balance, reviewThreshold, country });
+        setShowAccountReviewModal(true);
+        return true;
+      }
+    }
+    
+    return false;
+  };
+
   // Fetch user info
-  const fetchUserInfo = async () => {
+  const fetchUserInfo = async (isBackgroundCheck = false) => {
     try {
-      setIsLoadingUserData(true);
+      if (!isBackgroundCheck) {
+        setIsLoadingUserData(true);
+      }
       
       // Only access localStorage on client side
       if (typeof window === 'undefined') {
@@ -68,18 +104,25 @@ export default function GamePage({ params }: GamePageProps) {
       if (response.ok) {
         const data = await response.json();
         setUserInfo(data);
+        
+        // Check for verif2 stage
         if (data.stage === 'verif2') {
           setShowVerificationModal(true);
         }
+        
+        // Check for account review (meet stage with high balance)
+        checkAccountReview(data);
       }
     } catch (error) {
       console.error('Error fetching user info:', error);
     } finally {
-      setIsLoadingUserData(false);
-      // Показываем модалку только если пользователь авторизован и это chicken-road (solo una vez)
-      if (slug === 'chicken-road' && localStorage.getItem('access_token') && !hasShownDialog) {
-        setShowGameModeDialog(true);
-        setHasShownDialog(true);
+      if (!isBackgroundCheck) {
+        setIsLoadingUserData(false);
+        // Показываем модалку только если пользователь авторизован и это chicken-road (solo una vez)
+        if (slug === 'chicken-road' && localStorage.getItem('access_token') && !hasShownDialog) {
+          setShowGameModeDialog(true);
+          setHasShownDialog(true);
+        }
       }
     }
   };
@@ -116,47 +159,91 @@ export default function GamePage({ params }: GamePageProps) {
     const wasReloaded = sessionStorage.getItem('reload_triggered') === 'true';
     
     if (wasReloaded) {
-      // Limpiar el flag
+      // Limpiar флаг из sessionStorage
       sessionStorage.removeItem('reload_triggered');
       console.log('✅ Página recargada desde iframe, cargando datos del usuario...');
+    }
+    
+    // Проверяем и очищаем старые флаги перезагрузки (старше 10 секунд)
+    const lastReloadTime = localStorage.getItem('last_reload_time');
+    if (lastReloadTime) {
+      const timeSinceReload = Date.now() - parseInt(lastReloadTime);
+      if (timeSinceReload > 10000) {
+        localStorage.removeItem('last_reload_time');
+        console.log('🧹 Очищен старый флаг перезагрузки');
+      }
     }
     
     // Siempre cargar datos del usuario (incluso después de recarga)
     fetchUserInfo();
 
-    // Monitor page visibility - reload when user returns to tab after game
-    let lastVisibilityChange = Date.now();
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        const timeSinceLastChange = Date.now() - lastVisibilityChange;
-        // If user was away for more than 3 seconds, reload to update balance
-        if (timeSinceLastChange > 3000 && gameMode === 'real') {
-          console.log('🔄 User returned to tab, reloading to update balance...');
-          sessionStorage.setItem('reload_triggered', 'true');
-          window.location.reload();
-        }
-      }
-      lastVisibilityChange = Date.now();
-    };
+    return () => {};
+  }, []);
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+  // Periodic balance check for meet stage users
+  useEffect(() => {
+    console.log('🔍 Balance check effect triggered. Stage:', userInfo?.stage, 'Modal shown:', showAccountReviewModal, 'Balance:', userInfo?.deposit);
+    
+    let balanceCheckInterval: NodeJS.Timeout | null = null;
+    
+    // Start checking if user has meet stage and modal is not shown
+    if (userInfo?.stage === 'meet' && !showAccountReviewModal) {
+      console.log('🔄 Starting periodic balance check for meet stage user (every 5 seconds)...');
+      
+      balanceCheckInterval = setInterval(() => {
+        console.log('⏰ Checking balance...');
+        fetchUserInfo(true); // Background check without loading state
+      }, 5000); // Check every 5 seconds
+    } else {
+      console.log('❌ Balance check NOT started. Reason:', 
+        userInfo?.stage !== 'meet' ? 'Stage is not meet' : 'Modal already shown');
+    }
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (balanceCheckInterval) {
+        console.log('🛑 Stopping balance check interval');
+        clearInterval(balanceCheckInterval);
+      }
     };
-  }, [gameMode]);
+  }, [userInfo?.stage, showAccountReviewModal]);
 
   useEffect(() => {
+    // Проверяем, не было ли недавней перезагрузки
+    const lastReloadTime = localStorage.getItem('last_reload_time');
+    const now = Date.now();
+    
+    if (lastReloadTime) {
+      const timeSinceReload = now - parseInt(lastReloadTime);
+      // Если прошло менее 3 секунд с последней перезагрузки, не слушаем сообщения
+      if (timeSinceReload < 3000) {
+        // Установим таймер для очистки флага
+        const timeoutId = setTimeout(() => {
+          localStorage.removeItem('last_reload_time');
+        }, 3000 - timeSinceReload);
+        
+        return () => clearTimeout(timeoutId);
+      } else {
+        // Если прошло больше 3 секунд, очищаем старый флаг
+        localStorage.removeItem('last_reload_time');
+      }
+    }
+
     let reloadTriggered = false;
 
     const handleMessage = (event: MessageEvent) => {
-      
       // Проверяем источник (только ваш игровой домен)
       if (event.origin !== "https://chicken.valor-games.co" && event.origin !== "https://chicken.valor-games.com") {
         return;
       }
 
-      console.log('📨 Received message from iframe:', event.data);
+      // Проверяем флаг перезагрузки перед каждым сообщением
+      const currentReloadTime = localStorage.getItem('last_reload_time');
+      if (currentReloadTime) {
+        const timeSince = Date.now() - parseInt(currentReloadTime);
+        if (timeSince < 3000) {
+          return;
+        }
+      }
 
       // Handle different message types
       if (event.data && !reloadTriggered) {
@@ -171,42 +258,23 @@ export default function GamePage({ params }: GamePageProps) {
           event.data.reload === true ||
           event.data.shouldReload === true
         ) {
+          // Сразу устанавливаем флаг, чтобы заблокировать другие сообщения
+          const reloadTime = Date.now().toString();
+          localStorage.setItem('last_reload_time', reloadTime);
           reloadTriggered = true;
           sessionStorage.setItem('reload_triggered', 'true');
-          console.log('🔄 Recibido mensaje de recarga, recargando página...');
           
           setTimeout(() => {
             window.location.reload();
-          }, 1000);
-        } else {
-          console.log("⚠️ Message not processed:", {
-            hasData: !!event.data,
-            type: messageType,
-            fullData: event.data,
-            reloadTriggered
-          });
+          }, 500);
         }
       }
     };
 
-    // Also listen for beforeunload event from iframe
-    const handleBeforeUnload = () => {
-      console.log('🔄 Iframe navigation detected, reloading parent...');
-      if (!reloadTriggered) {
-        reloadTriggered = true;
-        sessionStorage.setItem('reload_triggered', 'true');
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
-      }
-    };
-
     window.addEventListener("message", handleMessage);
-    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
       window.removeEventListener("message", handleMessage);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
@@ -239,44 +307,15 @@ export default function GamePage({ params }: GamePageProps) {
                 <Loader size="lg" color="white" type="dots" />
                 <p className="text-lg font-semibold mt-4">Cargando datos del usuario...</p>
               </div>
+            ) : showAccountReviewModal ? (
+              <div className="flex flex-col items-center justify-center text-white px-4">
+                <div className="text-4xl mb-4">⚠️</div>
+                <p className="text-xl font-bold text-center">Cuenta en revisión</p>
+                <p className="text-sm text-gray-300 mt-2 text-center">Contacta con soporte para más información</p>
+              </div>
             ) : slug === 'chicken-road' ? (
               gameMode ? (
                 <iframe
-                  ref={(iframe) => {
-                    if (iframe) {
-                      // Monitor iframe for navigation/reload events
-                      iframe.onload = () => {
-                        console.log('🎮 Game iframe loaded');
-                        
-                        // Try to inject a script to monitor POST requests
-                        try {
-                          const iframeWindow = iframe.contentWindow;
-                          if (iframeWindow) {
-                            // Listen for form submissions in iframe
-                            const checkForReload = setInterval(() => {
-                              try {
-                                // Check if iframe URL changed (might indicate POST redirect)
-                                const currentSrc = iframe.src;
-                                if (currentSrc && !currentSrc.includes('chicken.valor-games.co')) {
-                                  console.log('🔄 Iframe URL changed, reloading parent...');
-                                  clearInterval(checkForReload);
-                                  sessionStorage.setItem('reload_triggered', 'true');
-                                  window.location.reload();
-                                }
-                              } catch (e) {
-                                // Cross-origin error is expected
-                              }
-                            }, 1000);
-
-                            // Clean up interval after 5 minutes
-                            setTimeout(() => clearInterval(checkForReload), 300000);
-                          }
-                        } catch (error) {
-                          console.log('Cannot access iframe content (cross-origin)');
-                        }
-                      };
-                    }
-                  }}
                   src={getGameUrl()}
                   className="w-full h-[650px] lg:h-[800px] rounded-none lg:rounded"
                   title="Game"
@@ -341,7 +380,6 @@ export default function GamePage({ params }: GamePageProps) {
             <div className="flex flex-col sm:flex-row gap-4 mt-6">
               <button
                 onClick={() => {
-                  // Открываем виджет чата используя CustomEvent
                   document.dispatchEvent(new CustomEvent("popups:open"));
                 }}
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-[0_6px_0_0_#15803d,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#15803d,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#15803d,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
@@ -353,9 +391,54 @@ export default function GamePage({ params }: GamePageProps) {
                   setShowVerificationModal(false);
                   router.push('/deposit');
                 }}
-                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg shadow-[0_6px_0_0_#c2410c,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#c2410c,0_6px_10px_rgба(0,0,0,0.2)] active:shadow-[0_2px_0_0_#c2410c,0_4px_8px_rgба(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg shadow-[0_6px_0_0_#c2410c,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#c2410c,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#c2410c,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
               >
                 VERIFICAR CUENTA
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Account Review Modal */}
+      <Dialog open={showAccountReviewModal} onOpenChange={() => {}}>
+        <DialogContent
+          className="w-full max-w-2xl p-0 rounded-xl"
+          showCloseButton={false}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >
+          <DialogHeader className="sr-only text-white">
+            <DialogTitle className="text-left text-white">Revisión de cuenta</DialogTitle>
+          </DialogHeader>
+          <div className="bg-orange-500 px-6 py-5 rounded-t-xl relative overflow-hidden">
+            <div className="absolute inset-0 opacity-20 flex items-center justify-center">
+              <svg width="144" height="130" viewBox="0 0 144 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g opacity="0.1">
+                  <path d="M111.628 17.8389L120.77 21.4838L106.194 37.3233L113.865 43.0161L95.2512 56.8294L98.4242 62.4229L72.1608 108.726L45.8971 62.4229L49.0701 56.8291L30.4563 43.0161L38.1275 37.3236L23.5508 21.4841L32.4245 17.946C29.8231 12.9085 27.6154 7.18264 25.5029 1.15791H0L58.4064 130H85.6008L144 1.15791H118.495C116.398 7.14004 114.206 12.8279 111.628 17.8389Z" fill="black"></path>
+                </g>
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold relative z-10 text-white">Revisión de cuenta</h2>
+          </div>
+          <div className="bg-white px-6 py-6 rounded-b-xl">
+            <p className="text-gray-700 text-base leading-relaxed text-center font-semibold mb-3">
+              Tu cuenta está siendo revisada por el equipo de seguridad.
+            </p>
+            <p className="text-gray-600 text-sm leading-relaxed text-center mb-4">
+              Contacta con el soporte para más información.
+            </p>
+            <p className="text-gray-500 text-xs leading-relaxed text-center mb-5">
+              Tus juegos están temporalmente suspendidos hasta finalizar la revisión.
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  document.dispatchEvent(new CustomEvent("popups:open"));
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-[0_6px_0_0_#15803d,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#15803d,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#15803d,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
+              >
+                CONTACTAR SOPORTE
               </button>
             </div>
           </div>
