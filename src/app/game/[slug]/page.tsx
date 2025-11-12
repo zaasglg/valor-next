@@ -2,7 +2,7 @@
 
 import { GameModeDialog } from "@/components/GameModeDialog";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Loader from "@/components/Loader";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -33,10 +33,10 @@ export default function GamePage({ params }: GamePageProps) {
   } | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showAccountReviewModal, setShowAccountReviewModal] = useState(false);
-  const [hasShownDialog, setHasShownDialog] = useState(false);
-  const [hasCheckedAccountReview, setHasCheckedAccountReview] = useState(false);
+  const dialogShownRef = useRef(false);
 
   const handleGameModeSelect = (mode: 'demo' | 'real') => {
+    console.log('🎯 Game mode selected:', mode);
     setGameMode(mode);
     setShowGameModeDialog(false);
   };
@@ -89,11 +89,6 @@ export default function GamePage({ params }: GamePageProps) {
       const token = localStorage.getItem('access_token');
       if (!token) {
         setIsLoadingUserData(false);
-        // Después de cargar datos, mostrar modal si es chicken-road (solo una vez)
-        if (slug === 'chicken-road' && !hasShownDialog) {
-          setShowGameModeDialog(true);
-          setHasShownDialog(true);
-        }
         return;
       }
 
@@ -118,18 +113,16 @@ export default function GamePage({ params }: GamePageProps) {
     } finally {
       if (!isBackgroundCheck) {
         setIsLoadingUserData(false);
-        // Показываем модалку только если пользователь авторизован и это chicken-road (solo una vez)
-        if (slug === 'chicken-road' && localStorage.getItem('access_token') && !hasShownDialog) {
-          setShowGameModeDialog(true);
-          setHasShownDialog(true);
-        }
       }
     }
   };
 
   // Generate game URL
   const getGameUrl = () => {
-    const baseUrl = "https://chicken.valor-games.co";
+    // Determine base URL based on game slug
+    const baseUrl = slug === 'aviator' 
+      ? "https://aviator.valor-games.co" 
+      : "https://chicken.valor-games.co";
     
     // Only access localStorage on client side
     if (typeof window === 'undefined') {
@@ -149,11 +142,14 @@ export default function GamePage({ params }: GamePageProps) {
   };
 
   useEffect(() => {
+    console.log('🚀 Component mounted for slug:', slug);
+    
     // Set client flag to prevent hydration mismatch
     setIsClient(true);
     
     const token = localStorage.getItem("access_token");
     setIsAuthenticated(!!token);
+    console.log('🔑 Token exists:', !!token);
     
     // Verificar si fue una recarga desde el iframe
     const wasReloaded = sessionStorage.getItem('reload_triggered') === 'true';
@@ -178,7 +174,32 @@ export default function GamePage({ params }: GamePageProps) {
     fetchUserInfo();
 
     return () => {};
-  }, []);
+  }, [slug]);
+
+  // Show game mode dialog immediately when client is ready
+  useEffect(() => {
+    if (!isClient) return; // Wait for client to be ready
+    
+    // Check if we need to show the dialog
+    const shouldShowDialog = !gameMode && 
+                            (slug === 'chicken-road' || slug === 'aviator') &&
+                            !dialogShownRef.current;
+    
+    console.log('🎮 Game mode check:', { 
+      gameMode, 
+      slug,
+      isClient,
+      dialogShown: dialogShownRef.current,
+      shouldShowDialog
+    });
+    
+    if (shouldShowDialog) {
+      console.log('✅ Opening game mode dialog immediately');
+      dialogShownRef.current = true;
+      // Show dialog immediately without waiting for user data
+      setShowGameModeDialog(true);
+    }
+  }, [gameMode, slug, isClient]);
 
   // Periodic balance check for meet stage users
   useEffect(() => {
@@ -232,7 +253,9 @@ export default function GamePage({ params }: GamePageProps) {
 
     const handleMessage = (event: MessageEvent) => {
       // Проверяем источник (только ваш игровой домен)
-      if (event.origin !== "https://chicken.valor-games.co" && event.origin !== "https://chicken.valor-games.com") {
+      if (event.origin !== "https://chicken.valor-games.co" && 
+          event.origin !== "https://chicken.valor-games.com" &&
+          event.origin !== "https://aviator.valor-games.co") {
         return;
       }
 
@@ -302,7 +325,7 @@ export default function GamePage({ params }: GamePageProps) {
       <main>
         <div className="bg-white">
           <div className="bg-black flex items-center justify-center relative overflow-hidden h-[650px] lg:h-[800px]">
-            {isLoadingUserData ? (
+            {isLoadingUserData && !showGameModeDialog ? (
               <div className="flex flex-col items-center justify-center text-white">
                 <Loader size="lg" color="white" type="dots" />
                 <p className="text-lg font-semibold mt-4">Cargando datos del usuario...</p>
@@ -313,7 +336,7 @@ export default function GamePage({ params }: GamePageProps) {
                 <p className="text-xl font-bold text-center">Cuenta en revisión</p>
                 <p className="text-sm text-gray-300 mt-2 text-center">Contacta con soporte para más información</p>
               </div>
-            ) : slug === 'chicken-road' ? (
+            ) : slug === 'chicken-road' || slug === 'aviator' ? (
               gameMode ? (
                 <iframe
                   src={getGameUrl()}
@@ -339,10 +362,18 @@ export default function GamePage({ params }: GamePageProps) {
       </main>
 
       {/* Game Mode Dialog */}
-      {slug === 'chicken-road' && (
+      {(slug === 'chicken-road' || slug === 'aviator') && (
         <GameModeDialog
           isOpen={showGameModeDialog}
-          onClose={() => setShowGameModeDialog(false)}
+          onClose={() => {
+            console.log('❌ Dialog close attempted');
+            // Don't allow closing if no mode selected
+            if (!gameMode) {
+              console.log('⚠️ Cannot close - no mode selected');
+              return;
+            }
+            setShowGameModeDialog(false);
+          }}
           onSelectMode={handleGameModeSelect}
         />
       )}

@@ -15,11 +15,12 @@ export function GameModeDialog({ isOpen, onClose, onSelectMode }: GameModeDialog
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-[#1a1a2e] border-[#16213e] p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-md bg-[#1a1a2e] border-[#16213e] p-0 overflow-hidden" aria-describedby="game-mode-description">
         {/* Header with blue background like deposit modal */}
         <DialogHeader className="bg-blue-900 text-white px-6 py-6 rounded-t-lg">
           <DialogTitle className="text-lg font-bold">{t('game_mode.select_mode')}</DialogTitle>
         </DialogHeader>
+        <p id="game-mode-description" className="sr-only">{t('game_mode.please_select_mode')}</p>
         
         <div className="space-y-4 py-4 px-6">
           {/* Demo Mode */}
