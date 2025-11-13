@@ -307,7 +307,7 @@ export default function GamePage({ params }: GamePageProps) {
       <div className="min-h-screen bg-[#fafbfc]">
         <main>
           <div className="bg-white">
-            <div className="bg-black rounded-none lg:rounded flex items-center justify-center relative overflow-hidden h-[calc(100vh-64px)] lg:h-[800px]">
+            <div className={`bg-black rounded-none lg:rounded flex items-center justify-center relative overflow-hidden ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[800px]`}>
               <div className="flex flex-col items-center justify-center text-white">
                 <Loader size="lg" color="white" type="dots" />
                 <p className="text-lg font-semibold mt-4">Cargando...</p>
@@ -324,7 +324,7 @@ export default function GamePage({ params }: GamePageProps) {
       {/* Desktop Layout */}
       <main>
         <div className="bg-white">
-          <div className="bg-black flex items-center justify-center relative overflow-hidden h-[calc(100vh-64px)] lg:h-[800px]">
+          <div className={`bg-black flex items-center justify-center relative overflow-hidden ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[800px]`}>
             {isLoadingUserData && !showGameModeDialog ? (
               <div className="flex flex-col items-center justify-center text-white">
                 <Loader size="lg" color="white" type="dots" />
@@ -340,7 +340,7 @@ export default function GamePage({ params }: GamePageProps) {
               gameMode ? (
                 <iframe
                   src={getGameUrl()}
-                  className="w-full h-[calc(100vh-64px)] lg:h-[800px] rounded-none lg:rounded"
+                  className={`w-full ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[800px] rounded-none lg:rounded`}
                   title="Game"
                   allow="autoplay; fullscreen"
                 />
