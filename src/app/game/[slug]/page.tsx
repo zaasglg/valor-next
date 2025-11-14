@@ -148,8 +148,16 @@ export default function GamePage({ params }: GamePageProps) {
     setIsClient(true);
     
     const token = localStorage.getItem("access_token");
-    setIsAuthenticated(!!token);
-    console.log('🔑 Token exists:', !!token);
+    const hasToken = !!token;
+    setIsAuthenticated(hasToken);
+    console.log('🔑 Token exists:', hasToken);
+    
+    // Redirect if not authenticated
+    if (!hasToken) {
+      console.log('❌ No token found, redirecting to home...');
+      router.push('/');
+      return;
+    }
     
     // Verificar si fue una recarga desde el iframe
     const wasReloaded = sessionStorage.getItem('reload_triggered') === 'true';
@@ -174,7 +182,7 @@ export default function GamePage({ params }: GamePageProps) {
     fetchUserInfo();
 
     return () => {};
-  }, [slug]);
+  }, [slug, router]);
 
   // Show game mode dialog immediately when client is ready
   useEffect(() => {
