@@ -189,15 +189,15 @@ export default function ProfilePage() {
       if (response.ok) {
         const result = await response.json();
         console.log("Profile update response:", result);
-        alert(t("profile.profile_updated"));
+        // alert(t("profile.profile_updated"));
       } else {
         const errorData = await response.json();
         console.error("Profile update error:", errorData);
-        alert("Error al actualizar el perfil");
+        // alert("Error al actualizar el perfil");
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Error al actualizar el perfil");
+      // alert("Error al actualizar el perfil");
     }
   };
   return (
