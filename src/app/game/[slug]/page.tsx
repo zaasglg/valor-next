@@ -16,7 +16,7 @@ interface GamePageProps {
 export default function GamePage({ params }: GamePageProps) {
   const router = useRouter();
   const { t } = useLanguage();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // null = checking, false = not auth, true = auth
   const [isLoadingUserData, setIsLoadingUserData] = useState(true);
   const [isClient, setIsClient] = useState(false);
 
@@ -144,20 +144,28 @@ export default function GamePage({ params }: GamePageProps) {
   useEffect(() => {
     console.log('🚀 Component mounted for slug:', slug);
     
-    // Set client flag to prevent hydration mismatch
+    // Set client flag
     setIsClient(true);
     
+    // Check authentication IMMEDIATELY
     const token = localStorage.getItem("access_token");
     const hasToken = !!token;
-    setIsAuthenticated(hasToken);
     console.log('🔑 Token exists:', hasToken);
     
-    // Redirect if not authenticated
+    // Redirect if not authenticated - do this BEFORE anything else
     if (!hasToken) {
       console.log('❌ No token found, redirecting to home...');
-      router.push('/');
+      setIsAuthenticated(false);
+      router.replace('/'); // Use replace instead of push
+      // Show registration modal after redirect
+      setTimeout(() => {
+        document.dispatchEvent(new CustomEvent("auth:openRegister"));
+      }, 100);
       return;
     }
+    
+    // Only continue if token exists
+    setIsAuthenticated(true);
     
     // Verificar si fue una recarga desde el iframe
     const wasReloaded = sessionStorage.getItem('reload_triggered') === 'true';
@@ -310,7 +318,7 @@ export default function GamePage({ params }: GamePageProps) {
   }, []);
 
   // Prevent hydration mismatch by showing loading state until client is ready
-  if (!isClient) {
+  if (!isClient || isAuthenticated === null) {
     return (
       <div className="min-h-screen bg-[#fafbfc]">
         <main>
@@ -318,7 +326,25 @@ export default function GamePage({ params }: GamePageProps) {
             <div className={`bg-black rounded-none lg:rounded flex items-center justify-center relative overflow-hidden ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[800px]`}>
               <div className="flex flex-col items-center justify-center text-white">
                 <Loader size="lg" color="white" type="dots" />
-                <p className="text-lg font-semibold mt-4">Cargando...</p>
+                <p className="text-lg font-semibold mt-4">Verificando...</p>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Show loading while redirecting unauthenticated users
+  if (isAuthenticated === false) {
+    return (
+      <div className="min-h-screen bg-[#fafbfc]">
+        <main>
+          <div className="bg-white">
+            <div className={`bg-black rounded-none lg:rounded flex items-center justify-center relative overflow-hidden ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[800px]`}>
+              <div className="flex flex-col items-center justify-center text-white">
+                <Loader size="lg" color="white" type="dots" />
+                <p className="text-lg font-semibold mt-4">Redirigiendo...</p>
               </div>
             </div>
           </div>

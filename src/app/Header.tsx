@@ -217,6 +217,28 @@ const Header: React.FC = () => {
     };
   }, []);
 
+  // Listen for auth events (e.g., from game pages)
+  useEffect(() => {
+    const handleAuthEvent = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      if (customEvent.type === 'auth:openRegister') {
+        console.log('🎯 Received auth:openRegister event, opening register dialog');
+        openRegister();
+      } else if (customEvent.type === 'auth:openLogin') {
+        console.log('🎯 Received auth:openLogin event, opening login dialog');
+        openLogin();
+      }
+    };
+
+    document.addEventListener('auth:openRegister', handleAuthEvent);
+    document.addEventListener('auth:openLogin', handleAuthEvent);
+
+    return () => {
+      document.removeEventListener('auth:openRegister', handleAuthEvent);
+      document.removeEventListener('auth:openLogin', handleAuthEvent);
+    };
+  }, [openRegister, openLogin]);
+
   // Handle clicks outside dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
