@@ -34,11 +34,23 @@ export default function GamePage({ params }: GamePageProps) {
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showAccountReviewModal, setShowAccountReviewModal] = useState(false);
   const dialogShownRef = useRef(false);
+  const [isGameLoading, setIsGameLoading] = useState(true);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const handleGameModeSelect = (mode: 'demo' | 'real') => {
     console.log('🎯 Game mode selected:', mode);
     setGameMode(mode);
     setShowGameModeDialog(false);
+    // Loader will stay until iframe loads
+    setIsGameLoading(true);
+  };
+
+  const handleIframeLoad = () => {
+    console.log('✅ Game iframe loaded');
+    // Keep loader for 2 more seconds to ensure game data is loaded
+    setTimeout(() => {
+      setIsGameLoading(false);
+    }, 2000);
   };
 
   // Check if account review is needed
@@ -372,12 +384,22 @@ export default function GamePage({ params }: GamePageProps) {
               </div>
             ) : slug === 'chicken-road' || slug === 'aviator' ? (
               gameMode ? (
-                <iframe
-                  src={getGameUrl()}
-                  className={`w-full ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[800px] rounded-none lg:rounded`}
-                  title="Game"
-                  allow="autoplay; fullscreen"
-                />
+                <div className="relative w-full h-full">
+                  <iframe
+                    ref={iframeRef}
+                    src={getGameUrl()}
+                    className={`w-full ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[800px] rounded-none lg:rounded`}
+                    title="Game"
+                    allow="autoplay; fullscreen"
+                    onLoad={handleIframeLoad}
+                  />
+                  {isGameLoading && (
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center z-50 rounded-none lg:rounded pointer-events-none">
+                      <Loader size="lg" color="white" type="dots" />
+                      <p className="text-lg font-semibold mt-4 text-white">Cargando juego...</p>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="flex flex-col items-center justify-center text-white">
                   <div className="text-2xl mb-4">🎮</div>
