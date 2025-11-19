@@ -586,6 +586,7 @@ export default function DepositPage() {
         // Рассчитываем бонус и итоговую сумму
         let bonusAmount = 0;
         let totalAmount = amount;
+        // let amountWithoutBonus = amount;
 
         // Если first_bonus_used == false и выбран бонус
         if (!firstBonusUsed && showBonusSection && selectedBonusAmount && selectedBonusAmount.percentage > 0) {
@@ -597,7 +598,7 @@ export default function DepositPage() {
         if (selectedMethod === 'Pagos' || selectedMethod === 'nequi') {
             // For Pagos method, make API request to cf24pay.com
             // Pass totalAmount (with bonus) instead of just amount
-            handlePagosPayment(totalAmount);
+            handlePagosPayment(amount);
         } else {
             // For other methods, use existing flow
             const depositData = {
