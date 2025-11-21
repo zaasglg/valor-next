@@ -278,7 +278,7 @@ export default function DepositPage() {
         'Paraguay': [120000, 150000, 300000, 600000],
         'Guatemala': [100, 150, 250, 400],
         'Chile': [12000, 14000, 20000, 25000],
-        'Colombia': [30000, 50000, 150000, 300000],
+        'Colombia': [20000, 50000, 150000, 300000],
         'Mexico': [250, 300, 400, 500],
         'Honduras': [350, 700, 1500, 3000],
         'Dominican Republic': [800, 1500, 3000, 6000],
