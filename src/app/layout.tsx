@@ -11,6 +11,7 @@ import { BalanceProvider } from "@/contexts/BalanceContext";
 import { CriticalCSS } from "@/components/ui/CriticalCSS";
 import { WebVitals, PerformanceMonitor } from "@/components/ui/WebVitals";
 import { ServiceWorker } from "@/components/ui/ServiceWorker";
+import { LayoutWrapper } from "@/components/LayoutWrapper";
 
 
 const geistSans = Geist({
@@ -82,9 +83,9 @@ export default function RootLayout({
           <BalanceProvider>
             <DialogProvider>
               <Header />
-              <div className="pb-20 md:pb-0">
+              <LayoutWrapper>
                 {children}
-              </div>
+              </LayoutWrapper>
               <Footer />
             </DialogProvider>
           </BalanceProvider>

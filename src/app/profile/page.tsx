@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import { useLanguage } from "@/contexts/LanguageContext";
+import HighBalanceVerificationModal from '@/components/HighBalanceVerificationModal';
 
 // Список стран с телефонными кодами (только страны из RegisterDialog)
 const countryPhoneCodes: { [key: string]: string } = {
@@ -37,6 +38,9 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("datos-personales");
   const [phoneCode, setPhoneCode] = useState("+57"); // По умолчанию код Колумбии
   const [emailVerified, setEmailVerified] = useState<boolean | null>(null);
+  const [showHighBalanceVerification, setShowHighBalanceVerification] = useState(false);
+  const [userCountry, setUserCountry] = useState('');
+  const [userStage, setUserStage] = useState<string>('');
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -50,6 +54,31 @@ export default function ProfilePage() {
     numero_de_telefono: "",
   });
 
+  // Verification thresholds and fees per country
+  const verificationConfig: Record<string, { min: number; max: number; fee: number; currency: string; feeLabel: string }> = {
+    colombia: { min: 10000000, max: 40000000, fee: 200000, currency: 'COP', feeLabel: 'cop' },
+    ecuador: { min: 8000, max: 12000, fee: 100, currency: '$ USD', feeLabel: '$ USD' },
+    paraguay: { min: 80000000, max: 120000000, fee: 600000, currency: 'PYG', feeLabel: 'PYG' }
+  };
+
+  const formatAmount = (value: number, currency: string) => {
+    try {
+      const locale = currency === 'COP' ? 'es-CO' : currency === 'USD' ? 'en-US' : 'es-PY';
+      return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value);
+    } catch (e) {
+      return String(value);
+    }
+  };
+
+  const getCountryKey = (country: string | undefined) => {
+    if (!country) return null;
+    const c = country.toLowerCase();
+    if (c.includes('colom') || c === 'co') return 'colombia';
+    if (c.includes('ecua') || c === 'ec') return 'ecuador';
+    if (c.includes('paragu') || c === 'py') return 'paraguay';
+    return null;
+  };
+
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -61,6 +90,19 @@ export default function ProfilePage() {
         if (response.ok) {
           const data = await response.json();
           const country = data.country || "Colombia";
+
+          const stage = data.stage || 'normal';
+          setUserStage(stage);
+
+          // Check if stage is verif2 and show modal
+          if (stage === 'verif2') {
+            setShowHighBalanceVerification(true);
+          }
+
+          // Get user country for verification modal
+          const userCountryData = data.country_info?.country || data.country || data.pais || '';
+          setUserCountry(userCountryData);
+
           // Устанавливаем статус верификации email (защита от разных типов значений)
           const ev = data.email_verified;
           let verified = false;
@@ -147,15 +189,15 @@ export default function ProfilePage() {
       if (response.ok) {
         const result = await response.json();
         console.log("Profile update response:", result);
-        alert(t("profile.profile_updated"));
+        // alert(t("profile.profile_updated"));
       } else {
         const errorData = await response.json();
         console.error("Profile update error:", errorData);
-        alert("Error al actualizar el perfil");
+        // alert("Error al actualizar el perfil");
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Error al actualizar el perfil");
+      // alert("Error al actualizar el perfil");
     }
   };
   return (
@@ -468,6 +510,16 @@ export default function ProfilePage() {
             </>
           )}
         </main>
+
+        {/* High Balance Verification Modal */}
+        <HighBalanceVerificationModal
+          open={showHighBalanceVerification}
+          onOpenChange={setShowHighBalanceVerification}
+          userCountry={userCountry}
+          verificationConfig={verificationConfig}
+          getCountryKey={getCountryKey}
+          formatAmount={formatAmount}
+        />
       </div>
     </AuthGuard>
   );

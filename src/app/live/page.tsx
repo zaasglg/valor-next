@@ -3,6 +3,7 @@
 import { LoginDialog } from "@/components/LoginDialog";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import HighBalanceVerificationModal from '@/components/HighBalanceVerificationModal';
 
 const games = [
   // PragmaticPlay Games

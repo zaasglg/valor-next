@@ -37,6 +37,8 @@ export default function DepositPage() {
     const [userCountry, setUserCountry] = useState('default');
     const [isLoading, setIsLoading] = useState(true);
     const [isManualInput, setIsManualInput] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false); // Новое состояние для блокировки кнопки
+    const [amountError, setAmountError] = useState(''); // Ошибка валидации суммы
     const [isCreatingPaymentLink, setIsCreatingPaymentLink] = useState(false);
 
     // Timer states
@@ -133,7 +135,7 @@ export default function DepositPage() {
                 phone_no: generatedData.phone_no,
                 amount: amount.toString(),
                 currency: 'cop',
-                tax_id: taxId || '1.024.567.890'
+                tax_id: taxId || '1.024.567.890',
             };
 
             console.log('Sending Pagos request:', requestData);
@@ -161,12 +163,85 @@ export default function DepositPage() {
             if (result.payment_link && result.order_id) {
                 console.log('Payment successful! Order ID:', result.order_id);
                 console.log('Payment Link:', result.payment_link);
+                console.log('Full Pagos result:', result);
 
-                // Store order info
-                localStorage.setItem('pagos_order_id', result.order_id);
+                localStorage.setItem('pagos_order_id', result.order_id || '');
+                localStorage.setItem('pagos_raynix_uuid', result.raynix_order_id || result.order_id || '');
+                if (result.orderid) {
+                    localStorage.setItem('pagos_orderid_fallback', String(result.orderid));
+                }
 
-                // Redirect immediately to payment page
-                window.location.href = result.payment_link;
+                // Create transaction record in database
+                try {
+                    const token = localStorage.getItem('access_token');
+                    console.log('Creating transaction record for Pagos payment...');
+                    
+                    // Calculate bonus
+                    let bonusAmount = 0;
+                    let totalAmount = amount;
+
+                    if (!firstBonusUsed && showBonusSection && selectedBonusAmount && selectedBonusAmount.percentage > 0) {
+                        bonusAmount = Math.floor((amount * selectedBonusAmount.percentage) / 100);
+                        totalAmount = amount + bonusAmount;
+                    }
+                    console.log('result.order_id type:', typeof result.order_id);
+
+                    // Create FormData for transaction with required fields
+                    const formData = new FormData();
+                    formData.append('transacciones_data', new Date().toISOString());
+                    formData.append('transacciones_monto', totalAmount.toString());
+                    formData.append('metodo_de_pago', 'PSE');
+                    formData.append('amount_usd', totalAmount.toString());
+                    formData.append('currency', userCurrency || 'COP');
+                    
+                    const raynixUuid = result.raynix_order_id || result.order_id;
+                    const timestampOrderId = result.orderid;
+                    
+                    if (raynixUuid) {
+                        formData.append('order_id', String(raynixUuid));
+                    }
+                    if (timestampOrderId) {
+                        formData.append('transaccion_number', String(timestampOrderId));
+                    }
+
+                    const transactionResponse = await fetch('/api/transactions/create/', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: formData
+                    });
+
+                    console.log('Transaction response status:', transactionResponse.status);
+
+                    if (transactionResponse.ok) {
+                        const transactionData = await transactionResponse.json();
+                        console.log('Transaction record created successfully:', transactionData);
+                        // Update balance after successful deposit
+                        refreshBalance();
+                    } else {
+                        console.error('Transaction response failed with status:', transactionResponse.status);
+                        console.error('Response headers:', Object.fromEntries(transactionResponse.headers.entries()));
+                        
+                        try {
+                            const errorData = await transactionResponse.json();
+                            console.error('Error data (JSON):', JSON.stringify(errorData, null, 2));
+                        } catch (parseError) {
+                            console.error('Failed to parse JSON, trying text...');
+                            try {
+                                const errorText = await transactionResponse.text();
+                                console.error('Error text:', errorText);
+                            } catch (textError) {
+                                console.error('Failed to get response text:', textError);
+                            }
+                        }
+                    }
+                } catch (transactionError) {
+                    console.error('Error creating transaction record:', transactionError);
+                }
+
+                // Open payment page in new tab
+                window.open(result.payment_link, '_blank');
 
             } else if (result.success || result.status === 'success') {
                 // Handle other success formats
@@ -442,12 +517,19 @@ export default function DepositPage() {
     };
 
     const handleDeposit = () => {
+        // Prevent multiple clicks
+        if (isProcessing) {
+            console.log('⚠️ Deposit already in progress, ignoring click');
+            return;
+        }
+
         console.log('handleDeposit called'); // Добавляем для отладки
 
         // Validate payment method selection FIRST
         if (!selectedMethod || selectedMethod.trim() === '') {
             console.log('Payment method not selected');
             setShowWarning(true);
+            setIsProcessing(false);
             return;
         }
 
@@ -455,12 +537,14 @@ export default function DepositPage() {
         if (!firstName || firstName.trim() === '') {
             console.log('First name validation failed:', { firstName, isEmpty: !firstName, isTrimEmpty: firstName.trim() === '' });
             setShowWarning(true);
+            setIsProcessing(false);
             return;
         }
 
         if (!lastName || lastName.trim() === '') {
             console.log('Last name validation failed:', { lastName, isEmpty: !lastName, isTrimEmpty: lastName.trim() === '' });
             setShowWarning(true);
+            setIsProcessing(false);
             return;
         }
 
@@ -469,12 +553,14 @@ export default function DepositPage() {
             if (!birthDate || birthDate.trim() === '') {
                 console.log('Birth date is required for Pagos method');
                 setShowWarning(true);
+                setIsProcessing(false);
                 return;
             }
 
             if (!taxId || taxId.trim() === '') {
                 console.log('Tax ID is required for Pagos method');
                 setShowWarning(true);
+                setIsProcessing(false);
                 return;
             }
         }
@@ -486,7 +572,7 @@ export default function DepositPage() {
             return;
         }
 
-        let amount = parseInt(customAmount);
+        const amount = parseInt(customAmount);
 
         // Check if amount is valid number
         if (isNaN(amount) || amount <= 0) {
@@ -495,13 +581,7 @@ export default function DepositPage() {
             return;
         }
 
-        // If bonus section is shown and user selected a bonus amount, use that amount
-        if (showBonusSection && selectedBonusAmount) {
-            amount = selectedBonusAmount.amount;
-            setCustomAmount(amount.toString());
-        }
-
-        // Check minimum amount LAST
+        // Check minimum amount
         if (amount < minimumAmount) {
             console.log(`Amount ${amount} is less than minimum ${minimumAmount}, showing warning`);
             setShowWarning(true);
@@ -510,10 +590,14 @@ export default function DepositPage() {
 
         // If we get here, proceed with deposit
         console.log('Proceeding with deposit...');
+        
+        // Set processing state to disable button
+        setIsProcessing(true);
 
         // Рассчитываем бонус и итоговую сумму
         let bonusAmount = 0;
         let totalAmount = amount;
+        // let amountWithoutBonus = amount;
 
         // Если first_bonus_used == false и выбран бонус
         if (!firstBonusUsed && showBonusSection && selectedBonusAmount && selectedBonusAmount.percentage > 0) {
@@ -524,6 +608,7 @@ export default function DepositPage() {
         // Handle different payment methods
         if (selectedMethod === 'Pagos' || selectedMethod === 'nequi') {
             // For Pagos method, make API request to cf24pay.com
+            // Pass totalAmount (with bonus) instead of just amount
             handlePagosPayment(amount);
         } else {
             // For other methods, use existing flow
@@ -676,27 +761,41 @@ export default function DepositPage() {
                                             value={customAmount}
                                             onChange={(e) => {
                                                 const value = e.target.value;
-                                                // Блокируем ввод суммы меньше минимальной
-                                                if (value === '' || parseInt(value) >= minimumAmount) {
-                                                    setCustomAmount(value);
-                                                } else if (parseInt(value) < minimumAmount) {
-                                                    setCustomAmount(minimumAmount.toString());
-                                                }
+                                                setCustomAmount(value);
                                                 setSelectedAmount(0);
                                                 setSelectedBonusAmount(null); // Сбрасываем выбранный бонус
                                                 setIsManualInput(true);
+                                                setAmountError(''); // Сбрасываем ошибку при вводе
                                             }}
-                                            className="pr-16"
-                                            min={minimumAmount}
+                                            onBlur={(e) => {
+                                                const value = e.target.value;
+                                                if (value !== '') {
+                                                    const amount = parseInt(value);
+                                                    if (isNaN(amount) || amount < minimumAmount) {
+                                                        setCustomAmount(minimumAmount.toString());
+                                                        setAmountError(`Monto mínimo: ${minimumAmount.toLocaleString()} ${displayCurrency}`);
+                                                    } else {
+                                                        setAmountError('');
+                                                    }
+                                                }
+                                            }}
+                                            className={`pr-16 ${amountError ? 'border-red-500' : ''}`}
                                             step="1"
                                         />
                                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-medium">
                                             {displayCurrency}
                                         </div>
                                     </div>
-                                    <div className="mt-2 text-sm text-gray-600">
-                                        {t('deposit.minimum_amount')}: {minimumAmount.toLocaleString()} {displayCurrency}
-                                    </div>
+                                    {amountError && (
+                                        <div className="mt-2 text-sm text-red-600">
+                                            {amountError}
+                                        </div>
+                                    )}
+                                    {!amountError && (
+                                        <div className="mt-2 text-sm text-gray-600">
+                                            {t('deposit.minimum_amount')}: {minimumAmount.toLocaleString()} {displayCurrency}
+                                        </div>
+                                    )}
 
                                     <div className="mt-10 bg-cover bg-[#2d1259] px-5 py-5 rounded-2xl" style={{
                                         backgroundImage: "url('images/deposit.svg')"
@@ -766,11 +865,12 @@ export default function DepositPage() {
 
                                 <button
                                     onClick={handleDeposit}
-                                    disabled={isCreatingPaymentLink}
-                                    className={`mt-4 lg:mt-8 w-full font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg ${isCreatingPaymentLink
-                                        ? 'bg-gray-400 cursor-not-allowed'
-                                        : 'bg-green-700 hover:bg-green-800 text-white'
-                                        }`}
+                                    disabled={isProcessing}
+                                    className={`mt-4 lg:mt-8 w-full font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg ${
+                                        isProcessing 
+                                            ? 'bg-gray-400 cursor-not-allowed opacity-70' 
+                                            : 'bg-green-700 hover:bg-green-800 text-white'
+                                    }`}
                                 >
                                     {isCreatingPaymentLink ? (
                                         <span className="flex items-center justify-center gap-2">
@@ -782,6 +882,9 @@ export default function DepositPage() {
                                         </span>
                                     ) : (
                                         (() => {
+                                        if (isProcessing) {
+                                            return '⏳ Procesando...';
+                                        }
                                             if (showBonusSection && selectedBonusAmount) {
                                                 return `${t('deposit.deposit_button')} ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}${selectedBonusAmount.percentage > 0 ? ` +${selectedBonusAmount.percentage}%` : ''}`;
                                             } else {
@@ -793,7 +896,10 @@ export default function DepositPage() {
                                 </button>
                             </div>
 
-                            <AlertDialog open={showWarning} onOpenChange={setShowWarning}>
+                            <AlertDialog open={showWarning} onOpenChange={(open) => {
+                                setShowWarning(open);
+                                if (!open) setIsProcessing(false); // Reset processing state when dialog closes
+                            }}>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                         <AlertDialogTitle className="text-red-500 text-2xl">
