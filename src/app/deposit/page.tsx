@@ -242,6 +242,11 @@ export default function DepositPage() {
 
                 // Open payment page in new tab
                 window.open(result.payment_link, '_blank');
+                
+                // Reset button state after 2 seconds
+                setTimeout(() => {
+                    setIsCreatingPaymentLink(false);
+                }, 2000);
 
             } else if (result.success || result.status === 'success') {
                 // Handle other success formats
