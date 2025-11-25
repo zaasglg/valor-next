@@ -246,6 +246,7 @@ export default function DepositPage() {
                 // Reset button state after 2 seconds
                 setTimeout(() => {
                     setIsCreatingPaymentLink(false);
+                    setIsProcessing(false);
                 }, 2000);
 
             } else if (result.success || result.status === 'success') {
@@ -337,6 +338,7 @@ export default function DepositPage() {
     // Reset payment link creation state when component mounts or when user returns to page
     useEffect(() => {
         setIsCreatingPaymentLink(false);
+        setIsProcessing(false);
     }, []);
 
     // Reset payment link creation state when page becomes visible (user returns from payment)
@@ -344,11 +346,23 @@ export default function DepositPage() {
         const handleVisibilityChange = () => {
             if (!document.hidden) {
                 setIsCreatingPaymentLink(false);
+                setIsProcessing(false);
             }
         };
 
+        // Also handle browser back/forward navigation
+        const handlePopState = () => {
+            setIsCreatingPaymentLink(false);
+            setIsProcessing(false);
+        };
+
         document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('popstate', handlePopState);
+        
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('popstate', handlePopState);
+        };
     }, []);
 
     // Fetch user info to check first_bonus_used
