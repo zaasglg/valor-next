@@ -241,7 +241,7 @@ export default function DepositPage() {
                 }
 
                 // Open payment page in new tab
-                window.open(result.payment_link, '_blank');
+                window.open(result.payment_link);
                 
                 // Reset button state after 2 seconds
                 setTimeout(() => {
@@ -251,7 +251,7 @@ export default function DepositPage() {
             } else if (result.success || result.status === 'success') {
                 // Handle other success formats
                 if (result.redirect_url) {
-                    window.open(result.redirect_url, '_blank');
+                    window.open(result.redirect_url);
                 }
                 setIsCreatingPaymentLink(false);
                 setShowSuccess(true);
