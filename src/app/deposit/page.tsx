@@ -329,9 +329,21 @@ export default function DepositPage() {
         };
     });
 
-    // Reset payment link creation state when component mounts
+    // Reset payment link creation state when component mounts or when user returns to page
     useEffect(() => {
         setIsCreatingPaymentLink(false);
+    }, []);
+
+    // Reset payment link creation state when page becomes visible (user returns from payment)
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                setIsCreatingPaymentLink(false);
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, []);
 
     // Fetch user info to check first_bonus_used
