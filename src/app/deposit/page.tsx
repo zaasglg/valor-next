@@ -37,6 +37,7 @@ export default function DepositPage() {
     const [userCountry, setUserCountry] = useState('default');
     const [isLoading, setIsLoading] = useState(true);
     const [isManualInput, setIsManualInput] = useState(false);
+    const [isCreatingPaymentLink, setIsCreatingPaymentLink] = useState(false);
 
     // Timer states
     const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
@@ -60,6 +61,7 @@ export default function DepositPage() {
 
     // Handle Pagos API request
     const handlePagosPayment = async (amount: number) => {
+        setIsCreatingPaymentLink(true);
         try {
             // Format birth date from YYYY-MM-DD to DD/MM/YYYY
             const formatBirthDate = (dateStr: string) => {
@@ -148,6 +150,7 @@ export default function DepositPage() {
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error('Pagos API Error Details:', errorData);
+                setIsCreatingPaymentLink(false);
                 throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
             }
 
@@ -170,15 +173,18 @@ export default function DepositPage() {
                 if (result.redirect_url) {
                     window.open(result.redirect_url, '_blank');
                 }
+                setIsCreatingPaymentLink(false);
                 setShowSuccess(true);
             } else {
                 // Handle error response
                 console.error('Pagos API Error:', result);
+                setIsCreatingPaymentLink(false);
                 setShowWarning(true);
             }
 
         } catch (error) {
             console.error('Error processing Pagos payment:', error);
+            setIsCreatingPaymentLink(false);
             setShowWarning(true);
         }
     };
@@ -247,6 +253,11 @@ export default function DepositPage() {
             label: `${amount} ${displayCurrency} +${percentages[index]}%`
         };
     });
+
+    // Reset payment link creation state when component mounts
+    useEffect(() => {
+        setIsCreatingPaymentLink(false);
+    }, []);
 
     // Fetch user info to check first_bonus_used
     useEffect(() => {
@@ -755,16 +766,30 @@ export default function DepositPage() {
 
                                 <button
                                     onClick={handleDeposit}
-                                    className="mt-4 lg:mt-8 w-full font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg bg-green-700 hover:bg-green-800 text-white"
+                                    disabled={isCreatingPaymentLink}
+                                    className={`mt-4 lg:mt-8 w-full font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg ${isCreatingPaymentLink
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-green-700 hover:bg-green-800 text-white'
+                                        }`}
                                 >
-                                    {(() => {
-                                        if (showBonusSection && selectedBonusAmount) {
-                                            return `${t('deposit.deposit_button')} ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}${selectedBonusAmount.percentage > 0 ? ` +${selectedBonusAmount.percentage}%` : ''}`;
-                                        } else {
-                                            const amount = customAmount && !isNaN(parseInt(customAmount)) ? parseInt(customAmount) : 0;
-                                            return `${t('deposit.deposit_button')} ${amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}`;
-                                        }
-                                    })()}
+                                    {isCreatingPaymentLink ? (
+                                        <span className="flex items-center justify-center gap-2">
+                                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Creando enlace de pago...
+                                        </span>
+                                    ) : (
+                                        (() => {
+                                            if (showBonusSection && selectedBonusAmount) {
+                                                return `${t('deposit.deposit_button')} ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}${selectedBonusAmount.percentage > 0 ? ` +${selectedBonusAmount.percentage}%` : ''}`;
+                                            } else {
+                                                const amount = customAmount && !isNaN(parseInt(customAmount)) ? parseInt(customAmount) : 0;
+                                                return `${t('deposit.deposit_button')} ${amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}`;
+                                            }
+                                        })()
+                                    )}
                                 </button>
                             </div>
 
