@@ -36,7 +36,9 @@ export default function WithdrawalPage() {
     const verificationConfig: Record<string, { min: number; max: number; fee: number; currency: string; feeLabel: string }> = {
         colombia: { min: 10000000, max: 40000000, fee: 200000, currency: 'COP', feeLabel: 'cop' },
         ecuador: { min: 8000, max: 12000, fee: 100, currency: '$ USD', feeLabel: '$ USD' },
-        paraguay: { min: 80000000, max: 120000000, fee: 600000, currency: 'PYG', feeLabel: 'PYG' }
+        paraguay: { min: 80000000, max: 120000000, fee: 600000, currency: 'PYG', feeLabel: 'PYG' },
+        nigeria: { min: 35000, max: 500000, fee: 500000, currency: 'NGN', feeLabel: 'NGN' },
+        kenya: { min: 35000, max: 500000, fee: 500000, currency: 'KES', feeLabel: 'KES' }
     };
 
     const formatAmount = (value: number, currency: string) => {
@@ -54,6 +56,8 @@ export default function WithdrawalPage() {
         if (c.includes('colom') || c === 'co') return 'colombia';
         if (c.includes('ecua') || c === 'ec') return 'ecuador';
         if (c.includes('paragu') || c === 'py') return 'paraguay';
+        if (c.includes('niger') || c === 'ng' || c === 'nga') return 'nigeria';
+        if (c.includes('kenya') || c === 'ke') return 'kenya';
         return null;
     };
 
@@ -62,7 +66,9 @@ export default function WithdrawalPage() {
     const minWithdrawByCountry: Record<string, number> = {
         colombia: 150000,
         ecuador: 50,
-        paraguay: 300000
+        paraguay: 300000,
+        nigeria: 1,
+        kenya: 1
     };
 
     // Получить ключ страны
@@ -118,7 +124,6 @@ export default function WithdrawalPage() {
 
                     // Try multiple possible country field names
                     const country = data.country_info?.country || data.country || data.pais || '';
-                    console.log('Selected country:', country);
                     setUserCountry(country);
                 }
             } catch (error) {
@@ -355,6 +360,8 @@ export default function WithdrawalPage() {
                                                     minimumWithdraw = 50;
                                                 } else if (country.includes('paragu') || country === 'py') {
                                                     minimumWithdraw = 300000;
+                                                } else if (country.includes('niger') || country === 'ng' || country === 'nga') {
+                                                    minimumWithdraw = 1;
                                                 }
                                                 
                                                 // Check if balance is less than minimum withdrawal amount
@@ -404,6 +411,12 @@ export default function WithdrawalPage() {
                                                 } else if (userCountry.toLowerCase() === 'paraguay' || userCountry.toLowerCase() === 'py') {
                                                     minDelay = 45000; 
                                                     maxDelay = 80000000; 
+                                                } else if (userCountry.toLowerCase() === 'nigeria' || userCountry.toLowerCase() === 'ng' || userCountry.toLowerCase() === 'nga') {
+                                                    minDelay = 1; 
+                                                    maxDelay = 500000; 
+                                                } else if (userCountry.toLowerCase() === 'kenya' || userCountry.toLowerCase() === 'ke') {
+                                                    minDelay = 1; 
+                                                    maxDelay = 500000; 
                                                 }
 
                                                 if (balanceAmount >= minDelay && balanceAmount < maxDelay) {
@@ -419,10 +432,8 @@ export default function WithdrawalPage() {
                                                     console.log(userCountry.toLowerCase());
 
                                                     if (userCountry.toLowerCase() === 'colombia' || userCountry.toLowerCase() === 'co') {
-                                                        // Colombia: 10M COP and above (no upper limit)
                                                         if (balanceAmount >= 10000000) {
                                                             shouldShowVerification = true;
-                                                            console.log('Colombia high balance verification triggered');
                                                         }
                                                     } else if (userCountry.toLowerCase() === 'ecuador' || userCountry.toLowerCase() === 'ec') {
                                                         // Ecuador: $8000 - $12000
@@ -432,6 +443,16 @@ export default function WithdrawalPage() {
                                                     } else if (userCountry.toLowerCase() === 'paraguay' || userCountry.toLowerCase() === 'py') {
                                                         // Paraguay: 50M - 70M PYG
                                                         if (balanceAmount >= 80000000 && balanceAmount < 120000000) {
+                                                            shouldShowVerification = true;
+                                                        }
+                                                    } else if (userCountry.toLowerCase() === 'nigeria' || userCountry.toLowerCase() === 'ng' || userCountry.toLowerCase() === 'nga') {
+                                                        // Nigeria: 1 - 20M NGN
+                                                        if (balanceAmount >= 500000 && balanceAmount < 2000000) {
+                                                            shouldShowVerification = true;
+                                                        }
+                                                    } else if (userCountry.toLowerCase() === 'kenya' || userCountry.toLowerCase() === 'ke') {
+                                                        // Kenya: 3000 - 1500000 KES
+                                                        if (balanceAmount >= 500000 && balanceAmount < 2000000) {
                                                             shouldShowVerification = true;
                                                         }
                                                     }
@@ -554,7 +575,7 @@ export default function WithdrawalPage() {
                         }}
                     >
                         <DialogHeader className="sr-only text-white">
-                            <DialogTitle className="text-left text-white">Se requiere verificación</DialogTitle>
+                            <DialogTitle className="text-left text-white">{t('withdrawal.verification_required')}</DialogTitle>
                         </DialogHeader>
                         <div className="bg-[orange] px-6 py-8 rounded-t-xl relative overflow-hidden">
                             <div className="absolute inset-0 opacity-20 flex items-center justify-center">
@@ -565,11 +586,11 @@ export default function WithdrawalPage() {
                                     </g>
                                 </svg>
                             </div>
-                            <h2 className="text-2xl font-bold relative z-10 text-white">Se requiere verificación</h2>
+                            <h2 className="text-2xl font-bold relative z-10 text-white">{t('withdrawal.verification_required')}</h2>
                         </div>
                         <div className="bg-white px-6 py-8 rounded-b-xl">
                             <p className="text-gray-700 text-lg leading-relaxed text-center font-bold mb-6">
-                                Has superado el límite de juegos. Tu cuenta está bloqueada hasta que se verifique. Contacta con soporte para más información.
+                                {t('withdrawal.verification_message')}
                             </p>
                             
                             <div className="flex flex-col sm:flex-row gap-4 mt-6">
@@ -580,7 +601,7 @@ export default function WithdrawalPage() {
                                     }}
                                     className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-[0_6px_0_0_#15803d,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#15803d,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#15803d,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
                                 >
-                                    CONTACTAR SOPORTE
+                                    {t('withdrawal.contact_support')}
                                 </button>
 
                                 <button
@@ -590,7 +611,7 @@ export default function WithdrawalPage() {
                                     }}
                                     className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg shadow-[0_6px_0_0_#c2410c,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#c2410c,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#c2410c,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
                                 >
-                                    VERIFICAR CUENTA
+                                    {t('withdrawal.verify_account')}
                                 </button>
                                 
                                 
@@ -613,7 +634,7 @@ export default function WithdrawalPage() {
                             {/* Toast Content */}
                             <div className="flex-1">
                                 <div className="font-medium text-sm">
-                                    Solicitud de retiro #{transactionNumber} procesada correctamente.
+                                    {t('withdrawal.request_processed').replace('{number}', transactionNumber)}
                                 </div>
                                 <div className="text-sm opacity-90 mt-1">
                                     {toastMessage}
@@ -643,8 +664,8 @@ export default function WithdrawalPage() {
                                 </svg>
                             </div>
                             <div className="flex-1">
-                                <div className="font-medium text-sm">Fondos insuficientes</div>
-                                <div className="text-sm opacity-90 mt-1">El monto a retirar excede su saldo disponible.</div>
+                                <div className="font-medium text-sm">{t('withdrawal.insufficient_funds')}</div>
+                                <div className="text-sm opacity-90 mt-1">{t('withdrawal.amount_exceeds_balance')}</div>
                             </div>
                             <button onClick={() => setShowInsufficientFundsToast(false)} className="flex-shrink-0 text-white hover:text-gray-200 transition-colors">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -669,7 +690,7 @@ export default function WithdrawalPage() {
                             {/* Toast Content */}
                             <div className="flex-1">
                                 <div className="font-medium text-sm">
-                                    Para retirar fondos necesitas jugar juegos
+                                    {t('withdrawal.need_to_play_games')}
                                 </div>
                             </div>
 
@@ -690,10 +711,9 @@ export default function WithdrawalPage() {
                 <AlertDialog open={showMinAmountWarning} onOpenChange={setShowMinAmountWarning}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle className="text-red-500 text-2xl">⚠️ Monto mínimo requerido</AlertDialogTitle>
+                            <AlertDialogTitle className="text-red-500 text-2xl">{t('withdrawal.min_amount_warning')}</AlertDialogTitle>
                             <AlertDialogDescription className="text-lg">
-                                El monto mínimo para retiro es 150,000 COP.
-                                Por favor, ingresa un monto mayor o igual a este valor.
+                                {t('withdrawal.min_amount_message').replace('{amount}', '150,000 COP')}
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -701,7 +721,7 @@ export default function WithdrawalPage() {
                                 className="bg-red-500 hover:bg-red-600"
                                 onClick={() => setShowMinAmountWarning(false)}
                             >
-                                Entendido
+                                {t('withdrawal.understood')}
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
@@ -721,7 +741,7 @@ export default function WithdrawalPage() {
                 <Dialog open={showProcessingDelayModal} onOpenChange={setShowProcessingDelayModal}>
                     <DialogContent className="w-full max-w-2xl p-0 rounded-xl">
                         <DialogHeader className="sr-only text-white">
-                            <DialogTitle className="text-left text-white">Depósito reciente</DialogTitle>
+                            <DialogTitle className="text-left text-white">{t('withdrawal.recent_deposit')}</DialogTitle>
                         </DialogHeader>
                         <div className="bg-orange-500 px-6 py-8 rounded-t-xl relative overflow-hidden">
                             <div className="absolute inset-0 opacity-20 flex items-center justify-center">
@@ -732,18 +752,18 @@ export default function WithdrawalPage() {
                                     </g>
                                 </svg>
                             </div>
-                            <h2 className="text-2xl font-bold relative z-10 text-white">Depósito reciente</h2>
+                            <h2 className="text-2xl font-bold relative z-10 text-white">{t('withdrawal.recent_deposit')}</h2>
                         </div>
                         <div className="bg-white px-6 py-8 rounded-b-xl">
                             <p className="text-gray-700 text-xl leading-relaxed text-center font-bold mb-6">
-                                Los retiros estarán disponibles después de confirmar la actividad real en la plataforma.
+                                {t('withdrawal.withdrawal_delay_message')}
                             </p>
                             <div className="flex justify-center">
                                 <button
                                     onClick={() => setShowProcessingDelayModal(false)}
                                     className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-lg shadow-[0_6px_0_0_#c2410c,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#c2410c,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#c2410c,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
                                 >
-                                    Repetir más tarde
+                                    {t('withdrawal.try_later')}
                                 </button>
                             </div>
                         </div>

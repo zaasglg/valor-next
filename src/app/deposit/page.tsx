@@ -283,6 +283,8 @@ export default function DepositPage() {
     // Deposit amounts by country
     const depositAmountsByCountry = {
         'Argentina': [20000, 50000, 100000, 250000],
+        'Nigeria': [5000, 15000, 35000, 70000],
+        'Kenya': [5000, 15000, 35000, 70000],
         'Bolivia': [200, 500, 1000, 2500],
         'Venezuela': [1500, 3000, 5000, 100000],
         'Peru': [50, 100, 200, 500],
@@ -301,6 +303,8 @@ export default function DepositPage() {
     // Currency mapping by country
     const currencyByCountry = {
         'Argentina': 'ARS',
+        'Nigeria': 'NGN',
+        'Kenya': 'KES',
         'Bolivia': 'BOB',
         'Venezuela': 'VES',
         'Peru': 'PEN',
@@ -316,14 +320,30 @@ export default function DepositPage() {
         'default': '$'
     };
 
-    // Get predefined amounts based on user's country
-    const predefinedAmounts = depositAmountsByCountry[userCountry as keyof typeof depositAmountsByCountry] || depositAmountsByCountry.default;
+    // Resolve country key (case-insensitive) so values like "nicaragua" or variations map correctly
+    const resolveCountryKey = (country: string) => {
+        if (!country) return 'default';
+        const keys = Object.keys(depositAmountsByCountry);
+        // exact match (case-insensitive)
+        const exact = keys.find(k => k.toLowerCase() === country.toLowerCase());
+        if (exact) return exact;
+        // contains match (handles values like "República de Nicaragua" or different casing)
+        const contains = keys.find(k => country.toLowerCase().includes(k.toLowerCase()));
+        if (contains) return contains;
+        // fallback to default
+        return 'default';
+    };
+
+    const countryKey = resolveCountryKey(userCountry || '');
+
+    // Get predefined amounts based on resolved country key
+    const predefinedAmounts = depositAmountsByCountry[countryKey as keyof typeof depositAmountsByCountry] || depositAmountsByCountry.default;
 
     // Get minimum amount for the user's country
     const minimumAmount = predefinedAmounts[0]; // First amount is always the minimum
 
     // Get currency for display (fallback to country currency if userCurrency is not set)
-    const displayCurrency = userCurrency || currencyByCountry[userCountry as keyof typeof currencyByCountry] || '$';
+    const displayCurrency = userCurrency || currencyByCountry[countryKey as keyof typeof currencyByCountry] || '$';
 
     // Bonus amounts based on country (using first 4 amounts from predefined amounts)
     const bonusAmounts = predefinedAmounts.slice(0, 4).map((amount, index) => {
