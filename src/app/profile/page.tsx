@@ -29,11 +29,13 @@ const countryPhoneCodes: { [key: string]: string } = {
   "Peru": "+51",
   "Puerto Rico": "+1",
   "Uruguay": "+598",
-  "Venezuela": "+58"
+  "Venezuela": "+58",
+  "Nigeria": "+234",
+  "Kenya": "+254",
 };
 
 export default function ProfilePage() {
-  const { t } = useLanguage();
+  const { t, setLanguage } = useLanguage();
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("datos-personales");
   const [phoneCode, setPhoneCode] = useState("+57"); // По умолчанию код Колумбии
@@ -141,6 +143,11 @@ export default function ProfilePage() {
           });
           // Устанавливаем телефонный код
           setPhoneCode(phoneCodeFromData);
+          
+          // Автоматически переключаем язык на английский для Нигерии и Кении
+          if (country === 'Nigeria' || country === 'Kenya') {
+            setLanguage('en');
+          }
         }
       } catch (error) {
         console.error("Error fetching user info:", error);
@@ -364,6 +371,10 @@ export default function ProfilePage() {
                               country: selectedCountry,
                             });
                             setPhoneCode(newPhoneCode);
+                            // Автоматически переключаем язык на английский для Нигерии и Кении
+                            if (selectedCountry === 'Nigeria' || selectedCountry === 'Kenya') {
+                              setLanguage('en');
+                            }
                           }}
                         >
                           {Object.keys(countryPhoneCodes).map((country) => (

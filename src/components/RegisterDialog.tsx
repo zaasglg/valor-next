@@ -13,6 +13,7 @@ import {
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { authService } from "@/lib/auth"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface RegisterDialogProps {
   children?: React.ReactNode
@@ -23,6 +24,7 @@ interface RegisterDialogProps {
 
 export function RegisterDialog({ children, isOpen = false, onOpenChange, onLoginClick }: RegisterDialogProps) {
   const router = useRouter();
+  const { setLanguage } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [country, setCountry] = useState('');
@@ -136,7 +138,12 @@ export function RegisterDialog({ children, isOpen = false, onOpenChange, onLogin
 
             <div>
               <label className="block text-sm font-medium mb-2">País</label>
-              <Select value={country} onValueChange={setCountry}>
+              <Select value={country} onValueChange={(value) => {
+                setCountry(value);
+                if (value === 'Nigeria') {
+                  setLanguage('en');
+                }
+              }}>
                 <SelectTrigger className="w-full bg-white shadow-lg">
                   <SelectValue placeholder="Selecciona tu país" />
                 </SelectTrigger>
