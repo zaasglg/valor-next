@@ -170,22 +170,22 @@ export function RegisterDialog({ children, isOpen = false, onOpenChange, onLogin
                   <SelectItem value="Colombia">Colombia</SelectItem>
                   <SelectItem value="Costa Rica">Costa Rica</SelectItem>
                   <SelectItem value="Cuba">Cuba</SelectItem>
-                  <SelectItem value="Dominican Republic">República Dominicana</SelectItem>
                   <SelectItem value="Ecuador">Ecuador</SelectItem>
                   <SelectItem value="El Salvador">El Salvador</SelectItem>
                   <SelectItem value="Guatemala">Guatemala</SelectItem>
                   <SelectItem value="Haiti">Haïti</SelectItem>
                   <SelectItem value="Honduras">Honduras</SelectItem>
+                  <SelectItem value="Kenya">Kenya</SelectItem>
                   <SelectItem value="Mexico">México</SelectItem>
                   <SelectItem value="Nicaragua">Nicaragua</SelectItem>
+                  <SelectItem value="Nigeria">Nigeria</SelectItem>
                   <SelectItem value="Panama">Panamá</SelectItem>
                   <SelectItem value="Paraguay">Paraguay</SelectItem>
                   <SelectItem value="Peru">Perú</SelectItem>
                   <SelectItem value="Puerto Rico">Puerto Rico</SelectItem>
+                  <SelectItem value="Dominican Republic">República Dominicana</SelectItem>
                   <SelectItem value="Uruguay">Uruguay</SelectItem>
                   <SelectItem value="Venezuela">Venezuela</SelectItem>
-                  <SelectItem value="Nigeria">Nigeria</SelectItem>
-                  <SelectItem value="Kenya">Kenya</SelectItem>
                 </SelectContent>
               </Select>
             </div>

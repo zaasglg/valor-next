@@ -270,15 +270,22 @@ export default function DepositPage() {
         }
     };
 
-    const paymentMethods = [
-        { id: 'Pagos', name: 'PSE', image: '/images/pes.webp' },
-        { id: 'nequi', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
-        { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
-        // { id: 'BTC', name: 'BTC', image: '/images/deposit/btc.jpg' },
-        // { id: 'ETH', name: 'ETH', image: '/images/deposit/eth.png' },
-        // { id: 'USDT', name: 'USDT (TRC20)', image: '/images/deposit/usdttrc20.png' },
-        // { id: 'TRONTRX', name: 'TRON TRX', image: '/images/deposit/trx.png' }
-    ];
+    // Show specific payment methods depending on domain:
+    // - valor-games.co: show PSE (Pagos) and Nequi
+    // - other domains: show only Cripto
+    const hostname = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
+    let paymentMethods = [] as { id: string; name: string; image: string }[];
+
+    if (hostname.includes('valor-games.co')) {
+        paymentMethods = [
+            { id: 'Pagos', name: 'PSE', image: '/images/pes.webp' },
+            { id: 'nequi', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
+        ];
+    } else {
+        paymentMethods = [
+            { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
+        ];
+    }
 
     // Deposit amounts by country
     const depositAmountsByCountry = {
