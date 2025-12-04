@@ -1419,9 +1419,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         
         // Domain to language mapping
         const domainLanguageMap: Record<string, Language> = {
-          'valor-games.co': 'es',
-          'valor-games.world': 'en',
-          'valor-games.online': 'en',
+          'https://valor-games.co': 'es',
+          'https://valor-games.world': 'en',
+          'https://valor-games.online': 'en',
         };
         
         // Check if domain matches any in the mapping
