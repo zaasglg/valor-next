@@ -61,6 +61,21 @@ export function RegisterDialog({ children, isOpen = false, onOpenChange, onLogin
     }
   };
 
+  const hostname = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
+  let bannerDesktop = language === 'es' ? '/images/banner_register.png' : '/images/banner_register_en.png';
+  let bannerMobile = language === 'es' ? '/images/banner_register_m.png' : '/images/banner_register_en_m.png';
+
+  if (hostname.includes('valor-games.online')) {
+    // Kenya domain
+    bannerDesktop = '/images/banner_register-kenya.jpg';
+    bannerMobile = '/images/banner_register_m-kenya.jpg';
+  } else if (hostname.includes('valor-games.world')) {
+    // Nigeria domain
+    bannerDesktop = '/images/banner_register-nigeria.jpg';
+    // As requested, mobile uses the Kenya mobile banner for this domain
+    bannerMobile = '/images/banner_register_m-kenya.jpg';
+  }
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -78,10 +93,10 @@ export function RegisterDialog({ children, isOpen = false, onOpenChange, onLogin
 
           <div className="relative w-full">
             <picture>
-              <source srcSet={language === 'es' ? "/images/banner_register_m.png" : "/images/banner_register_en_m.png"} media="(max-width: 640px)" />
+              <source srcSet={bannerMobile} media="(max-width: 640px)" />
               <img
-                src="/images/banner_register.png"
-                alt="Bono de hasta 2.000.000 COP por primera vez"
+                src={bannerDesktop}
+                alt="Bonus banner"
                 className="w-full h-auto object-cover"
                 loading="lazy"
               />
