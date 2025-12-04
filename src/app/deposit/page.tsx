@@ -280,12 +280,12 @@ export default function DepositPage() {
         paymentMethods = [
             // { id: 'Pagos', name: 'PSE', image: '/images/pes.webp' },
             // { id: 'nequi', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
-            // { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
+            { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
         ];
     } else {
         paymentMethods = [
             { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
-            { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
+            // { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
         ];
     }
 
