@@ -11,6 +11,7 @@ import {
 import Autoplay from "embla-carousel-autoplay"
 import { LoginDialog } from "@/components/LoginDialog";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface CarouselBannerProps {
   isAuthenticated: boolean;
@@ -18,35 +19,42 @@ interface CarouselBannerProps {
 
 export function CarouselBanner({ isAuthenticated }: CarouselBannerProps) {
   const router = useRouter();
+  const [banners, setBanners] = useState([
+    { id: 1, src: "/images/1-banner.jpg", alt: "banner img" },
+    { id: 2, src: "/images/2-banner.jpg", alt: "banner img" },
+  ]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname.toLowerCase();
+      
+      if (hostname.includes('valor-games.online')) {
+        // Kenya domain
+        setBanners([
+          { id: 1, src: "/images/1-banner-kenya.jpg", alt: "banner img" },
+          { id: 2, src: "/images/2-banner-eng.jpg", alt: "banner img" },
+        ]);
+      } else if (hostname.includes('valor-games.world')) {
+        // Nigeria domain
+        setBanners([
+          { id: 1, src: "/images/1-banner-nigeria.jpg", alt: "banner img" },
+          { id: 2, src: "/images/2-banner-eng.jpg", alt: "banner img" },
+        ]);
+      } else {
+        // Default (Spanish - valor-games.co and others)
+        setBanners([
+          { id: 1, src: "/images/1-banner.jpg", alt: "banner img" },
+          { id: 2, src: "/images/2-banner.jpg", alt: "banner img" },
+        ]);
+      }
+    }
+  }, []);
 
   const handleCarouselClick = () => {
     if (isAuthenticated) {
       router.push('/deposit');
     }
   };
-
-  const banners = [
-    {
-      id: 1,
-      src: "/images/1-banner.jpg",
-      alt: "banner img"
-    },
-    {
-      id: 2,
-      src: "/images/2-banner.jpg",
-      alt: "banner img"
-    },
-    {
-      id: 3,
-      src: "/images/1-banner.jpg",
-      alt: "banner img"
-    },
-    {
-      id: 4,
-      src: "/images/2-banner.jpg",
-      alt: "banner img"
-    }
-  ];
 
   return (
     <section className="px-4 py-4">
