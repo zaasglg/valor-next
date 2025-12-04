@@ -285,7 +285,7 @@ export default function DepositPage() {
     } else {
         paymentMethods = [
             { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
-            // { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
+            { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
         ];
     }
 
