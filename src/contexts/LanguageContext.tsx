@@ -85,6 +85,26 @@ const translations = {
     'deposit.page_title': 'Recargar',
     'deposit.choose_method': 'Elige el método de depósito',
     
+    // Register dialog
+    'register.title': 'Creación de cuenta',
+    'register.email': 'Correo electrónico',
+    'register.email_placeholder': 'Correo electrónico',
+    'register.password': 'Contraseña',
+    'register.password_placeholder': 'Contraseña',
+    'register.country': 'País',
+    'register.country_placeholder': 'Selecciona tu país',
+    'register.all_fields_required': 'Todos los campos son obligatorios',
+    'register.creating_account': 'Creando cuenta...',
+    'register.open_account': 'Abrir cuenta',
+    'register.terms_agreement': 'Estoy familiarizado y de acuerdo con',
+    'register.terms_link': 'las condiciones del acuerdo de uso del sitio',
+    'register.bonus_bets': '¡Obtén un 650% en apuestas!',
+    'register.bonus_casino': '¡Obtén un 650% en el casino!',
+    'register.bonus_cashback': '¡Obtén hasta un 30% de reembolsos!',
+    'register.have_account': '¿Ya tiene cuenta?',
+    'register.login': 'Ingresar',
+    'register.error': 'Error al registrarse',
+    
     // Detalization page
     'detalization.deposits': 'depósitos',
     'detalization.payments': 'pagos',
@@ -362,6 +382,26 @@ const translations = {
     // Additional deposit texts
     'deposit.page_title': 'Recharge',
     'deposit.choose_method': 'Choose deposit method',
+    
+    // Register dialog
+    'register.title': 'Create account',
+    'register.email': 'Email',
+    'register.email_placeholder': 'Email',
+    'register.password': 'Password',
+    'register.password_placeholder': 'Password',
+    'register.country': 'Country',
+    'register.country_placeholder': 'Select your country',
+    'register.all_fields_required': 'All fields are required',
+    'register.creating_account': 'Creating account...',
+    'register.open_account': 'Open account',
+    'register.terms_agreement': 'I am familiar and agree with',
+    'register.terms_link': 'the terms and conditions of use of the site',
+    'register.bonus_bets': 'Get 650% on bets!',
+    'register.bonus_casino': 'Get 650% at the casino!',
+    'register.bonus_cashback': 'Get up to 30% cashback!',
+    'register.have_account': 'Already have an account?',
+    'register.login': 'Login',
+    'register.error': 'Registration error',
     
     // Detalization page
     'detalization.deposits': 'deposits',
@@ -641,6 +681,26 @@ const translations = {
     'deposit.page_title': 'Recarregar',
     'deposit.choose_method': 'Escolha o método de depósito',
     
+    // Register dialog
+    'register.title': 'Criar conta',
+    'register.email': 'Email',
+    'register.email_placeholder': 'Email',
+    'register.password': 'Senha',
+    'register.password_placeholder': 'Senha',
+    'register.country': 'País',
+    'register.country_placeholder': 'Selecione seu país',
+    'register.all_fields_required': 'Todos os campos são obrigatórios',
+    'register.creating_account': 'Criando conta...',
+    'register.open_account': 'Abrir conta',
+    'register.terms_agreement': 'Estou familiarizado e concordo com',
+    'register.terms_link': 'os termos e condições de uso do site',
+    'register.bonus_bets': 'Ganhe 650% em apostas!',
+    'register.bonus_casino': 'Ganhe 650% no cassino!',
+    'register.bonus_cashback': 'Ganhe até 30% de cashback!',
+    'register.have_account': 'Já tem uma conta?',
+    'register.login': 'Entrar',
+    'register.error': 'Erro ao registrar',
+    
     // Detalization page
     'detalization.deposits': 'depósitos',
     'detalization.payments': 'pagamentos',
@@ -919,6 +979,26 @@ const translations = {
     'deposit.page_title': 'إعادة شحن',
     'deposit.choose_method': 'اختر طريقة الإيداع',
     
+    // Register dialog
+    'register.title': 'إنشاء حساب',
+    'register.email': 'البريد الإلكتروني',
+    'register.email_placeholder': 'البريد الإلكتروني',
+    'register.password': 'كلمة المرور',
+    'register.password_placeholder': 'كلمة المرور',
+    'register.country': 'البلد',
+    'register.country_placeholder': 'اختر بلدك',
+    'register.all_fields_required': 'جميع الحقول مطلوبة',
+    'register.creating_account': 'جاري إنشاء الحساب...',
+    'register.open_account': 'فتح حساب',
+    'register.terms_agreement': 'أنا على دراية وأوافق على',
+    'register.terms_link': 'شروط وأحكام استخدام الموقع',
+    'register.bonus_bets': 'احصل على 650% على الرهانات!',
+    'register.bonus_casino': 'احصل على 650% في الكازينو!',
+    'register.bonus_cashback': 'احصل على ما يصل إلى 30% استرداد نقدي!',
+    'register.have_account': 'هل لديك حساب بالفعل؟',
+    'register.login': 'تسجيل الدخول',
+    'register.error': 'خطأ في التسجيل',
+    
     // Detalization page
     'detalization.deposits': 'الإيداعات',
     'detalization.payments': 'المدفوعات',
@@ -1196,6 +1276,26 @@ const translations = {
     // Additional deposit texts
     'deposit.page_title': 'Recharger',
     'deposit.choose_method': 'Choisissez la méthode de dépôt',
+    
+    // Register dialog
+    'register.title': 'Créer un compte',
+    'register.email': 'Email',
+    'register.email_placeholder': 'Email',
+    'register.password': 'Mot de passe',
+    'register.password_placeholder': 'Mot de passe',
+    'register.country': 'Pays',
+    'register.country_placeholder': 'Sélectionnez votre pays',
+    'register.all_fields_required': 'Tous les champs sont obligatoires',
+    'register.creating_account': 'Création du compte...',
+    'register.open_account': 'Ouvrir un compte',
+    'register.terms_agreement': 'Je suis familiarisé et j\'accepte',
+    'register.terms_link': 'les conditions d\'utilisation du site',
+    'register.bonus_bets': 'Obtenez 650% sur les paris!',
+    'register.bonus_casino': 'Obtenez 650% au casino!',
+    'register.bonus_cashback': 'Obtenez jusqu\'à 30% de remboursement!',
+    'register.have_account': 'Vous avez déjà un compte?',
+    'register.login': 'Se connecter',
+    'register.error': 'Erreur d\'inscription',
     
     // Detalization page
     'detalization.deposits': 'dépôts',
