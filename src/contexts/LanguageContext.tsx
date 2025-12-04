@@ -1410,31 +1410,35 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedLanguage = localStorage.getItem('language') as Language;
-      if (savedLanguage && ['es', 'en', 'pt', 'ar', 'fr'].includes(savedLanguage)) {
-        setLanguage(savedLanguage);
-      } else {
-        // Determine language based on domain
-        const hostname = window.location.hostname.toLowerCase();
-        
-        // Domain to language mapping
-        const domainLanguageMap: Record<string, Language> = {
-          'https://valor-games.co': 'es',
-          'https://valor-games.world': 'en',
-          'https://valor-games.online': 'en',
-        };
-        
-        // Check if domain matches any in the mapping
-        let detectedLanguage: Language = 'es'; // default
-        for (const [domain, lang] of Object.entries(domainLanguageMap)) {
-          if (hostname.includes(domain)) {
-            detectedLanguage = lang;
-            break;
-          }
+      const hostname = window.location.hostname.toLowerCase();
+      
+      // Domain to language mapping - DOMAIN HAS PRIORITY
+      const domainLanguageMap: Record<string, Language> = {
+        'valor-games.co': 'es',
+        'valor-games.world': 'en',
+        'valor-games.online': 'en',
+      };
+      
+      // Check if domain matches any in the mapping
+      let detectedLanguage: Language | null = null;
+      for (const [domain, lang] of Object.entries(domainLanguageMap)) {
+        if (hostname.includes(domain)) {
+          detectedLanguage = lang;
+          break;
         }
-        
-        // If no domain match, use browser locale
-        if (!Object.keys(domainLanguageMap).some(domain => hostname.includes(domain))) {
+      }
+      
+      // If domain matched, use that language
+      if (detectedLanguage) {
+        setLanguage(detectedLanguage);
+        localStorage.setItem('language', detectedLanguage);
+      } else {
+        // No domain match - check localStorage or browser locale
+        const savedLanguage = localStorage.getItem('language') as Language;
+        if (savedLanguage && ['es', 'en', 'pt', 'ar', 'fr'].includes(savedLanguage)) {
+          setLanguage(savedLanguage);
+        } else {
+          // Use browser locale as fallback
           const browserLanguage = navigator.language || navigator.languages?.[0] || 'es';
           const languageCode = browserLanguage.split('-')[0].toLowerCase();
           
@@ -1446,11 +1450,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
             'fr': 'fr',
           };
           
-          detectedLanguage = languageMap[languageCode] || 'es';
+          const fallbackLanguage = languageMap[languageCode] || 'es';
+          setLanguage(fallbackLanguage);
+          localStorage.setItem('language', fallbackLanguage);
         }
-        
-        setLanguage(detectedLanguage);
-        localStorage.setItem('language', detectedLanguage);
       }
     }
   }, []);
