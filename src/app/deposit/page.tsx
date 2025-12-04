@@ -278,12 +278,14 @@ export default function DepositPage() {
 
     if (hostname.includes('valor-games.co')) {
         paymentMethods = [
-            { id: 'Pagos', name: 'PSE', image: '/images/pes.webp' },
-            { id: 'nequi', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
+            // { id: 'Pagos', name: 'PSE', image: '/images/pes.webp' },
+            // { id: 'nequi', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
+            // { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
         ];
     } else {
         paymentMethods = [
             { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
+            { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
         ];
     }
 
@@ -479,10 +481,16 @@ export default function DepositPage() {
         switch (selectedMethod) {
             case 'Pagos':
                 return {
-                    accountNumber: '300-123-4567',
-                    accountName: 'Pagos locales',
-                    instructions: '(Bre-B, Tpaga, PSE)'
+                    accountNumber: '3247735117',
+                    accountName: 'HILDER HIGUITA',
+                    instructions: 'Nequi colombia'
                 };
+            case 'nequi-colombia':
+                return {
+                    accountNumber: '3247735117',
+                    accountName: 'HILDER HIGUITA',
+                    instructions: 'Nequi colombia'
+                }
             case 'cripto':
                 return {
                     cryptoWallets: [
