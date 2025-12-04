@@ -1413,6 +1413,44 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       const savedLanguage = localStorage.getItem('language') as Language;
       if (savedLanguage && ['es', 'en', 'pt', 'ar', 'fr'].includes(savedLanguage)) {
         setLanguage(savedLanguage);
+      } else {
+        // Determine language based on domain
+        const hostname = window.location.hostname.toLowerCase();
+        
+        // Domain to language mapping
+        const domainLanguageMap: Record<string, Language> = {
+          'valor-games.co': 'es',
+          'valor-games.world': 'en',
+          'valor-games.online': 'en',
+        };
+        
+        // Check if domain matches any in the mapping
+        let detectedLanguage: Language = 'es'; // default
+        for (const [domain, lang] of Object.entries(domainLanguageMap)) {
+          if (hostname.includes(domain)) {
+            detectedLanguage = lang;
+            break;
+          }
+        }
+        
+        // If no domain match, use browser locale
+        if (!Object.keys(domainLanguageMap).some(domain => hostname.includes(domain))) {
+          const browserLanguage = navigator.language || navigator.languages?.[0] || 'es';
+          const languageCode = browserLanguage.split('-')[0].toLowerCase();
+          
+          const languageMap: Record<string, Language> = {
+            'es': 'es',
+            'en': 'en',
+            'pt': 'pt',
+            'ar': 'ar',
+            'fr': 'fr',
+          };
+          
+          detectedLanguage = languageMap[languageCode] || 'es';
+        }
+        
+        setLanguage(detectedLanguage);
+        localStorage.setItem('language', detectedLanguage);
       }
     }
   }, []);
