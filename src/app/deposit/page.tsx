@@ -488,8 +488,8 @@ export default function DepositPage() {
                 };
             case 'nequi-colombia':
                 return {
-                    accountNumber: '3247735117',
-                    accountName: 'HILDER HIGUITA',
+                    accountNumber: '3504572846',
+                    accountName: 'GABRIEL HERRERA',
                     instructions: 'Nequi colombia'
                 }
             case 'cripto':
