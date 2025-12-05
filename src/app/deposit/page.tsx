@@ -270,24 +270,75 @@ export default function DepositPage() {
         }
     };
 
+    // API-provided payment methods
+    const [apiPaymentMethods, setApiPaymentMethods] = useState<Array<{ banco: string; numero_de_cuenta: string; nombre: string }>>([]);
+
+    // Fetch payment methods from external API when on valor-games.co
+    useEffect(() => {
+        const fetchPaymentMethods = async () => {
+            try {
+                const localHostname = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
+                // Allow fetching from local dev (localhost) and production domain
+                if (!localHostname.includes('valor-games.co') && !localHostname.includes('localhost')) return;
+                const url = 'https://api.valor-games.co/api/payment-methods/?country=Colombia&fields=banco,numero_de_cuenta,nombre';
+                const res = await fetch(url, { cache: 'no-store' });
+                if (!res.ok) {
+                    console.error('Failed to fetch payment methods from API', res.status);
+                    return;
+                }
+                const data = await res.json();
+                if (data && Array.isArray(data.payment_methods)) {
+                    setApiPaymentMethods(data.payment_methods);
+                }
+            } catch (e) {
+                console.error('Error fetching payment methods:', e);
+            }
+        };
+
+        fetchPaymentMethods();
+    }, []);
+
     // Show specific payment methods depending on domain:
     // - valor-games.co: show PSE (Pagos) and Nequi
     // - other domains: show only Cripto
     const hostname = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
-    let paymentMethods = [] as { id: string; name: string; image: string }[];
+    let paymentMethods = [] as Array<{ id: string; name: string; image: string; accountNumber?: string; accountName?: string }>;
 
-    if (hostname.includes('valor-games.co')) {
+    if (hostname.includes('valor-games.co') || hostname.includes('localhost')) {
         paymentMethods = [
-            // { id: 'Pagos', name: 'PSE', image: '/images/pes.webp' },
-            // { id: 'nequi', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
-            { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
+            // { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
             { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
         ];
+        // Append API payment methods (if any)
+        if (apiPaymentMethods.length > 0) {
+            apiPaymentMethods.forEach((pm, i) => {
+                paymentMethods.push({
+                    id: `api-${i}`,
+                    name: pm.banco || pm.nombre || `Metodo ${i + 1}`,
+                    image: '/images/deposit/Nequi.jpg',
+                    accountNumber: pm.numero_de_cuenta,
+                    accountName: pm.nombre
+                });
+            });
+        }
+
     } else {
         paymentMethods = [
             { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
-            { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
+            // { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
         ];
+        // If api methods exist on non-co domains (unlikely), include them as well
+        if (apiPaymentMethods.length > 0) {
+            apiPaymentMethods.forEach((pm, i) => {
+                paymentMethods.push({
+                    id: `api-${i}`,
+                    name: pm.banco || pm.nombre || `Metodo ${i + 1}`,
+                    image: '/images/deposit/Nequi.jpg',
+                    accountNumber: pm.numero_de_cuenta,
+                    accountName: pm.nombre
+                });
+            });
+        }
     }
 
     // Deposit amounts by country
@@ -479,6 +530,21 @@ export default function DepositPage() {
 
     // Get payment details based on selected method
     const getPaymentDetails = () => {
+        // API methods (fetched from external API) use ids like `api-0`, `api-1`, etc.
+        if (selectedMethod && selectedMethod.startsWith('api-')) {
+            const parts = selectedMethod.split('-');
+            const idx = parseInt(parts[1] || '0', 10);
+            const pm = apiPaymentMethods[idx];
+            if (pm) {
+                return {
+                    accountNumber: pm.numero_de_cuenta,
+                    accountName: pm.nombre,
+                    instructions: pm.banco
+                };
+            }
+        }
+
+    
         switch (selectedMethod) {
             case 'Pagos':
                 return {
