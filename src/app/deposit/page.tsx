@@ -388,6 +388,7 @@ export default function DepositPage() {
         'Honduras': [350, 700, 1500, 3000],
         'Dominican Republic': [800, 1500, 3000, 6000],
         'Ecuador': [12, 15, 30, 60],
+        'Zimbabwe': [1000, 10000, 20000, 40000],
         'default': [10, 25, 50, 100]
     };
 
@@ -408,6 +409,7 @@ export default function DepositPage() {
         'Honduras': 'HNL',
         'Dominican Republic': 'DOP',
         'Ecuador': '$',
+        'Zimbabwe': 'ZWL',
         'default': '$'
     };
 

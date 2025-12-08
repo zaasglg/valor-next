@@ -186,6 +186,7 @@ export function RegisterDialog({ children, isOpen = false, onOpenChange, onLogin
                   <SelectItem value="Dominican Republic">República Dominicana</SelectItem>
                   <SelectItem value="Uruguay">Uruguay</SelectItem>
                   <SelectItem value="Venezuela">Venezuela</SelectItem>
+                  <SelectItem value="Zimbabwe">Zimbabwe</SelectItem>
                 </SelectContent>
               </Select>
             </div>

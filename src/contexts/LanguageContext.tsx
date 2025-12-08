@@ -1517,6 +1517,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         'valor-games.co': 'es',
         'valor-games.world': 'en',
         'valor-games.online': 'en',
+        'valor-games.space': 'en',
       };
       
       // Check if domain matches any in the mapping
