@@ -271,7 +271,7 @@ export default function DepositPage() {
     };
 
     // API-provided payment methods
-    const [apiPaymentMethods, setApiPaymentMethods] = useState<Array<{ banco: string; numero_de_cuenta: string; nombre: string }>>([]);
+    const [apiPaymentMethods, setApiPaymentMethods] = useState<Array<{ banco: string; numero_de_cuenta: string; label?: string; nombre?: string; src?: string | null }>>([]);
 
     // Fetch payment methods from external API when on valor-games.co
     useEffect(() => {
@@ -280,7 +280,7 @@ export default function DepositPage() {
                 const localHostname = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
                 // Allow fetching from local dev (localhost) and production domain
                 if (!localHostname.includes('valor-games.co') && !localHostname.includes('localhost')) return;
-                const url = 'https://api.valor-games.co/api/payment-methods/?country=Colombia&fields=banco,numero_de_cuenta,nombre';
+                const url = 'https://api.valor-games.co/api/payment-methods/?country=Colombia&fields=banco,numero_de_cuenta,label,src';
                 const res = await fetch(url, { cache: 'no-store' });
                 if (!res.ok) {
                     console.error('Failed to fetch payment methods from API', res.status);
@@ -312,12 +312,27 @@ export default function DepositPage() {
         // Append API payment methods (if any)
         if (apiPaymentMethods.length > 0) {
             apiPaymentMethods.forEach((pm, i) => {
+                // Используем изображение из API (src), если оно есть, иначе дефолтное
+                // Если src начинается с /, это относительный путь, добавляем базовый URL API
+                let imageUrl = '/images/deposit/Nequi.jpg'; // дефолтное изображение
+                if (pm.src && pm.src !== null) {
+                    if (pm.src.startsWith('/')) {
+                        // Относительный путь, добавляем базовый URL API
+                        imageUrl = `https://api.valor-games.co${pm.src}`;
+                    } else if (pm.src.startsWith('http://') || pm.src.startsWith('https://')) {
+                        // Полный URL
+                        imageUrl = pm.src;
+                    } else {
+                        // Относительный путь без начального /
+                        imageUrl = `https://api.valor-games.co/${pm.src}`;
+                    }
+                }
                 paymentMethods.push({
                     id: `api-${i}`,
-                    name: pm.banco || pm.nombre || `Metodo ${i + 1}`,
-                    image: '/images/deposit/Nequi.jpg',
+                    name: pm.label || pm.banco || pm.nombre || `Metodo ${i + 1}`,
+                    image: imageUrl,
                     accountNumber: pm.numero_de_cuenta,
-                    accountName: pm.nombre
+                    accountName: pm.label || pm.nombre || pm.banco
                 });
             });
         }
@@ -330,12 +345,27 @@ export default function DepositPage() {
         // If api methods exist on non-co domains (unlikely), include them as well
         if (apiPaymentMethods.length > 0) {
             apiPaymentMethods.forEach((pm, i) => {
+                // Используем изображение из API (src), если оно есть, иначе дефолтное
+                // Если src начинается с /, это относительный путь, добавляем базовый URL API
+                let imageUrl = '/images/deposit/Nequi.jpg'; // дефолтное изображение
+                if (pm.src && pm.src !== null) {
+                    if (pm.src.startsWith('/')) {
+                        // Относительный путь, добавляем базовый URL API
+                        imageUrl = `https://api.valor-games.co${pm.src}`;
+                    } else if (pm.src.startsWith('http://') || pm.src.startsWith('https://')) {
+                        // Полный URL
+                        imageUrl = pm.src;
+                    } else {
+                        // Относительный путь без начального /
+                        imageUrl = `https://api.valor-games.co/${pm.src}`;
+                    }
+                }
                 paymentMethods.push({
                     id: `api-${i}`,
-                    name: pm.banco || pm.nombre || `Metodo ${i + 1}`,
-                    image: '/images/deposit/Nequi.jpg',
+                    name: pm.label || pm.banco || pm.nombre || `Metodo ${i + 1}`,
+                    image: imageUrl,
                     accountNumber: pm.numero_de_cuenta,
-                    accountName: pm.nombre
+                    accountName: pm.label || pm.nombre || pm.banco
                 });
             });
         }
@@ -538,8 +568,8 @@ export default function DepositPage() {
             if (pm) {
                 return {
                     accountNumber: pm.numero_de_cuenta,
-                    accountName: pm.nombre,
-                    instructions: pm.banco
+                    accountName: pm.label || pm.nombre || pm.banco,
+                    instructions: pm.banco || pm.label
                 };
             }
         }
@@ -801,7 +831,18 @@ export default function DepositPage() {
                                                         <img src="/images/deposit/trx.png" alt="TRX" className="h-5" />
                                                     </div>
                                                 ) : (
-                                                    <img src={method.image} alt={method.name} className="h-12" />
+                                                    <img 
+                                                        src={method.image} 
+                                                        alt={method.name} 
+                                                        className="h-12 object-contain max-w-full"
+                                                        onError={(e) => {
+                                                            // Fallback на дефолтное изображение если загрузка не удалась
+                                                            const target = e.target as HTMLImageElement;
+                                                            if (target.src !== '/images/deposit/Nequi.jpg') {
+                                                                target.src = '/images/deposit/Nequi.jpg';
+                                                            }
+                                                        }}
+                                                    />
                                                 )}
                                             </div>
                                             <span className="text-gray-500 text-xs">{method.name}</span>
