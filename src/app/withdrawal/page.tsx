@@ -38,7 +38,8 @@ export default function WithdrawalPage() {
         ecuador: { min: 8000, max: 12000, fee: 100, currency: '$ USD', feeLabel: '$ USD' },
         paraguay: { min: 80000000, max: 120000000, fee: 600000, currency: 'PYG', feeLabel: 'PYG' },
         nigeria: { min: 35000, max: 500000, fee: 500000, currency: 'NGN', feeLabel: 'NGN' },
-        kenya: { min: 35000, max: 500000, fee: 500000, currency: 'KES', feeLabel: 'KES' }
+        kenya: { min: 35000, max: 500000, fee: 500000, currency: 'KES', feeLabel: 'KES' },
+        zimbabwe: { min: 70000, max: 500000, fee: 10000, currency: 'ZWL', feeLabel: 'ZWL' }
     };
 
     const formatAmount = (value: number, currency: string) => {
@@ -58,6 +59,7 @@ export default function WithdrawalPage() {
         if (c.includes('paragu') || c === 'py') return 'paraguay';
         if (c.includes('niger') || c === 'ng' || c === 'nga') return 'nigeria';
         if (c.includes('kenya') || c === 'ke') return 'kenya';
+        if (c.includes('zimbabw') || c === 'zw') return 'zimbabwe';
         return null;
     };
 
@@ -68,7 +70,8 @@ export default function WithdrawalPage() {
         ecuador: 50,
         paraguay: 300000,
         nigeria: 1,
-        kenya: 1
+        kenya: 1,
+        zimbabwe: 1
     };
 
     // Получить ключ страны
@@ -362,6 +365,10 @@ export default function WithdrawalPage() {
                                                     minimumWithdraw = 300000;
                                                 } else if (country.includes('niger') || country === 'ng' || country === 'nga') {
                                                     minimumWithdraw = 1;
+                                                } else if (country.includes('kenya') || country === 'ke') {
+                                                    minimumWithdraw = 1;
+                                                } else if (country.includes('zimbabw') || country === 'zw') {
+                                                    minimumWithdraw = 1;
                                                 }
                                                 
                                                 // Check if balance is less than minimum withdrawal amount
@@ -417,6 +424,9 @@ export default function WithdrawalPage() {
                                                 } else if (userCountry.toLowerCase() === 'kenya' || userCountry.toLowerCase() === 'ke') {
                                                     minDelay = 1; 
                                                     maxDelay = 500000; 
+                                                } else if (userCountry.toLowerCase() === 'zimbabwe' || userCountry.toLowerCase() === 'zw') {
+                                                    minDelay = 1; 
+                                                    maxDelay = 70000; 
                                                 }
 
                                                 if (balanceAmount >= minDelay && balanceAmount < maxDelay) {
@@ -453,6 +463,11 @@ export default function WithdrawalPage() {
                                                     } else if (userCountry.toLowerCase() === 'kenya' || userCountry.toLowerCase() === 'ke') {
                                                         // Kenya: 3000 - 1500000 KES
                                                         if (balanceAmount >= 500000 && balanceAmount < 2000000) {
+                                                            shouldShowVerification = true;
+                                                        }
+                                                    } else if (userCountry.toLowerCase() === 'zimbabwe' || userCountry.toLowerCase() === 'zw') {
+                                                        // Zimbabwe: 70000 - 500000 ZWL
+                                                        if (balanceAmount >= 70000 && balanceAmount < 200000) {
                                                             shouldShowVerification = true;
                                                         }
                                                     }
