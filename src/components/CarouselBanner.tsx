@@ -40,7 +40,12 @@ export function CarouselBanner({ isAuthenticated }: CarouselBannerProps) {
           { id: 1, src: "/images/1-banner-nigeria.jpg", alt: "banner img" },
           { id: 2, src: "/images/2-banner-eng.jpg", alt: "banner img" },
         ]);
-      } else {
+      } else if (hostname.includes('valor-games.space')) {
+        setBanners([
+          { id: 1, src: "/images/1-banner-zimba.jpg", alt: "banner img" },
+          { id: 2, src: "/images/2-banner-eng.jpg", alt: "banner img" },
+        ]);
+      } else{
         // Default (Spanish - valor-games.co and others)
         setBanners([
           { id: 1, src: "/images/1-banner.jpg", alt: "banner img" },

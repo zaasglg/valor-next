@@ -74,6 +74,10 @@ export function RegisterDialog({ children, isOpen = false, onOpenChange, onLogin
     bannerDesktop = '/images/banner_register-nigeria.jpg';
     // As requested, mobile uses the Kenya mobile banner for this domain
     bannerMobile = '/images/banner_register_m-kenya.jpg';
+  } else if (hostname.includes('valor-games.space')) {
+    // Zimbabwe domain
+    bannerDesktop = '/images/banner_register-zimba.jpg';
+    bannerMobile = '/images/banner_register_m-zimba.jpg';
   }
 
   return (
