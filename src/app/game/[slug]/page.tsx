@@ -396,7 +396,7 @@ export default function GamePage({ params }: GamePageProps) {
                   {isGameLoading && (
                     <div className="absolute inset-0 bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center z-50 rounded-none lg:rounded pointer-events-none">
                       <Loader size="lg" color="white" type="dots" />
-                      <p className="text-lg font-semibold mt-4 text-white">Cargando juego...</p>
+                      <p className="text-lg font-semibold mt-4 text-white">{t('game_mode.loading_game')}</p>
                     </div>
                   )}
                 </div>

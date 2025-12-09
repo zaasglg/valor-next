@@ -32,6 +32,7 @@ const countryPhoneCodes: { [key: string]: string } = {
   "Venezuela": "+58",
   "Nigeria": "+234",
   "Kenya": "+254",
+  "Zimbabwe": "+263",
 };
 
 export default function ProfilePage() {

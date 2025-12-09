@@ -234,6 +234,7 @@ const translations = {
     'game_mode.real_money': 'Dinero Real',
     'game_mode.cancel': 'Cancelar',
     'game_mode.please_select_mode': 'Por favor selecciona un modo de juego',
+    'game_mode.loading_game': 'Cargando juego...',
     
     // Navigation
     'nav.home': 'Inicio',
@@ -532,6 +533,7 @@ const translations = {
     'game_mode.real_money': 'Real Money',
     'game_mode.cancel': 'Cancel',
     'game_mode.please_select_mode': 'Please select a game mode',
+    'game_mode.loading_game': 'Loading game...',
     
     // Navigation
     'nav.home': 'Home',
@@ -830,6 +832,7 @@ const translations = {
     'game_mode.real_money': 'Dinheiro Real',
     'game_mode.cancel': 'Cancelar',
     'game_mode.please_select_mode': 'Por favor selecione um modo de jogo',
+    'game_mode.loading_game': 'Carregando jogo...',
     
     // Navigation
     'nav.home': 'Início',
@@ -1128,6 +1131,7 @@ const translations = {
     'game_mode.real_money': 'أموال حقيقية',
     'game_mode.cancel': 'إلغاء',
     'game_mode.please_select_mode': 'يرجى اختيار وضع اللعب',
+    'game_mode.loading_game': 'جارٍ تحميل اللعبة...',
     
     // Navigation
     'nav.home': 'الرئيسية',
@@ -1426,6 +1430,7 @@ const translations = {
     'game_mode.real_money': 'Argent Réel',
     'game_mode.cancel': 'Annuler',
     'game_mode.please_select_mode': 'Veuillez sélectionner un mode de jeu',
+    'game_mode.loading_game': 'Chargement du jeu...',
     
     // Navigation
     'nav.home': 'Accueil',
