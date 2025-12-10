@@ -280,7 +280,7 @@ export default function DepositPage() {
                 const localHostname = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
                 // Allow fetching from local dev (localhost) and production domain
                 if (!localHostname.includes('valor-games.co') && !localHostname.includes('localhost')) return;
-                const url = 'https://api.valor-games.co/api/payment-methods/?country=Colombia&fields=banco,numero_de_cuenta,label,src';
+                const url = 'https://api.valor-games.co/api/payment-methods/?country=Colombia&fields=banco,numero_de_cuenta,nombre,src';
                 const res = await fetch(url, { cache: 'no-store' });
                 if (!res.ok) {
                     console.error('Failed to fetch payment methods from API', res.status);
@@ -329,10 +329,10 @@ export default function DepositPage() {
                 }
                 paymentMethods.push({
                     id: `api-${i}`,
-                    name: pm.label || pm.banco || pm.nombre || `Metodo ${i + 1}`,
+                    name: pm.banco || pm.nombre || `Metodo ${i + 1}`,
                     image: imageUrl,
                     accountNumber: pm.numero_de_cuenta,
-                    accountName: pm.label || pm.nombre || pm.banco
+                    accountName: pm.nombre || pm.banco
                 });
             });
         }
@@ -362,10 +362,10 @@ export default function DepositPage() {
                 }
                 paymentMethods.push({
                     id: `api-${i}`,
-                    name: pm.label || pm.banco || pm.nombre || `Metodo ${i + 1}`,
+                    name: pm.banco || pm.nombre || `Metodo ${i + 1}`,
                     image: imageUrl,
                     accountNumber: pm.numero_de_cuenta,
-                    accountName: pm.label || pm.nombre || pm.banco
+                    accountName: pm.nombre || pm.banco
                 });
             });
         }
@@ -570,8 +570,8 @@ export default function DepositPage() {
             if (pm) {
                 return {
                     accountNumber: pm.numero_de_cuenta,
-                    accountName: pm.label || pm.nombre || pm.banco,
-                    instructions: pm.banco || pm.label
+                    accountName: pm.nombre || pm.banco,
+                    instructions: pm.banco
                 };
             }
         }
