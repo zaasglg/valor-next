@@ -588,8 +588,8 @@ const translations = {
     'home.all_games_filter': 'All Games',
     
     // Footer
-    'footer.company_info': 'The information on the site is provided by the site operator - ValorBet N.V. company, registered at: Palm Avenue 10, Rosebank, Sint Maarten. The activity of ValorBet N.V. company is licensed and regulated by IslandGames N.V. (license number: No. 1234/JAZ2021-567; valid until December 31, 2025) and by Sint Maarten legislation. Payments are processed by Global Invest Solutions Ltd (registration number: HE 654321, address: Ocean Drive 22, Mesa Verde, 5678, Limassol, Cyprus), a subsidiary of ValorBet N.V.',
-    'footer.copyright': '© 2021 - 2025. ValorCasino. All Rights Reserved',
+    'footer.company_info': 'The information on this site is provided by the operator Phoenix Space:  Address: 11 Hope Road, Mountain View, Johannesburg, Gauteng, 2192, South Africa.All payment processing and operational activities are carried out in accordance with applicable regulations of South Africa.',
+    'footer.copyright': '© 2024 - 2025. All Rights Reserved.',
     'footer.legal_info': 'Legal Information',
     
     // Policies page
