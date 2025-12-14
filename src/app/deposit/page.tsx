@@ -4,13 +4,14 @@ import { Input } from "@/components/ui/input";
 import ProfileSidebar from "../../components/ProfileSidebar";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Clock, Copy, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import Link from "next/link";
 import { useBalanceContext } from "@/contexts/BalanceContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import crypto from 'crypto';
 
 export default function DepositPage() {
     const router = useRouter();
@@ -21,6 +22,11 @@ export default function DepositPage() {
     const [customAmount, setCustomAmount] = useState(''); // Стартовое значение пустое
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [momoNumber, setMomoNumber] = useState('');
+    const [cardNumber, setCardNumber] = useState('');
+    const [expiryMonthNumber, setExpiryMonthNumber] = useState('');
+    const [expiryYearNumber, setExpiryYearNumber] = useState('');
+    const [cvvNumber, setCVVNumber] = useState('');
     const [birthDate, setBirthDate] = useState('');
     const [taxId, setTaxId] = useState('');
     const [userEmail, setUserEmail] = useState('');
@@ -28,6 +34,14 @@ export default function DepositPage() {
     const [showWarning, setShowWarning] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
+    const [showCashonrailsPayment, setShowCashonrailsPayment] = useState(false);
+    const [cashonrailsPayment, setCashonrailsPayment] = useState<{
+        data?: {
+            account_number?: string;
+            bank_name?: string;
+            account_name?: string;
+        };
+    }>({});
 
     // Bonus states
     const [firstBonusUsed, setFirstBonusUsed] = useState(false);
@@ -58,6 +72,42 @@ export default function DepositPage() {
             setTaxId('');
         }
     }, [selectedMethod]);
+
+
+    function generateRandomString(length:number) {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
+
+    function encryptCardDetails(cardData:any, publicKey:string, reference:string) {
+        // Generate reference with prefix and timestamp
+
+        // Use first 16 chars of reference as IV
+        const iv = reference.slice(0, 16);
+
+        // Prepare the encryption key
+        const key = Buffer.from(publicKey, 'utf-8');
+        const ivBuffer = Buffer.from(iv, 'utf-8');
+
+        try {
+            // Create cipher
+            const cipher = crypto.createCipheriv('aes-256-cbc', key, ivBuffer);
+
+            // Encrypt the data
+            let encrypted = cipher.update(JSON.stringify(cardData), 'utf8', 'hex');
+            encrypted += cipher.final('hex');
+
+            return encrypted;
+        } catch (error:any) {
+            throw new Error(`Encryption failed: ${error.message}`);
+        }
+    }
 
 
 
@@ -195,7 +245,7 @@ export default function DepositPage() {
                     formData.append('currency', userCurrency || 'COP');
                     
                     const raynixUuid = result.raynix_order_id || result.order_id;
-                    const timestampOrderId = result.orderid;
+                    const timestampOrderId = result.order_id;
                     
                     if (raynixUuid) {
                         formData.append('order_id', String(raynixUuid));
@@ -270,6 +320,186 @@ export default function DepositPage() {
         }
     };
 
+    const handleCashonrailsPayment = async (amount: number) => {
+        setIsCreatingPaymentLink(true);
+        try {
+
+            const requestData = {
+                first_name: firstName || 'kevin daniel',
+                last_name: lastName || 'Diaz Narvaez',
+                country: 'CO',
+                email: userEmail || 'kevindanieldiazn@gmail.com',
+                amount: amount.toString(),
+                currency: userCurrency,
+                method: selectedMethod,
+                momoNumber: momoNumber,
+                card: "",
+                reference: ""
+            };
+
+            if(selectedMethod == "card"){
+                const reference="vlcard"+generateRandomString(16);
+                const cardData = {
+                    number: cardNumber,
+                    cvv: cvvNumber,
+                    expiryMonth: expiryMonthNumber,
+                    expiryYear: expiryYearNumber
+                };
+
+                const result = encryptCardDetails(cardData, 'pk_test_mznpgejwsaljnjbrhzd71wyzcdes7yxfeme6nt'.slice(0, 32),reference);
+                console.log("result",result);
+
+                requestData.card=result;
+                requestData.reference=reference;
+            }
+
+            console.log('Sending Cashonrails request:', requestData);
+
+            // Make API request to our proxy endpoint
+            const response = await fetch('/api/cashonrails', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Cashonrails API Error Details:', errorData);
+                setIsCreatingPaymentLink(false);
+                alert(errorData.error);
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Cashonrails API Response:', result);
+
+            // Check if response contains payment_link (successful response)
+            if (result.order_id) {
+                console.log('Payment successful! Order ID:', result.order_id);
+                console.log('Full Cashonrails result:', result);
+
+                localStorage.setItem('pagos_order_id', result.order_id || '');
+                // localStorage.setItem('pagos_raynix_uuid', result.raynix_order_id || result.order_id || '');
+                // if (result.orderid) {
+                //     localStorage.setItem('pagos_orderid_fallback', String(result.orderid));
+                // }
+
+                // Create transaction record in database
+                try {
+                    const token = localStorage.getItem('access_token');
+                    console.log('Creating transaction record for Cashonrails payment...');
+
+                    // Calculate bonus
+                    let bonusAmount = 0;
+                    let totalAmount = amount;
+
+                    if (!firstBonusUsed && showBonusSection && selectedBonusAmount && selectedBonusAmount.percentage > 0) {
+                        bonusAmount = Math.floor((amount * selectedBonusAmount.percentage) / 100);
+                        totalAmount = amount + bonusAmount;
+                    }
+                    console.log('result.order_id type:', typeof result.order_id);
+
+                    // Create FormData for transaction with required fields
+                    const formData = new FormData();
+                    formData.append('transacciones_data', new Date().toISOString());
+                    formData.append('transacciones_monto', totalAmount.toString());
+                    formData.append('metodo_de_pago', selectedMethod);
+                    formData.append('amount_usd', totalAmount.toString());
+                    formData.append('currency', userCurrency || 'NGN');
+
+                    const raynixUuid = result.raynix_order_id || result.order_id;
+                    const timestampOrderId = result.orderid;
+
+                    if (raynixUuid) {
+                        formData.append('order_id', String(raynixUuid));
+                    }
+                    if (timestampOrderId) {
+                        formData.append('transaccion_number', String(timestampOrderId));
+                    }
+
+                    const transactionResponse = await fetch('/api/transactions/create/', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: formData
+                    });
+
+                    console.log('Transaction response status:', transactionResponse.status);
+
+                    if (transactionResponse.ok) {
+                        const transactionData = await transactionResponse.json();
+                        console.log('Transaction record created successfully:', transactionData);
+                        // Update balance after successful deposit
+                        refreshBalance();
+                    } else {
+                        console.error('Transaction response failed with status:', transactionResponse.status);
+                        console.error('Response headers:', Object.fromEntries(transactionResponse.headers.entries()));
+
+                        try {
+                            const errorData = await transactionResponse.json();
+                            console.error('Error data (JSON):', JSON.stringify(errorData, null, 2));
+                        } catch (parseError) {
+                            console.error('Failed to parse JSON, trying text...');
+                            try {
+                                const errorText = await transactionResponse.text();
+                                console.error('Error text:', errorText);
+                            } catch (textError) {
+                                console.error('Failed to get response text:', textError);
+                            }
+                        }
+                    }
+                } catch (transactionError) {
+                    console.error('Error creating transaction record:', transactionError);
+                }
+
+                if(result.redirect_url){
+                    // Open payment page in new tab
+                    window.open(result.redirect_url);
+                }else{
+                    //If it is card
+                    if(selectedMethod =="card" && result.paymentCompleted){
+                        setIsCreatingPaymentLink(false);
+                        setShowSuccess(true);
+                        refreshBalance();
+                        router.push('/detalization');
+                    }else{
+                        setCashonrailsPayment(result);
+                        setShowCashonrailsPayment(true);
+                    }
+
+                }
+
+                // Reset button state after 2 seconds
+                setTimeout(() => {
+                    setIsCreatingPaymentLink(false);
+                    setIsProcessing(false);
+                }, 2000);
+
+            } else if (result.success || result.status === 'success') {
+                // Handle other success formats
+                if (result.redirect_url) {
+                    window.open(result.redirect_url);
+                }
+                setIsCreatingPaymentLink(false);
+                setShowSuccess(true);
+            } else {
+                // Handle error response
+                console.error('Pagos API Error:', result);
+                setIsCreatingPaymentLink(false);
+                setShowWarning(true);
+            }
+
+        } catch (error) {
+            console.error('Error processing Pagos payment:', error);
+            setIsCreatingPaymentLink(false);
+            setShowWarning(true);
+        }
+    };
+
+
     // API-provided payment methods
     const [apiPaymentMethods, setApiPaymentMethods] = useState<Array<{ banco: string; numero_de_cuenta: string; label?: string; nombre?: string; src?: string | null }>>([]);
 
@@ -304,10 +534,11 @@ export default function DepositPage() {
     const hostname = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
     let paymentMethods = [] as Array<{ id: string; name: string; image: string; accountNumber?: string; accountName?: string }>;
 
-    if (hostname.includes('valor-games.co') || hostname.includes('localhost')) {
+    if (hostname.includes('valor-games.co')) {
         paymentMethods = [
             // { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
             { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
+            // { id: 'cashorinial', name: 'cashorinial', image: '/images/cash.svg' },
         ];
         // Append API payment methods (if any)
         if (apiPaymentMethods.length > 0) {
@@ -338,37 +569,24 @@ export default function DepositPage() {
         }
 
     } else {
-        paymentMethods = [
-            { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
-            // { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
-        ];
-        // If api methods exist on non-co domains (unlikely), include them as well
-        if (apiPaymentMethods.length > 0) {
-            apiPaymentMethods.forEach((pm, i) => {
-                // Используем изображение из API (src), если оно есть, иначе дефолтное
-                // Если src начинается с /, это относительный путь, добавляем базовый URL API
-                let imageUrl = '/images/deposit/Nequi.jpg'; // дефолтное изображение
-                if (pm.src && pm.src !== null) {
-                    if (pm.src.startsWith('/')) {
-                        // Относительный путь, добавляем базовый URL API
-                        imageUrl = `https://api.valor-games.co${pm.src}`;
-                    } else if (pm.src.startsWith('http://') || pm.src.startsWith('https://')) {
-                        // Полный URL
-                        imageUrl = pm.src;
-                    } else {
-                        // Относительный путь без начального /
-                        imageUrl = `https://api.valor-games.co/${pm.src}`;
-                    }
-                }
-                paymentMethods.push({
-                    id: `api-${i}`,
-                    name: pm.banco || pm.nombre || `Metodo ${i + 1}`,
-                    image: imageUrl,
-                    accountNumber: pm.numero_de_cuenta,
-                    accountName: pm.nombre || pm.banco
-                });
-            });
+        if(userCountry == "NGN" || userCountry == "Nigeria"){
+            paymentMethods = [
+                { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
+                { id: 'card', name: 'CARD', image: '/images/deposit/cash.svg' },
+                { id: 'banktranfer', name: 'BANK TRANSFER', image: '/images/deposit/cash.svg' },
+                { id: 'palmpay', name: 'PAY WITH PALMPAY', image: '/images/deposit/cash.svg' },
+            ];
+        }else if(userCountry == "KES" || userCountry == "Kenya"){
+            paymentMethods = [
+                { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
+                { id: 'momo', name: 'MOMO', image: '/images/deposit/cash.svg' }
+            ];
+        }else{
+            paymentMethods = [
+                { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' }
+            ];
         }
+
     }
 
     // Deposit amounts by country
@@ -447,6 +665,19 @@ export default function DepositPage() {
             label: `${amount} ${displayCurrency} +${percentages[index]}%`
         };
     });
+
+    // Config for CheckoutButton - updates dynamically when customAmount changes
+    const config = useMemo(() => ({
+        api_key: 'sk_test_i4etlpi7eucwdxonism19cxy6chfkykdfg6jsoe',
+        amount: customAmount && !isNaN(parseInt(customAmount)) ? parseInt(customAmount) : 0,
+        currency: 'KES',
+        customer: {
+            email: userEmail || 'user@example.com',
+            first_name: firstName || 'User',
+            last_name: lastName || 'Name',
+            phone: '77712345678',
+        },
+    }), [customAmount, userEmail, firstName, lastName]);
 
     // Reset payment link creation state when component mounts or when user returns to page
     useEffect(() => {
@@ -770,6 +1001,42 @@ export default function DepositPage() {
             totalAmount = amount + bonusAmount;
         }
 
+        if(selectedMethod === "card"){
+            if(cardNumber == ""){
+                console.log(`Card Number cannot be empty`);
+                setShowWarning(true);
+                return;
+            }
+            if(expiryMonthNumber == ""){
+                console.log(`Expiry cannot be empty`);
+                setShowWarning(true);
+                return;
+            }
+            if(cvvNumber == ""){
+                console.log(`CVV cannot be empty`);
+                setShowWarning(true);
+                return;
+            }
+
+            handleCashonrailsPayment(amount);
+            return;
+        }
+
+        if(selectedMethod === "momo"){
+            if(momoNumber == ""){
+                console.log(`Momo Number cannot be empty`);
+                setShowWarning(true);
+                return;
+            }
+            handleCashonrailsPayment(amount);
+            return;
+        }
+
+        if(selectedMethod === "banktranfer" || "palmpay"){
+            handleCashonrailsPayment(amount);
+            return;
+        }
+
         // Handle different payment methods
         if (selectedMethod === 'Pagos' || selectedMethod === 'nequi') {
             // For Pagos method, make API request to cf24pay.com
@@ -850,6 +1117,7 @@ export default function DepositPage() {
                                             <span className="text-gray-500 text-xs">{method.name}</span>
                                         </button>
                                     ))}
+                                    
                                 </div>
                             </section>
                             <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-10">
@@ -997,6 +1265,85 @@ export default function DepositPage() {
                                             required
                                         />
 
+                                        {selectedMethod === 'momo' && (
+                                            <div>
+                                                <label htmlFor="birth-date" className="mt-2 text-sm text-white block">Phone Number <span className="text-red-400">*</span></label>
+                                                <Input
+                                                    id="momo-number"
+                                                    type="number"
+                                                    placeholder="+2338976567"
+                                                    className="border-gray-700 mt-2 placeholder:text-white text-white"
+                                                    value={momoNumber}
+                                                    onChange={(e) => setMomoNumber(e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                        )}
+
+                                        {selectedMethod === 'card' && (
+                                            <div>
+                                                <label htmlFor="card-number" className="mt-2 text-sm text-white block">Card Number <span className="text-red-400">*</span></label>
+                                                <Input
+                                                    id="card-number"
+                                                    type="number"
+                                                    placeholder="5554 38737 2...."
+                                                    className="border-gray-700 mt-2 placeholder:text-white text-white"
+                                                    value={cardNumber}
+                                                    onChange={(e) => setCardNumber(e.target.value)}
+                                                    required
+                                                />
+
+                                                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {/* Card Date */}
+                                                    <div>
+                                                        <label htmlFor="month-date" className="text-sm text-white block">Month <span className="text-red-400">*</span></label>
+                                                        <Input
+                                                            id="month-date"
+                                                            type="number"
+                                                            placeholder="MM"
+                                                            min="00"
+                                                            max="99"
+                                                            maxLength={2}
+                                                            className="border-gray-700 mt-2 placeholder:text-white text-white"
+                                                            value={expiryMonthNumber}
+                                                            onChange={(e) => setExpiryMonthNumber(e.target.value.slice(0, 2))}
+                                                            required
+                                                        />
+                                                    </div>
+
+
+                                                    <div>
+                                                        <label htmlFor="year-date" className="text-sm text-white block">Year <span className="text-red-400">*</span></label>
+                                                        <Input
+                                                            id="year-date"
+                                                            type="number"
+                                                            placeholder="YY"
+                                                            maxLength={2}
+                                                            min="00"
+                                                            max="99"
+                                                            className="border-gray-700 mt-2 placeholder:text-white text-white"
+                                                            value={expiryYearNumber}
+                                                            onChange={(e) => setExpiryYearNumber(e.target.value.slice(0, 2))}
+                                                            required
+                                                        />
+                                                    </div>
+
+                                                    {/* cvv */}
+                                                    <div>
+                                                        <label htmlFor="cvv" className="text-sm text-white block">CVV <span className="text-red-400">*</span></label>
+                                                        <Input
+                                                            id="cvv"
+                                                            type="password"
+                                                            placeholder="***"
+                                                            className="border-gray-700 mt-2 placeholder:text-white text-white"
+                                                            value={cvvNumber}
+                                                            onChange={(e) => setCVVNumber(e.target.value.slice(0, 3))}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                         {(selectedMethod === 'Pagos' || selectedMethod === 'nequi') && (
                                             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 {/* Birth Date */}
@@ -1043,24 +1390,24 @@ export default function DepositPage() {
                                     onClick={handleDeposit}
                                     disabled={isProcessing}
                                     className={`mt-4 lg:mt-8 w-full font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg ${
-                                        isProcessing 
-                                            ? 'bg-gray-400 cursor-not-allowed opacity-70' 
+                                        isProcessing
+                                            ? 'bg-gray-400 cursor-not-allowed opacity-70'
                                             : 'bg-green-700 hover:bg-green-800 text-white'
                                     }`}
                                 >
                                     {isCreatingPaymentLink ? (
                                         <span className="flex items-center justify-center gap-2">
-                                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            Creando enlace de pago...
-                                        </span>
+                                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                Creando enlace de pago...
+                                            </span>
                                     ) : (
                                         (() => {
-                                        if (isProcessing) {
-                                            return '⏳ Procesando...';
-                                        }
+                                            if (isProcessing) {
+                                                return '⏳ Procesando...';
+                                            }
                                             if (showBonusSection && selectedBonusAmount) {
                                                 return `${t('deposit.deposit_button')} ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}${selectedBonusAmount.percentage > 0 ? ` +${selectedBonusAmount.percentage}%` : ''}`;
                                             } else {
@@ -1070,6 +1417,7 @@ export default function DepositPage() {
                                         })()
                                     )}
                                 </button>
+
                             </div>
 
                             <AlertDialog open={showWarning} onOpenChange={(open) => {
@@ -1087,6 +1435,12 @@ export default function DepositPage() {
                                                         <span className="lg:hidden">Completa los campos obligatorios.</span>
                                                     </> :
                                                     (!lastName || lastName.trim() === '') ?
+                                                        <>
+                                                            <span className="hidden lg:inline">Por favor, completa los campos obligatorios para continuar.</span>
+                                                            <span className="lg:hidden">Completa los campos obligatorios.</span>
+                                                        </> :
+
+                                                    (selectedMethod === 'momo' && momoNumber.trim() === '') ?
                                                         <>
                                                             <span className="hidden lg:inline">Por favor, completa los campos obligatorios para continuar.</span>
                                                             <span className="lg:hidden">Completa los campos obligatorios.</span>
@@ -1334,6 +1688,196 @@ export default function DepositPage() {
                                             />
                                             <button className="w-full bg-[#094179] hover:bg-blue-900 text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2 pointer-events-none">
                                                 <span>Download receipt </span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-arrow-right-icon lucide-circle-arrow-right"><circle cx="12" cy="12" r="10" /><path d="m12 16 4-4-4-4" /><path d="M8 12h8" /></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
+
+                            <Dialog open={showCashonrailsPayment} onOpenChange={setShowCashonrailsPayment}>
+                                <DialogContent className="max-w-3xl p-0 max-h-[90vh] overflow-y-auto rounded-2xl">
+                                    <DialogHeader>
+                                        <DialogTitle className="sr-only">{t('deposit.safety_pay')}</DialogTitle>
+                                    </DialogHeader>
+                                    <div className=" bg-blue-900 text-white px-6 py-6 rounded-2xl">
+                                        <h2 className="text-lg font-bold">Payment</h2>
+                                    </div>
+                                    <div className="p-2 lg:p-6 overflow-y-auto">
+                                        <div className="grid grid-cols-2">
+                                            <div className="bg-gray-50 p-6">
+                                                <p className="text-center text-gray-600 mb-2 text-xs">Pagar el valor exacto</p>
+                                                <p className="text-xl font-bold text-blue-900 text-center">{customAmount}.00 {displayCurrency}</p>
+                                            </div>
+                                            <div className="bg-blue-50 lg:p-6 text-center">
+                                                <p className="mb-2 text-xs text-[#135699]">Tienes:</p>
+                                                <div
+                                                    className={`flex items-center justify-center gap-2 text-lg font-bold transition-colors cursor-pointer hover:opacity-80 text-center text-[#135699]`}
+                                                >
+                                                    <Clock />
+                                                    {formatTime(timeLeft)}
+                                                </div>
+                                                <p className="text-gray-600 text-xs mt-2">
+                                                    Paga antes del
+                                                </p>
+                                                <p className="text-gray-600 text-xs">{new Date().toLocaleDateString('es-ES', {
+                                                    day: 'numeric',
+                                                    month: 'short',
+                                                    year: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                    hour12: false
+                                                }).replace(',', ',')} hrs.</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-blue-100 p-4">
+                                            <p className="text-center text-gray-600 mb-2 text-xs">Método de pago seleccionado</p>
+                                            <h3 className="text-2xl font-bold text-blue-900 text-center">
+                                                {paymentMethods.find(method => method.id === selectedMethod)?.name || selectedMethod}
+                                            </h3>
+                                        </div>
+
+                                        <div className="space-y-4 bg-blue-200 py-1">
+                                            {selectedMethod === 'cripto' ? (
+                                                // Show all crypto wallets for CRIPTO method
+                                                <div>
+                                                    <h4 className="text-center text-gray-700 font-bold text-sm">Selecciona tu criptomoneda preferida:</h4>
+                                                    {getPaymentDetails().cryptoWallets?.map((wallet, index) => (
+                                                        <div key={index} className="bg-white p-4 shadow-sm border border-blue-300">
+                                                            <div className="flex items-center justify-between mb-3">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div>
+                                                                        <h5 className="font-bold text-blue-900">{wallet.name}</h5>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="mb-3">
+                                                                <p className="text-gray-600 mb-1 text-xs">Dirección de Wallet</p>
+                                                                <div className="flex items-center gap-1 p-2 bg-gray-50 rounded border">
+                                                                    <span className="font-mono text-sm text-blue-900 break-all flex-1">
+                                                                        {wallet.address}
+                                                                    </span>
+                                                                    <button
+                                                                        className="text-blue-900 hover:text-blue-800 flex-shrink-0"
+                                                                        onClick={() => navigator.clipboard.writeText(wallet.address)}
+                                                                        title="Copiar dirección"
+                                                                    >
+                                                                        <Copy size={16} />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                            <p className="text-xs text-gray-600 italic">{wallet.instructions}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : selectedMethod === 'momo' ? (
+                                                // Show all crypto wallets for MOMO method
+                                                <div>
+                                                    <h4 className="text-center text-gray-700 font-bold text-sm">Pago iniciado. Por favor, revise su dispositivo para ver si se le solicita que complete el pago.</h4>
+                                                </div>
+                                            ) : (
+                                                // Show single payment details for other methods
+                                                <>
+                                                    <div>
+                                                        <p className="text-gray-600 mb-1 text-center text-xs">
+                                                            {selectedMethod === 'NEQUI' ? 'Número NEQUI' :
+                                                                ['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Dirección de Wallet' :
+                                                                    'Numero de cuenta'}
+                                                        </p>
+                                                        <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
+                                                            <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 break-all text-center">
+                                                                {cashonrailsPayment?.data?.account_number || ''}
+                                                            </span>
+                                                            <button
+                                                                className="text-blue-900 hover:text-blue-800 ml-2 flex-shrink-0"
+                                                                onClick={() => navigator.clipboard.writeText(cashonrailsPayment?.data?.account_number || '')}
+                                                            >
+                                                                <Copy />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <p className="text-gray-600 mb-1 text-center text-xs">
+                                                            Banco
+                                                        </p>
+                                                        <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
+                                                            <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 text-center">
+                                                                {cashonrailsPayment?.data?.bank_name || ''}
+                                                            </span>
+                                                            <button
+                                                                className="text-blue-900 hover:text-blue-800 ml-2 flex-shrink-0"
+                                                                onClick={() => navigator.clipboard.writeText(cashonrailsPayment?.data?.bank_name || '')}
+                                                            >
+                                                                <Copy />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <p className="text-gray-600 mb-1 text-center text-xs">
+                                                            {['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Tipo de Wallet' : 'Nombre'}
+                                                        </p>
+                                                        <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
+                                                            <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 text-center">
+                                                                {cashonrailsPayment?.data?.account_name || ''}
+                                                            </span>
+                                                            <button
+                                                                className="text-blue-900 hover:text-blue-800 ml-2 flex-shrink-0"
+                                                                onClick={() => navigator.clipboard.writeText(cashonrailsPayment?.data?.account_name || '')}
+                                                            >
+                                                                <Copy />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 items-start mt-2 gap-1">
+                                            <div>
+                                                <p className="text-sm text-gray-700">
+                                                    La gerencia del casino decidió enviar los pagos del depósito directamente al departamento de contabilidad de la empresa para evitar pagar una comisión elevada por realizar un pago en el sitio web. Los detalles del pago incluyen los datos del contador responsable de su país. (Puede hacer preguntas adicionales al servicio de atención al cliente)
+                                                </p>
+                                            </div>
+
+                                            <div className="flex items-start gap-2">
+                                                <input type="checkbox" className="mt-1" />
+                                                <p className="text-sm text-gray-600">
+                                                    Acepto Términos y Condiciones y políticas de privacidad
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="my-5">
+                                            <h4 className="font-bold text-blue-600 mb-2">Instrucciones de pago:</h4>
+                                            <div className="grid grid-cols-2 gap-4 text-base">
+                                                <div className="flex gap-2">
+                                                    <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">1</span>
+                                                    <span className="text-xs">Copie el número de cuenta indicado.</span>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
+                                                    <span className="text-xs">Ingrese a la aplicación del banco y haga la transferencia.</span>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
+                                                    <span className="text-xs">Para que el pago se procese lo más rápido posible, le pido que no deje comentarios en el pago.</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="relative">
+                                            <button className="w-full bg-[#094179] hover:bg-blue-900 text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2 pointer-events-none" onClick={
+                                                ()=>{
+                                                    refreshBalance();
+                                                    router.push('/detalization');
+                                                }
+                                            }>
+                                                <span>I have Made The Transfer </span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-arrow-right-icon lucide-circle-arrow-right"><circle cx="12" cy="12" r="10" /><path d="m12 16 4-4-4-4" /><path d="M8 12h8" /></svg>
                                             </button>
                                         </div>
