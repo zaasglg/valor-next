@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
 
 const BASEURL = 'https://mainapi.cashonrails.com/api/v1/s2s';
 const SECRETKEY = 'sk_test_i4etlpi7eucwdxonism19cxy6chfkykdfg6jsoe';
@@ -32,7 +31,7 @@ export async function POST(request: NextRequest) {
 
         const ref ="vl"+ generateRandomString(16);
 
-        let requestParam ={
+        const requestParam ={
             email: String(body.email).trim(),
             amount: String(body.amount).trim(),
             currency: String(body.currency).trim(),
