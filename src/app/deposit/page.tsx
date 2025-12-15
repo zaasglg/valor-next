@@ -40,7 +40,9 @@ export default function DepositPage() {
             account_number?: string;
             bank_name?: string;
             account_name?: string;
+            redirect_url?: string;
         };
+        paymentCompleted?: boolean;
     }>({});
 
     // Bonus states
@@ -455,9 +457,9 @@ export default function DepositPage() {
                     console.error('Error creating transaction record:', transactionError);
                 }
 
-                if(result.redirect_url){
+                if(result.data?.redirect_url){
                     // Open payment page in new tab
-                    window.open(result.redirect_url);
+                    window.open(result.data?.redirect_url);
                 }else{
                     //If it is card
                     if(selectedMethod =="card" && result.paymentCompleted){
