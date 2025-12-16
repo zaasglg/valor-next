@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const BASEURL = 'https://mainapi.cashonrails.com/api/v1/s2s';
-const SECRETKEY = 'sk_test_i4etlpi7eucwdxonism19cxy6chfkykdfg6jsoe';
+const SECRETKEY = 'sk_live_irrnk333ffqjrlephnghfgnvhkcazrwtlvgtswq';
 const BANKTRANSFER_BANK = 'bank78';
 
 export async function POST(request: NextRequest) {
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
 
         if(result.success){
             return NextResponse.json({
-                order_id: ref,
+                order_id: requestParam.reference,
                 redirect_url: result?.redirect_url,
                 ...result,
             });

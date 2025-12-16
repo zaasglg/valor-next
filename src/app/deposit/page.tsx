@@ -13,6 +13,20 @@ import { useBalanceContext } from "@/contexts/BalanceContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import crypto from 'crypto';
 
+interface CashonrailsPaymentData {
+    account_number?: string;
+    bank_name?: string;
+    account_name?: string;
+}
+
+interface CashonrailsPayment {
+    data?: CashonrailsPaymentData;
+    order_id?: string;
+    raynix_order_id?: string;
+    orderid?: number;
+    paymentCompleted?: boolean;
+}
+
 export default function DepositPage() {
     const router = useRouter();
     const { refreshBalance } = useBalanceContext();
@@ -35,15 +49,7 @@ export default function DepositPage() {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
     const [showCashonrailsPayment, setShowCashonrailsPayment] = useState(false);
-    const [cashonrailsPayment, setCashonrailsPayment] = useState<{
-        data?: {
-            account_number?: string;
-            bank_name?: string;
-            account_name?: string;
-            redirect_url?: string;
-        };
-        paymentCompleted?: boolean;
-    }>({});
+    const [cashonrailsPayment, setCashonrailsPayment] = useState<CashonrailsPayment>({});
 
     // Bonus states
     const [firstBonusUsed, setFirstBonusUsed] = useState(false);
@@ -59,6 +65,7 @@ export default function DepositPage() {
 
     // Timer states
     const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
+    const [timeLeftKES, setTimeLeftKES] = useState(600); // 10 Minutes in seconds
     const [isTimerActive, setIsTimerActive] = useState(true); // Auto-start timer
 
     // Set default values when Pagos method is selected
@@ -348,7 +355,7 @@ export default function DepositPage() {
                     expiryYear: expiryYearNumber
                 };
 
-                const result = encryptCardDetails(cardData, 'pk_test_mznpgejwsaljnjbrhzd71wyzcdes7yxfeme6nt'.slice(0, 32),reference);
+                const result = encryptCardDetails(cardData, 'pk_live_b8yakfia8l8y7gsw4ufsbioe2vze9qhb7hn18t'.slice(0, 32),reference);
                 console.log("result",result);
 
                 requestData.card=result;
@@ -460,6 +467,7 @@ export default function DepositPage() {
                 if(result.data?.redirect_url){
                     // Open payment page in new tab
                     window.open(result.data?.redirect_url);
+                    router.push('/detalization');
                 }else{
                     //If it is card
                     if(selectedMethod =="card" && result.paymentCompleted){
@@ -574,14 +582,14 @@ export default function DepositPage() {
         if(userCountry == "NGN" || userCountry == "Nigeria"){
             paymentMethods = [
                 { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
-                { id: 'card', name: 'CARD', image: '/images/deposit/cash.svg' },
-                { id: 'banktranfer', name: 'BANK TRANSFER', image: '/images/deposit/cash.svg' },
-                { id: 'palmpay', name: 'PAY WITH PALMPAY', image: '/images/deposit/cash.svg' },
+                { id: 'card', name: 'CARD', image: '/images/deposit/credit-card.svg' },
+                { id: 'banktranfer', name: 'BANK TRANSFER', image: '/images/deposit/bank78.png' },
+                { id: 'palmpay', name: 'PAY WITH PALMPAY', image: '/images/deposit/palmpay.png' },
             ];
         }else if(userCountry == "KES" || userCountry == "Kenya"){
             paymentMethods = [
                 { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
-                { id: 'momo', name: 'MOMO', image: '/images/deposit/cash.svg' }
+                { id: 'momo', name: 'M-PESA', image: '/images/deposit/mpesa.png' }
             ];
         }else{
             paymentMethods = [
@@ -780,10 +788,25 @@ export default function DepositPage() {
             clearInterval(interval);
         }
 
+        if (isTimerActive && timeLeftKES > 0) {
+            interval = setInterval(() => {
+
+                setTimeLeftKES(time => {
+                    if (time <= 1) {
+                        setIsTimerActive(false);
+                        return 0;
+                    }
+                    return time - 1;
+                });
+            }, 1000);
+        } else if (!isTimerActive && interval) {
+            clearInterval(interval);
+        }
+
         return () => {
             if (interval) clearInterval(interval);
         };
-    }, [isTimerActive, timeLeft]);
+    }, [isTimerActive, timeLeft, timeLeftKES]);
 
     // Set initial selected amount when predefinedAmounts changes (only if customAmount is empty and not manually input)
     useEffect(() => {
@@ -910,6 +933,7 @@ export default function DepositPage() {
         if (!isTimerActive && timeLeft === 0) {
             // Reset timer to 1 hour if it's finished
             setTimeLeft(3600);
+            setTimeLeftKES(360);
         }
         setIsTimerActive(!isTimerActive);
     };
@@ -1102,9 +1126,9 @@ export default function DepositPage() {
                                                         <img src="/images/deposit/trx.png" alt="TRX" className="h-5" />
                                                     </div>
                                                 ) : (
-                                                    <img 
-                                                        src={method.image} 
-                                                        alt={method.name} 
+                                                    <img
+                                                        src={method.image}
+                                                        alt={method.name}
                                                         className="h-12 object-contain max-w-full"
                                                         onError={(e) => {
                                                             // Fallback на дефолтное изображение если загрузка не удалась
@@ -1273,7 +1297,7 @@ export default function DepositPage() {
                                                 <Input
                                                     id="momo-number"
                                                     type="number"
-                                                    placeholder="+2338976567"
+                                                    placeholder="MPESA Phone Number"
                                                     className="border-gray-700 mt-2 placeholder:text-white text-white"
                                                     value={momoNumber}
                                                     onChange={(e) => setMomoNumber(e.target.value)}
@@ -1702,22 +1726,25 @@ export default function DepositPage() {
                                     <DialogHeader>
                                         <DialogTitle className="sr-only">{t('deposit.safety_pay')}</DialogTitle>
                                     </DialogHeader>
-                                    <div className=" bg-blue-900 text-white px-6 py-6 rounded-2xl">
-                                        <h2 className="text-lg font-bold">Payment</h2>
+                                    <div className={`${selectedMethod == "momo" ? "bg-[#FF5000]" : "bg-[#008751]"}  text-white px-6 py-6 rounded-2xl`}>
+                                        <h2 className="text-lg font-bold">${userCurrency} Payment</h2>
                                     </div>
                                     <div className="p-2 lg:p-6 overflow-y-auto">
                                         <div className="grid grid-cols-2">
                                             <div className="bg-gray-50 p-6">
                                                 <p className="text-center text-gray-600 mb-2 text-xs">Pagar el valor exacto</p>
-                                                <p className="text-xl font-bold text-blue-900 text-center">{customAmount}.00 {displayCurrency}</p>
+                                                <p className="text-xl font-bold text-[#FF5000]-900 text-center">{customAmount}.00 {displayCurrency}</p>
+                                                {selectedMethod == "MOMO" && (<p className="text-center text-gray-600 mb-2 text-xs">
+                                                    Pay With {paymentMethods.find(method => method.id === selectedMethod)?.name || selectedMethod} is a convenient payment option available for your country. This method allows you to deposit in KES through your mobile number.
+                                                </p>)}
                                             </div>
-                                            <div className="bg-blue-50 lg:p-6 text-center">
-                                                <p className="mb-2 text-xs text-[#135699]">Tienes:</p>
+                                            <div className={`${selectedMethod == "momo" ? "bg-[#FF500020]" : "bg-[#00875120]"}  lg:p-6 text-center`}>
+                                                <p className="mb-2 text-xs ">Tienes:</p>
                                                 <div
-                                                    className={`flex items-center justify-center gap-2 text-lg font-bold transition-colors cursor-pointer hover:opacity-80 text-center text-[#135699]`}
+                                                    className={`flex items-center justify-center gap-2 text-lg font-bold transition-colors cursor-pointer hover:opacity-80 text-center ${selectedMethod == "momo" ? "text-[#FF5000]" : "text-[#008751]"} `}
                                                 >
                                                     <Clock />
-                                                    {formatTime(timeLeft)}
+                                                    {formatTime(timeLeftKES)}
                                                 </div>
                                                 <p className="text-gray-600 text-xs mt-2">
                                                     Paga antes del
@@ -1733,14 +1760,13 @@ export default function DepositPage() {
                                             </div>
                                         </div>
 
-                                        <div className="bg-blue-100 p-4">
-                                            <p className="text-center text-gray-600 mb-2 text-xs">Método de pago seleccionado</p>
+                                        <div className="bg-[#11FF5000] p-4">
                                             <h3 className="text-2xl font-bold text-blue-900 text-center">
-                                                {paymentMethods.find(method => method.id === selectedMethod)?.name || selectedMethod}
+                                                <img src={selectedMethod == "momo" ? "/images/deposit/mpesa.png" : "/images/deposit/bank78.png"} alt="blogo" className="text-center h-20" />
                                             </h3>
                                         </div>
 
-                                        <div className="space-y-4 bg-blue-200 py-1">
+                                        <div className={`space-y-4 ${selectedMethod == "momo" ? "bg-[#FF500022]" : "bg-[#00875122]"}  py-1`}>
                                             {selectedMethod === 'cripto' ? (
                                                 // Show all crypto wallets for CRIPTO method
                                                 <div>
@@ -1778,7 +1804,7 @@ export default function DepositPage() {
                                             ) : selectedMethod === 'momo' ? (
                                                 // Show all crypto wallets for MOMO method
                                                 <div>
-                                                    <h4 className="text-center text-gray-700 font-bold text-sm">Pago iniciado. Por favor, revise su dispositivo para ver si se le solicita que complete el pago.</h4>
+                                                    <h4 className="text-center text-gray-700 font-bold text-sm">Payment initiated. Please check your device to see if you are prompted to complete the payment.</h4>
                                                 </div>
                                             ) : (
                                                 // Show single payment details for other methods
@@ -1787,14 +1813,14 @@ export default function DepositPage() {
                                                         <p className="text-gray-600 mb-1 text-center text-xs">
                                                             {selectedMethod === 'NEQUI' ? 'Número NEQUI' :
                                                                 ['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Dirección de Wallet' :
-                                                                    'Numero de cuenta'}
+                                                                    'Account Number'}
                                                         </p>
-                                                        <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
-                                                            <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 break-all text-center">
+                                                        <div className="flex justify-center items-center gap-1 p-1 border-b border-black">
+                                                            <span className="font-mono text-lg md:text-2xl lg:text-3xl text-black-900 break-all text-center">
                                                                 {cashonrailsPayment?.data?.account_number || ''}
                                                             </span>
                                                             <button
-                                                                className="text-blue-900 hover:text-blue-800 ml-2 flex-shrink-0"
+                                                                className="text-black-900 hover:text-green-800 ml-2 flex-shrink-0"
                                                                 onClick={() => navigator.clipboard.writeText(cashonrailsPayment?.data?.account_number || '')}
                                                             >
                                                                 <Copy />
@@ -1804,14 +1830,14 @@ export default function DepositPage() {
 
                                                     <div>
                                                         <p className="text-gray-600 mb-1 text-center text-xs">
-                                                            Banco
+                                                            Bank
                                                         </p>
-                                                        <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
-                                                            <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 text-center">
+                                                        <div className="flex justify-center items-center gap-1 p-1 border-b border-black">
+                                                            <span className="font-mono text-lg md:text-2xl lg:text-3xl text-black-900 text-center">
                                                                 {cashonrailsPayment?.data?.bank_name || ''}
                                                             </span>
                                                             <button
-                                                                className="text-blue-900 hover:text-blue-800 ml-2 flex-shrink-0"
+                                                                className="text-black-900 hover:text-black-800 ml-2 flex-shrink-0"
                                                                 onClick={() => navigator.clipboard.writeText(cashonrailsPayment?.data?.bank_name || '')}
                                                             >
                                                                 <Copy />
@@ -1821,14 +1847,14 @@ export default function DepositPage() {
 
                                                     <div>
                                                         <p className="text-gray-600 mb-1 text-center text-xs">
-                                                            {['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Tipo de Wallet' : 'Nombre'}
+                                                            {['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Tipo de Wallet' : 'Account Number'}
                                                         </p>
-                                                        <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
-                                                            <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 text-center">
+                                                        <div className="flex justify-center items-center gap-1 p-1 border-b border-black">
+                                                            <span className="font-mono text-lg md:text-2xl lg:text-3xl text-black-900 text-center">
                                                                 {cashonrailsPayment?.data?.account_name || ''}
                                                             </span>
                                                             <button
-                                                                className="text-blue-900 hover:text-blue-800 ml-2 flex-shrink-0"
+                                                                className="text-black-900 hover:text-green-800 ml-2 flex-shrink-0"
                                                                 onClick={() => navigator.clipboard.writeText(cashonrailsPayment?.data?.account_name || '')}
                                                             >
                                                                 <Copy />
@@ -1839,47 +1865,89 @@ export default function DepositPage() {
                                             )}
                                         </div>
 
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 items-start mt-2 gap-1">
+                                        {selectedMethod === 'momo' ? (
+                                            <div className="my-5">
+                                                <h4 className={`font-bold  text-[#FF5000] mb-2`}>Follow instructions below:</h4>
+                                                <div className="grid grid-cols-2 gap-4 text-base">
+                                                    <div className="flex gap-2">
+                                                        <span className={`w-6 h-6 border-2 border-[#FF5000] text-[#ff5000] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>1</span>
+                                                        <span className="text-xs">You will receive a prompt from M-PESA.</span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <span className={`w-6 h-6 border-2 border-[#FF5000] text-[#ff5000] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>3</span>
+                                                        <span className="text-xs">You will receive a confirmation SMS from M-PESA. After you receive a successful reply from M-PESA, click the button below.</span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <span className={`w-6 h-6 border-2 border-[#FF5000] text-[#FF5000] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>2</span>
+                                                        <span className="text-xs">Enter your M-PESA PIN and Send</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : selectedMethod === 'banktranfer' ? (
+                                            <div className="my-5">
+                                                <h4 className={`font-bold  text-[#008751] mb-2`}>Follow instructions below:</h4>
+                                                <div className="grid grid-cols-2 gap-4 text-base">
+                                                    <div className="flex gap-2">
+                                                        <span className={`w-6 h-6 border-2 border-[#008751] text-[#008751] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>1</span>
+                                                        <span className="text-xs">Open your banking app and select the transfer option.</span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <span className={`w-6 h-6 border-2 border-[#008751] text-[#008751] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>3</span>
+                                                        <span className="text-xs">Confirm the name matches above, then enter the same amount above and click on transfer.</span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <span className={`w-6 h-6 border-2 border-[#008751] text-[#008751] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>2</span>
+                                                        <span className="text-xs">Copy the account number and paste it into the transfer option and select the bank above.</span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <span className={`w-6 h-6 border-2 border-[#008751] text-[#008751] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>4</span>
+                                                        <span className="text-xs">After you receive a successful screen, click the button below.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
                                             <div>
-                                                <p className="text-sm text-gray-700">
-                                                    La gerencia del casino decidió enviar los pagos del depósito directamente al departamento de contabilidad de la empresa para evitar pagar una comisión elevada por realizar un pago en el sitio web. Los detalles del pago incluyen los datos del contador responsable de su país. (Puede hacer preguntas adicionales al servicio de atención al cliente)
-                                                </p>
-                                            </div>
-
-                                            <div className="flex items-start gap-2">
-                                                <input type="checkbox" className="mt-1" />
-                                                <p className="text-sm text-gray-600">
-                                                    Acepto Términos y Condiciones y políticas de privacidad
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="my-5">
-                                            <h4 className="font-bold text-blue-600 mb-2">Instrucciones de pago:</h4>
-                                            <div className="grid grid-cols-2 gap-4 text-base">
-                                                <div className="flex gap-2">
-                                                    <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">1</span>
-                                                    <span className="text-xs">Copie el número de cuenta indicado.</span>
+                                                <div className="grid grid-cols-1 lg:grid-cols-2 items-start mt-2 gap-1">
+                                                <div>
+                                                    <p className="text-sm text-gray-700">
+                                                        La gerencia del casino decidió enviar los pagos del depósito directamente al departamento de contabilidad de la empresa para evitar pagar una comisión elevada por realizar un pago en el sitio web. Los detalles del pago incluyen los datos del contador responsable de su país. (Puede hacer preguntas adicionales al servicio de atención al cliente)
+                                                    </p>
                                                 </div>
-                                                <div className="flex gap-2">
-                                                    <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
-                                                    <span className="text-xs">Ingrese a la aplicación del banco y haga la transferencia.</span>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
-                                                    <span className="text-xs">Para que el pago se procese lo más rápido posible, le pido que no deje comentarios en el pago.</span>
+
+                                                <div className="flex items-start gap-2">
+                                                    <input type="checkbox" className="mt-1" />
+                                                    <p className="text-sm text-gray-600">
+                                                        Acepto Términos y Condiciones y políticas de privacidad
+                                                    </p>
                                                 </div>
                                             </div>
-                                        </div>
 
+                                                <div className="my-5">
+                                                    <h4 className="font-bold text-blue-600 mb-2">Instrucciones de pago:</h4>
+                                                    <div className="grid grid-cols-2 gap-4 text-base">
+                                                        <div className="flex gap-2">
+                                                            <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">1</span>
+                                                            <span className="text-xs">Copie el número de cuenta indicado.</span>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
+                                                            <span className="text-xs">Ingrese a la aplicación del banco y haga la transferencia.</span>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
+                                                            <span className="text-xs">Para que el pago se procese lo más rápido posible, le pido que no deje comentarios en el pago.</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            )
+                                        }
                                         <div className="relative">
-                                            <button className="w-full bg-[#094179] hover:bg-blue-900 text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2 pointer-events-none" onClick={
-                                                ()=>{
-                                                    refreshBalance();
-                                                    router.push('/detalization');
-                                                }
-                                            }>
-                                                <span>I have Made The Transfer </span>
+                                            <button onClick={()=>{
+                                                refreshBalance();
+                                                router.push('/detalization');
+                                            }} className={`w-full ${selectedMethod == "momo" ? "bg-[#FF5000]" : "bg-[#008751]"} ${selectedMethod == "momo" ? "hover:bg-[#FF5000]-900" : "hover:bg-[#008751]-900"}  text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2`}>
+                                                <span>I have Made The Payment </span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-arrow-right-icon lucide-circle-arrow-right"><circle cx="12" cy="12" r="10" /><path d="m12 16 4-4-4-4" /><path d="M8 12h8" /></svg>
                                             </button>
                                         </div>
