@@ -1185,7 +1185,7 @@ export default function DepositPage() {
                                                         <div className="text-center">
                                                             <div className="font-black text-xl">{t('deposit.recharge')}:                                                     {bonus.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} {displayCurrency}</div>
                                                             <div className="text-sm text-gray-400 font-normal">
-                                                                {bonus.percentage > 0 && `Bono +${bonus.percentage}%`}
+                                                                {bonus.percentage > 0 && t('deposit.bonus_percentage').replace('{percentage}', String(bonus.percentage))}
                                                             </div>
                                                         </div>
                                                     </button>
