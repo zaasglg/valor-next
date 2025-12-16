@@ -1243,7 +1243,7 @@ export default function DepositPage() {
                                                     const amount = parseInt(value);
                                                     if (isNaN(amount) || amount < minimumAmount) {
                                                         setCustomAmount(minimumAmount.toString());
-                                                        setAmountError(`Monto mínimo: ${minimumAmount.toLocaleString()} ${displayCurrency}`);
+                                                        setAmountError(t('deposit.minimum_amount_error').replace('{amount}', minimumAmount.toLocaleString()).replace('{currency}', displayCurrency));
                                                     } else {
                                                         setAmountError('');
                                                     }
@@ -1293,11 +1293,11 @@ export default function DepositPage() {
 
                                         {selectedMethod === 'momo' && (
                                             <div>
-                                                <label htmlFor="birth-date" className="mt-2 text-sm text-white block">Phone Number <span className="text-red-400">*</span></label>
+                                                <label htmlFor="birth-date" className="mt-2 text-sm text-white block">{t('deposit.phone_number')} <span className="text-red-400">*</span></label>
                                                 <Input
                                                     id="momo-number"
                                                     type="number"
-                                                    placeholder="MPESA Phone Number"
+                                                    placeholder={t('deposit.mpesa_phone_placeholder')}
                                                     className="border-gray-700 mt-2 placeholder:text-white text-white"
                                                     value={momoNumber}
                                                     onChange={(e) => setMomoNumber(e.target.value)}
@@ -1308,7 +1308,7 @@ export default function DepositPage() {
 
                                         {selectedMethod === 'card' && (
                                             <div>
-                                                <label htmlFor="card-number" className="mt-2 text-sm text-white block">Card Number <span className="text-red-400">*</span></label>
+                                                <label htmlFor="card-number" className="mt-2 text-sm text-white block">{t('deposit.card_number')} <span className="text-red-400">*</span></label>
                                                 <Input
                                                     id="card-number"
                                                     type="number"
@@ -1322,7 +1322,7 @@ export default function DepositPage() {
                                                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     {/* Card Date */}
                                                     <div>
-                                                        <label htmlFor="month-date" className="text-sm text-white block">Month <span className="text-red-400">*</span></label>
+                                                        <label htmlFor="month-date" className="text-sm text-white block">{t('deposit.month')} <span className="text-red-400">*</span></label>
                                                         <Input
                                                             id="month-date"
                                                             type="number"
@@ -1339,7 +1339,7 @@ export default function DepositPage() {
 
 
                                                     <div>
-                                                        <label htmlFor="year-date" className="text-sm text-white block">Year <span className="text-red-400">*</span></label>
+                                                        <label htmlFor="year-date" className="text-sm text-white block">{t('deposit.year')} <span className="text-red-400">*</span></label>
                                                         <Input
                                                             id="year-date"
                                                             type="number"
@@ -1356,7 +1356,7 @@ export default function DepositPage() {
 
                                                     {/* cvv */}
                                                     <div>
-                                                        <label htmlFor="cvv" className="text-sm text-white block">CVV <span className="text-red-400">*</span></label>
+                                                        <label htmlFor="cvv" className="text-sm text-white block">{t('deposit.cvv')} <span className="text-red-400">*</span></label>
                                                         <Input
                                                             id="cvv"
                                                             type="password"
@@ -1427,12 +1427,12 @@ export default function DepositPage() {
                                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                                 </svg>
-                                                Creando enlace de pago...
+                                                {t('deposit.creating_payment_link')}
                                             </span>
                                     ) : (
                                         (() => {
                                             if (isProcessing) {
-                                                return '⏳ Procesando...';
+                                                return t('deposit.processing');
                                             }
                                             if (showBonusSection && selectedBonusAmount) {
                                                 return `${t('deposit.deposit_button')} ${selectedBonusAmount.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${userCurrency}${selectedBonusAmount.percentage > 0 ? ` +${selectedBonusAmount.percentage}%` : ''}`;
@@ -1454,28 +1454,28 @@ export default function DepositPage() {
                                     <AlertDialogHeader>
                                         <AlertDialogTitle className="text-red-500 text-2xl">
                                             {(!selectedMethod || selectedMethod.trim() === '') ?
-                                                'Selecciona el método de pago' :
+                                                t('deposit.select_payment_method') :
                                                 (!firstName || firstName.trim() === '') ?
                                                     <>
-                                                        <span className="hidden lg:inline">Por favor, completa los campos obligatorios para continuar.</span>
-                                                        <span className="lg:hidden">Completa los campos obligatorios.</span>
+                                                        <span className="hidden lg:inline">{t('deposit.complete_required_fields')}</span>
+                                                        <span className="lg:hidden">{t('deposit.complete_required_fields_short')}</span>
                                                     </> :
                                                     (!lastName || lastName.trim() === '') ?
                                                         <>
-                                                            <span className="hidden lg:inline">Por favor, completa los campos obligatorios para continuar.</span>
-                                                            <span className="lg:hidden">Completa los campos obligatorios.</span>
+                                                            <span className="hidden lg:inline">{t('deposit.complete_required_fields')}</span>
+                                                            <span className="lg:hidden">{t('deposit.complete_required_fields_short')}</span>
                                                         </> :
 
                                                     (selectedMethod === 'momo' && momoNumber.trim() === '') ?
                                                         <>
-                                                            <span className="hidden lg:inline">Por favor, completa los campos obligatorios para continuar.</span>
-                                                            <span className="lg:hidden">Completa los campos obligatorios.</span>
+                                                            <span className="hidden lg:inline">{t('deposit.complete_required_fields')}</span>
+                                                            <span className="lg:hidden">{t('deposit.complete_required_fields_short')}</span>
                                                         </> :
                                                         (selectedMethod === 'Pagos' || selectedMethod === 'nequi') && (!birthDate || birthDate.trim() === '') ?
-                                                            'Campo requerido' :
+                                                            t('deposit.required_field') :
                                                             (selectedMethod === 'Pagos' || selectedMethod === 'nequi') && (!taxId || taxId.trim() === '') ?
-                                                                'Campo requerido' :
-                                                                'Monto mínimo requerido'
+                                                                t('deposit.required_field') :
+                                                                t('deposit.minimum_amount_required')
                                             }
                                         </AlertDialogTitle>
                                     </AlertDialogHeader>
@@ -1501,11 +1501,11 @@ export default function DepositPage() {
                                     <div className="p-2 lg:p-6 overflow-y-auto">
                                         <div className="grid grid-cols-2">
                                             <div className="bg-gray-50 p-6">
-                                                <p className="text-center text-gray-600 mb-2 text-xs">Pagar el valor exacto</p>
+                                                <p className="text-center text-gray-600 mb-2 text-xs">{t('deposit.pay_exact_amount')}</p>
                                                 <p className="text-xl font-bold text-blue-900 text-center">{customAmount}.00 {displayCurrency}</p>
                                             </div>
                                             <div className="bg-blue-50 lg:p-6 text-center">
-                                                <p className="mb-2 text-xs text-[#135699]">Tienes:</p>
+                                                <p className="mb-2 text-xs text-[#135699]">{t('deposit.you_have')}:</p>
                                                 <div
                                                     className={`flex items-center justify-center gap-2 text-lg font-bold transition-colors cursor-pointer hover:opacity-80 text-center text-[#135699]`}
                                                 >
@@ -1527,7 +1527,7 @@ export default function DepositPage() {
                                         </div>
 
                                         <div className="bg-blue-100 p-4">
-                                            <p className="text-center text-gray-600 mb-2 text-xs">Método de pago seleccionado</p>
+                                            <p className="text-center text-gray-600 mb-2 text-xs">{t('deposit.selected_payment_method')}</p>
                                             <h3 className="text-2xl font-bold text-blue-900 text-center">
                                                 {paymentMethods.find(method => method.id === selectedMethod)?.name || selectedMethod}
                                             </h3>
@@ -1573,9 +1573,9 @@ export default function DepositPage() {
                                                 <>
                                                     <div>
                                                         <p className="text-gray-600 mb-1 text-center text-xs">
-                                                            {selectedMethod === 'NEQUI' ? 'Número NEQUI' :
-                                                                ['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Dirección de Wallet' :
-                                                                    'Numero de cuenta'}
+                                                            {selectedMethod === 'NEQUI' ? t('deposit.nequi_number') :
+                                                                ['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? t('deposit.wallet_address') :
+                                                                    t('deposit.account_number')}
                                                         </p>
                                                         <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
                                                             <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 break-all text-center">
@@ -1592,7 +1592,7 @@ export default function DepositPage() {
 
                                                     <div>
                                                         <p className="text-gray-600 mb-1 text-center text-xs">
-                                                            {['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Tipo de Wallet' : 'Nombre'}
+                                                            {['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? t('deposit.wallet_type') : t('deposit.name')}
                                                         </p>
                                                         <div className="flex justify-center items-center gap-1 p-1 border-b border-blue-800">
                                                             <span className="font-mono text-lg md:text-2xl lg:text-3xl text-blue-900 text-center">
@@ -1613,36 +1613,36 @@ export default function DepositPage() {
                                         <div className="grid grid-cols-1 lg:grid-cols-2 items-start mt-2 gap-1">
                                             <div>
                                                 <p className="text-sm text-gray-700">
-                                                    La gerencia del casino decidió enviar los pagos del depósito directamente al departamento de contabilidad de la empresa para evitar pagar una comisión elevada por realizar un pago en el sitio web. Los detalles del pago incluyen los datos del contador responsable de su país. (Puede hacer preguntas adicionales al servicio de atención al cliente)
+                                                    {t('deposit.management_notice')}
                                                 </p>
                                             </div>
 
                                             <div className="flex items-start gap-2">
                                                 <input type="checkbox" className="mt-1" />
                                                 <p className="text-sm text-gray-600">
-                                                    Acepto Términos y Condiciones y políticas de privacidad
+                                                    {t('deposit.accept_terms')}
                                                 </p>
                                             </div>
                                         </div>
 
                                         <div className="my-5">
-                                            <h4 className="font-bold text-blue-600 mb-2">Instrucciones de pago:</h4>
+                                            <h4 className="font-bold text-blue-600 mb-2">{t('deposit.payment_instructions')}:</h4>
                                             <div className="grid grid-cols-2 gap-4 text-base">
                                                 <div className="flex gap-2">
                                                     <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">1</span>
-                                                    <span className="text-xs">Copie el número de cuenta indicado.</span>
+                                                    <span className="text-xs">{t('deposit.instruction_1')}</span>
                                                 </div>
                                                 <div className="flex gap-2">
                                                     <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
-                                                    <span className="text-xs">Ingrese a la aplicación del banco y haga la transferencia.</span>
+                                                    <span className="text-xs">{t('deposit.instruction_3')}</span>
                                                 </div>
                                                 <div className="flex gap-2">
                                                     <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
-                                                    <span className="text-xs">Para que el pago se procese lo más rápido posible, le pido que no deje comentarios en el pago.</span>
+                                                    <span className="text-xs">{t('deposit.instruction_2')}</span>
                                                 </div>
                                                 <div className="flex gap-2">
                                                     <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">4</span>
-                                                    <span className="text-xs">Tome una captura de pantalla de la traducción y cargue el archivo en el sitio.</span>
+                                                    <span className="text-xs">{t('deposit.instruction_4')}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1690,7 +1690,7 @@ export default function DepositPage() {
                                                             });
 
                                                             if (response.ok) {
-                                                                alert(`Recibo subido exitosamente: ${file.name}`);
+                                                                alert(t('deposit.receipt_uploaded_success').replace('{fileName}', file.name));
                                                                 // Обновляем баланс после успешного депозита
                                                                 refreshBalance();
                                                                 router.push('/detalization');
@@ -1700,20 +1700,20 @@ export default function DepositPage() {
 
                                                                 // Check for specific database schema error
                                                                 if (errorData.error === 'Database schema issue') {
-                                                                    alert(`Error del servidor: ${errorData.message}\n\nPor favor contacte al equipo técnico para resolver este problema.`);
+                                                                    alert(t('deposit.server_error').replace('{message}', errorData.message));
                                                                 } else {
-                                                                    alert('Error al procesar el pago');
+                                                                    alert(t('deposit.payment_processing_error'));
                                                                 }
                                                             }
                                                         } catch (error) {
                                                             console.error('Error uploading receipt:', error);
-                                                            alert('Error de conexión');
+                                                            alert(t('deposit.connection_error'));
                                                         }
                                                     }
                                                 }}
                                             />
                                             <button className="w-full bg-[#094179] hover:bg-blue-900 text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2 pointer-events-none">
-                                                <span>Download receipt </span>
+                                                <span>{t('deposit.download_receipt')} </span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-arrow-right-icon lucide-circle-arrow-right"><circle cx="12" cy="12" r="10" /><path d="m12 16 4-4-4-4" /><path d="M8 12h8" /></svg>
                                             </button>
                                         </div>
@@ -1727,19 +1727,19 @@ export default function DepositPage() {
                                         <DialogTitle className="sr-only">{t('deposit.safety_pay')}</DialogTitle>
                                     </DialogHeader>
                                     <div className={`${selectedMethod == "momo" ? "bg-[#FF5000]" : "bg-[#008751]"}  text-white px-6 py-6 rounded-2xl`}>
-                                        <h2 className="text-lg font-bold">${userCurrency} Payment</h2>
+                                        <h2 className="text-lg font-bold">{userCurrency} {t('deposit.payment')}</h2>
                                     </div>
                                     <div className="p-2 lg:p-6 overflow-y-auto">
                                         <div className="grid grid-cols-2">
                                             <div className="bg-gray-50 p-6">
-                                                <p className="text-center text-gray-600 mb-2 text-xs">Pagar el valor exacto</p>
+                                                <p className="text-center text-gray-600 mb-2 text-xs">{t('deposit.pay_exact_amount')}</p>
                                                 <p className="text-xl font-bold text-[#FF5000]-900 text-center">{customAmount}.00 {displayCurrency}</p>
                                                 {selectedMethod == "MOMO" && (<p className="text-center text-gray-600 mb-2 text-xs">
-                                                    Pay With {paymentMethods.find(method => method.id === selectedMethod)?.name || selectedMethod} is a convenient payment option available for your country. This method allows you to deposit in KES through your mobile number.
+                                                    {t('deposit.momo_description').replace('{method}', paymentMethods.find(method => method.id === selectedMethod)?.name || selectedMethod)}
                                                 </p>)}
                                             </div>
                                             <div className={`${selectedMethod == "momo" ? "bg-[#FF500020]" : "bg-[#00875120]"}  lg:p-6 text-center`}>
-                                                <p className="mb-2 text-xs ">Tienes:</p>
+                                                <p className="mb-2 text-xs ">{t('deposit.you_have')}:</p>
                                                 <div
                                                     className={`flex items-center justify-center gap-2 text-lg font-bold transition-colors cursor-pointer hover:opacity-80 text-center ${selectedMethod == "momo" ? "text-[#FF5000]" : "text-[#008751]"} `}
                                                 >
@@ -1804,16 +1804,16 @@ export default function DepositPage() {
                                             ) : selectedMethod === 'momo' ? (
                                                 // Show all crypto wallets for MOMO method
                                                 <div>
-                                                    <h4 className="text-center text-gray-700 font-bold text-sm">Payment initiated. Please check your device to see if you are prompted to complete the payment.</h4>
+                                                    <h4 className="text-center text-gray-700 font-bold text-sm">{t('deposit.momo_payment_initiated')}</h4>
                                                 </div>
                                             ) : (
                                                 // Show single payment details for other methods
                                                 <>
                                                     <div>
                                                         <p className="text-gray-600 mb-1 text-center text-xs">
-                                                            {selectedMethod === 'NEQUI' ? 'Número NEQUI' :
-                                                                ['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Dirección de Wallet' :
-                                                                    'Account Number'}
+                                                            {selectedMethod === 'NEQUI' ? t('deposit.nequi_number') :
+                                                                ['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? t('deposit.wallet_address') :
+                                                                    t('deposit.account_number')}
                                                         </p>
                                                         <div className="flex justify-center items-center gap-1 p-1 border-b border-black">
                                                             <span className="font-mono text-lg md:text-2xl lg:text-3xl text-black-900 break-all text-center">
@@ -1830,7 +1830,7 @@ export default function DepositPage() {
 
                                                     <div>
                                                         <p className="text-gray-600 mb-1 text-center text-xs">
-                                                            Bank
+                                                            {t('deposit.bank')}
                                                         </p>
                                                         <div className="flex justify-center items-center gap-1 p-1 border-b border-black">
                                                             <span className="font-mono text-lg md:text-2xl lg:text-3xl text-black-900 text-center">
@@ -1847,7 +1847,7 @@ export default function DepositPage() {
 
                                                     <div>
                                                         <p className="text-gray-600 mb-1 text-center text-xs">
-                                                            {['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? 'Tipo de Wallet' : 'Account Number'}
+                                                            {['BTC', 'ETH', 'USDT'].includes(selectedMethod) ? t('deposit.wallet_type') : t('deposit.account_name')}
                                                         </p>
                                                         <div className="flex justify-center items-center gap-1 p-1 border-b border-black">
                                                             <span className="font-mono text-lg md:text-2xl lg:text-3xl text-black-900 text-center">
@@ -1867,41 +1867,41 @@ export default function DepositPage() {
 
                                         {selectedMethod === 'momo' ? (
                                             <div className="my-5">
-                                                <h4 className={`font-bold  text-[#FF5000] mb-2`}>Follow instructions below:</h4>
+                                                <h4 className={`font-bold  text-[#FF5000] mb-2`}>{t('deposit.follow_instructions')}:</h4>
                                                 <div className="grid grid-cols-2 gap-4 text-base">
                                                     <div className="flex gap-2">
                                                         <span className={`w-6 h-6 border-2 border-[#FF5000] text-[#ff5000] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>1</span>
-                                                        <span className="text-xs">You will receive a prompt from M-PESA.</span>
+                                                        <span className="text-xs">{t('deposit.momo_step_1')}</span>
                                                     </div>
                                                     <div className="flex gap-2">
                                                         <span className={`w-6 h-6 border-2 border-[#FF5000] text-[#ff5000] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>3</span>
-                                                        <span className="text-xs">You will receive a confirmation SMS from M-PESA. After you receive a successful reply from M-PESA, click the button below.</span>
+                                                        <span className="text-xs">{t('deposit.momo_step_3')}</span>
                                                     </div>
                                                     <div className="flex gap-2">
                                                         <span className={`w-6 h-6 border-2 border-[#FF5000] text-[#FF5000] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>2</span>
-                                                        <span className="text-xs">Enter your M-PESA PIN and Send</span>
+                                                        <span className="text-xs">{t('deposit.momo_step_2')}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                         ) : selectedMethod === 'banktranfer' ? (
                                             <div className="my-5">
-                                                <h4 className={`font-bold  text-[#008751] mb-2`}>Follow instructions below:</h4>
+                                                <h4 className={`font-bold  text-[#008751] mb-2`}>{t('deposit.follow_instructions')}:</h4>
                                                 <div className="grid grid-cols-2 gap-4 text-base">
                                                     <div className="flex gap-2">
                                                         <span className={`w-6 h-6 border-2 border-[#008751] text-[#008751] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>1</span>
-                                                        <span className="text-xs">Open your banking app and select the transfer option.</span>
+                                                        <span className="text-xs">{t('deposit.bank_step_1')}</span>
                                                     </div>
                                                     <div className="flex gap-2">
                                                         <span className={`w-6 h-6 border-2 border-[#008751] text-[#008751] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>3</span>
-                                                        <span className="text-xs">Confirm the name matches above, then enter the same amount above and click on transfer.</span>
+                                                        <span className="text-xs">{t('deposit.bank_step_3')}</span>
                                                     </div>
                                                     <div className="flex gap-2">
                                                         <span className={`w-6 h-6 border-2 border-[#008751] text-[#008751] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>2</span>
-                                                        <span className="text-xs">Copy the account number and paste it into the transfer option and select the bank above.</span>
+                                                        <span className="text-xs">{t('deposit.bank_step_2')}</span>
                                                     </div>
                                                     <div className="flex gap-2">
                                                         <span className={`w-6 h-6 border-2 border-[#008751] text-[#008751] rounded-full flex items-center justify-center text-sm flex-shrink-0`}>4</span>
-                                                        <span className="text-xs">After you receive a successful screen, click the button below.</span>
+                                                        <span className="text-xs">{t('deposit.bank_step_4')}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1947,7 +1947,7 @@ export default function DepositPage() {
                                                 refreshBalance();
                                                 router.push('/detalization');
                                             }} className={`w-full ${selectedMethod == "momo" ? "bg-[#FF5000]" : "bg-[#008751]"} ${selectedMethod == "momo" ? "hover:bg-[#FF5000]-900" : "hover:bg-[#008751]-900"}  text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2`}>
-                                                <span>I have Made The Payment </span>
+                                                <span>{t('deposit.payment_made')} </span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-arrow-right-icon lucide-circle-arrow-right"><circle cx="12" cy="12" r="10" /><path d="m12 16 4-4-4-4" /><path d="M8 12h8" /></svg>
                                             </button>
                                         </div>
