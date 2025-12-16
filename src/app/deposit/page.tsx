@@ -470,11 +470,18 @@ export default function DepositPage() {
                     router.push('/detalization');
                 }else{
                     //If it is card
-                    if(selectedMethod =="card" && result.paymentCompleted){
-                        setIsCreatingPaymentLink(false);
-                        setShowSuccess(true);
-                        refreshBalance();
-                        router.push('/detalization');
+                    if(selectedMethod =="card"){
+                         if(result.paymentCompleted) {
+                            setIsCreatingPaymentLink(false);
+                            setShowSuccess(true);
+                            refreshBalance();
+                            router.push('/detalization');
+                        }else{
+                            console.log("result._links",result._links);
+                            console.log("result._links.url",result._links.url);
+                            window.open(result._links.url);
+                            router.push('/detalization');
+                        }
                     }else{
                         setCashonrailsPayment(result);
                         setShowCashonrailsPayment(true);
