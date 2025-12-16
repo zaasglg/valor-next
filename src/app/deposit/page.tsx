@@ -602,8 +602,8 @@ export default function DepositPage() {
     // Deposit amounts by country
     const depositAmountsByCountry = {
         'Argentina': [20000, 50000, 100000, 250000],
-        'Nigeria': [5000, 15000, 35000, 70000],
-        'Kenya': [5000, 15000, 35000, 70000],
+        'Nigeria': [5000, 15000, 45000, 75000],
+        'Kenya': [500, 1500, 4500, 6500],
         'Bolivia': [200, 500, 1000, 2500],
         'Venezuela': [1500, 3000, 5000, 100000],
         'Peru': [50, 100, 200, 500],
