@@ -867,11 +867,11 @@ export default function AllGamesPage() {
       </aside>
 
       {/* Desktop Content */}
-      <main className="flex-1 p-8 2xl:p-12">
+      <main className="flex-1 p-4 lg:p-6 2xl:p-5">
         {/* Banners superiores */}
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 2xl:gap-8 mb-6 lg:mb-8 2xl:mb-12">
-          <div className="overflow-hidden w-full lg:w-5/12 bg-green-700 rounded-2xl 2xl:rounded-3xl flex items-center justify-center relative bg-[url(/images/Bbv2-xdH.jpg)] bg-cover h-64 lg:h-64 2xl:h-[45em]">
-            <div className="absolute inset-0 flex flex-col items-center justify-end z-10 pb-10 2xl:pb-16">
+        <div className="flex flex-col lg:flex-row lg:items-stretch gap-4 lg:gap-4 2xl:gap-8 mb-4 lg:mb-4 2xl:mb-12 lg:h-[220px] 2xl:h-[22em]">
+          <div className="overflow-hidden w-full lg:w-5/12 bg-green-700 rounded-2xl 2xl:rounded-3xl flex items-center justify-center relative bg-[url(/images/Bbv2-xdH.jpg)] bg-cover h-64 lg:h-full 2xl:h-full">
+            <div className="absolute inset-0 flex flex-col items-center justify-end z-10 pb-6 lg:pb-4 2xl:pb-16">
               <div className="flex items-end gap-1 lg:gap-2 2xl:gap-3 w-full px-2 lg:px-5 2xl:px-8">
                 <div className="flex-1 flex justify-center">
                   <img
@@ -928,51 +928,51 @@ export default function AllGamesPage() {
               </div>
             </div>
           </div>
-          <div className="flex-1 w-full lg:w-7/12 h-64 2xl:h-[45em] relative overflow-hidden">
+          <div className="w-full lg:w-7/12 h-64 lg:h-full 2xl:h-full relative overflow-hidden rounded-2xl 2xl:rounded-3xl">
             <Carousel
               opts={{ align: "start", loop: true, slidesToScroll: 1 }}
-              className="[&_.carousel-previous]:hidden [&_.carousel-next]:hidden [&_.carousel-dots]:hidden"
+              className="[&_.carousel-previous]:hidden [&_.carousel-next]:hidden [&_.carousel-dots]:hidden h-full w-full"
             >
-              <CarouselContent className="flex h-full">
-                <CarouselItem className="basis-full h-full">
+              <CarouselContent className="h-full">
+                <CarouselItem className="h-full">
                   {isAuthenticated ? (
-                    <div className="h-full w-full relative">
+                    <div className="h-full w-full">
                       <img
                         src="/images/1-banner.jpg"
                         alt="imagen del banner"
-                        className="rounded-lg 2xl:rounded-2xl w-full h-full object-contain cursor-pointer"
+                        className="w-full h-full object-cover cursor-pointer"
                         onClick={handleCarouselClick}
                       />
                     </div>
                   ) : (
                     <LoginDialog>
-                      <div className="h-full w-full relative">
+                      <div className="h-full w-full">
                         <img
                           src="/images/1-banner.jpg"
                           alt="imagen del banner"
-                          className="rounded-lg 2xl:rounded-2xl w-full h-full object-contain cursor-pointer"
+                          className="w-full h-full object-cover cursor-pointer"
                         />
                       </div>
                     </LoginDialog>
                   )}
                 </CarouselItem>
-                <CarouselItem className="basis-full h-full">
+                <CarouselItem className="h-full">
                   {isAuthenticated ? (
-                    <div className="h-full w-full relative">
+                    <div className="h-full w-full">
                       <img
                         src="/images/2-banner.jpg"
                         alt="imagen del banner"
-                        className="rounded-lg 2xl:rounded-2xl w-full h-full object-contain cursor-pointer"
+                        className="w-full h-full object-cover cursor-pointer"
                         onClick={handleCarouselClick}
                       />
                     </div>
                   ) : (
                     <LoginDialog>
-                      <div className="h-full w-full relative">
+                      <div className="h-full w-full">
                         <img
                           src="/images/2-banner.jpg"
                           alt="imagen del banner"
-                          className="rounded-lg 2xl:rounded-2xl w-full h-full object-contain cursor-pointer"
+                          className="w-full h-full object-cover cursor-pointer"
                         />
                       </div>
                     </LoginDialog>
@@ -983,7 +983,7 @@ export default function AllGamesPage() {
           </div>
         </div>
         {/* Todos los Juegos */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between my-6 lg:my-8 2xl:my-12 gap-2 2xl:gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between my-3 lg:my-4 2xl:my-12 gap-2 2xl:gap-4">
           <h1 className="text-2xl lg:text-3xl 2xl:text-4xl font-bold text-[#23223a]">
             {t('all_games.all_games')}
           </h1>

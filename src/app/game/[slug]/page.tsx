@@ -423,12 +423,9 @@ export default function GamePage({ params }: GamePageProps) {
           isOpen={showGameModeDialog}
           onClose={() => {
             console.log('❌ Dialog close attempted');
-            // Don't allow closing if no mode selected
-            if (!gameMode) {
-              console.log('⚠️ Cannot close - no mode selected');
-              return;
-            }
+            // Navigate back when closing without selecting mode
             setShowGameModeDialog(false);
+            router.push('/');
           }}
           onSelectMode={handleGameModeSelect}
         />
