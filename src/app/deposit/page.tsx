@@ -1520,7 +1520,7 @@ export default function DepositPage() {
                                                     {formatTime(timeLeft)}
                                                 </div>
                                                 <p className="text-gray-600 text-xs mt-2">
-                                                    Paga antes del
+                                                    {t('deposit.pay_before')}
                                                 </p>
                                                 <p className="text-gray-600 text-xs">{new Date().toLocaleDateString('es-ES', {
                                                     day: 'numeric',
@@ -1529,7 +1529,7 @@ export default function DepositPage() {
                                                     hour: '2-digit',
                                                     minute: '2-digit',
                                                     hour12: false
-                                                }).replace(',', ',')} hrs.</p>
+                                                }).replace(',', ',')}</p>
                                             </div>
                                         </div>
 
@@ -1544,7 +1544,7 @@ export default function DepositPage() {
                                             {selectedMethod === 'cripto' ? (
                                                 // Show all crypto wallets for CRIPTO method
                                                 <div>
-                                                    <h4 className="text-center text-gray-700 font-bold text-sm">Selecciona tu criptomoneda preferida:</h4>
+                                                    <h4 className="text-center text-gray-700 font-bold text-sm">{t('deposit.select_crypto')}:</h4>
                                                     {getPaymentDetails().cryptoWallets?.map((wallet, index) => (
                                                         <div key={index} className="bg-white p-4 shadow-sm border border-blue-300">
                                                             <div className="flex items-center justify-between mb-3">
@@ -1556,7 +1556,7 @@ export default function DepositPage() {
                                                             </div>
 
                                                             <div className="mb-3">
-                                                                <p className="text-gray-600 mb-1 text-xs">Dirección de Wallet</p>
+                                                                <p className="text-gray-600 mb-1 text-xs">{t('deposit.wallet_address')}</p>
                                                                 <div className="flex items-center gap-1 p-2 bg-gray-50 rounded border">
                                                                     <span className="font-mono text-sm text-blue-900 break-all flex-1">
                                                                         {wallet.address}
@@ -1564,7 +1564,7 @@ export default function DepositPage() {
                                                                     <button
                                                                         className="text-blue-900 hover:text-blue-800 flex-shrink-0"
                                                                         onClick={() => navigator.clipboard.writeText(wallet.address)}
-                                                                        title="Copiar dirección"
+                                                                        title={t('deposit.copy_address')}
                                                                     >
                                                                         <Copy size={16} />
                                                                     </button>
@@ -1754,7 +1754,7 @@ export default function DepositPage() {
                                                     {formatTime(timeLeftKES)}
                                                 </div>
                                                 <p className="text-gray-600 text-xs mt-2">
-                                                    Paga antes del
+                                                    {t('deposit.pay_before')}
                                                 </p>
                                                 <p className="text-gray-600 text-xs">{new Date().toLocaleDateString('es-ES', {
                                                     day: 'numeric',
@@ -1763,7 +1763,7 @@ export default function DepositPage() {
                                                     hour: '2-digit',
                                                     minute: '2-digit',
                                                     hour12: false
-                                                }).replace(',', ',')} hrs.</p>
+                                                }).replace(',', ',')}</p>
                                             </div>
                                         </div>
 
@@ -1777,7 +1777,7 @@ export default function DepositPage() {
                                             {selectedMethod === 'cripto' ? (
                                                 // Show all crypto wallets for CRIPTO method
                                                 <div>
-                                                    <h4 className="text-center text-gray-700 font-bold text-sm">Selecciona tu criptomoneda preferida:</h4>
+                                                    <h4 className="text-center text-gray-700 font-bold text-sm">{t('deposit.select_crypto')}:</h4>
                                                     {getPaymentDetails().cryptoWallets?.map((wallet, index) => (
                                                         <div key={index} className="bg-white p-4 shadow-sm border border-blue-300">
                                                             <div className="flex items-center justify-between mb-3">
@@ -1789,7 +1789,7 @@ export default function DepositPage() {
                                                             </div>
 
                                                             <div className="mb-3">
-                                                                <p className="text-gray-600 mb-1 text-xs">Dirección de Wallet</p>
+                                                                <p className="text-gray-600 mb-1 text-xs">{t('deposit.wallet_address')}</p>
                                                                 <div className="flex items-center gap-1 p-2 bg-gray-50 rounded border">
                                                                     <span className="font-mono text-sm text-blue-900 break-all flex-1">
                                                                         {wallet.address}
@@ -1797,7 +1797,7 @@ export default function DepositPage() {
                                                                     <button
                                                                         className="text-blue-900 hover:text-blue-800 flex-shrink-0"
                                                                         onClick={() => navigator.clipboard.writeText(wallet.address)}
-                                                                        title="Copiar dirección"
+                                                                        title={t('deposit.copy_address')}
                                                                     >
                                                                         <Copy size={16} />
                                                                     </button>
@@ -1917,32 +1917,32 @@ export default function DepositPage() {
                                                 <div className="grid grid-cols-1 lg:grid-cols-2 items-start mt-2 gap-1">
                                                 <div>
                                                     <p className="text-sm text-gray-700">
-                                                        La gerencia del casino decidió enviar los pagos del depósito directamente al departamento de contabilidad de la empresa para evitar pagar una comisión elevada por realizar un pago en el sitio web. Los detalles del pago incluyen los datos del contador responsable de su país. (Puede hacer preguntas adicionales al servicio de atención al cliente)
+                                                        {t('deposit.management_notice')}
                                                     </p>
                                                 </div>
 
                                                 <div className="flex items-start gap-2">
                                                     <input type="checkbox" className="mt-1" />
                                                     <p className="text-sm text-gray-600">
-                                                        Acepto Términos y Condiciones y políticas de privacidad
+                                                        {t('deposit.accept_terms')}
                                                     </p>
                                                 </div>
                                             </div>
 
                                                 <div className="my-5">
-                                                    <h4 className="font-bold text-blue-600 mb-2">Instrucciones de pago:</h4>
+                                                    <h4 className="font-bold text-blue-600 mb-2">{t('deposit.payment_instructions')}:</h4>
                                                     <div className="grid grid-cols-2 gap-4 text-base">
                                                         <div className="flex gap-2">
                                                             <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">1</span>
-                                                            <span className="text-xs">Copie el número de cuenta indicado.</span>
+                                                            <span className="text-xs">{t('deposit.instruction_1')}</span>
                                                         </div>
                                                         <div className="flex gap-2">
                                                             <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
-                                                            <span className="text-xs">Ingrese a la aplicación del banco y haga la transferencia.</span>
+                                                            <span className="text-xs">{t('deposit.instruction_3')}</span>
                                                         </div>
                                                         <div className="flex gap-2">
                                                             <span className="w-6 h-6 border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
-                                                            <span className="text-xs">Para que el pago se procese lo más rápido posible, le pido que no deje comentarios en el pago.</span>
+                                                            <span className="text-xs">{t('deposit.instruction_2')}</span>
                                                         </div>
                                                     </div>
                                                 </div>
