@@ -33,6 +33,10 @@ const countryPhoneCodes: { [key: string]: string } = {
   "Nigeria": "+234",
   "Kenya": "+254",
   "Zimbabwe": "+263",
+  "Ghana": "+233",
+  "Uganda": "+256",
+  "South Africa": "+27",
+  "Zambia": "+260",
 };
 
 export default function ProfilePage() {
@@ -378,11 +382,18 @@ export default function ProfilePage() {
                             }
                           }}
                         >
-                          {Object.keys(countryPhoneCodes).map((country) => (
-                            <option key={country} value={country}>
-                              {country}
-                            </option>
-                          ))}
+                          {(typeof window !== 'undefined' && (window.location.hostname.includes('valor-games.world') || window.location.hostname.includes('valor-games.online'))) 
+                            ? ['Nigeria', 'Kenya', 'Zimbabwe', 'Ghana', 'Uganda', 'South Africa', 'Zambia'].map((country) => (
+                              <option key={country} value={country}>
+                                {country}
+                              </option>
+                            ))
+                            : Object.keys(countryPhoneCodes).map((country) => (
+                              <option key={country} value={country}>
+                                {country}
+                              </option>
+                            ))
+                          }
                         </select>
                       </div>
                       <div className="flex flex-col gap-2">

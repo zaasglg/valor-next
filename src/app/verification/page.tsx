@@ -198,16 +198,30 @@ export default function VerificationPage() {
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Colombia">Colombia</SelectItem>
-                                    <SelectItem value="Argentina">Argentina</SelectItem>
-                                    <SelectItem value="Brasil">Brasil</SelectItem>
-                                    <SelectItem value="Chile">Chile</SelectItem>
-                                    <SelectItem value="Ecuador">Ecuador</SelectItem>
-                                    <SelectItem value="México">México</SelectItem>
-                                    <SelectItem value="Perú">Perú</SelectItem>
-                                    <SelectItem value="Uruguay">Uruguay</SelectItem>
-                                    <SelectItem value="Venezuela">Venezuela</SelectItem>
-                                    <SelectItem value="España">España</SelectItem>
+                                    {(typeof window !== 'undefined' && (window.location.hostname.includes('valor-games.world') || window.location.hostname.includes('valor-games.online'))) ? (
+                                        <>
+                                            <SelectItem value="Nigeria">Nigeria</SelectItem>
+                                            <SelectItem value="Kenya">Kenya</SelectItem>
+                                            <SelectItem value="Zimbabwe">Zimbabwe</SelectItem>
+                                            <SelectItem value="Ghana">Ghana</SelectItem>
+                                            <SelectItem value="Uganda">Uganda</SelectItem>
+                                            <SelectItem value="South Africa">South Africa</SelectItem>
+                                            <SelectItem value="Zambia">Zambia</SelectItem>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <SelectItem value="Colombia">Colombia</SelectItem>
+                                            <SelectItem value="Argentina">Argentina</SelectItem>
+                                            <SelectItem value="Brasil">Brasil</SelectItem>
+                                            <SelectItem value="Chile">Chile</SelectItem>
+                                            <SelectItem value="Ecuador">Ecuador</SelectItem>
+                                            <SelectItem value="México">México</SelectItem>
+                                            <SelectItem value="Perú">Perú</SelectItem>
+                                            <SelectItem value="Uruguay">Uruguay</SelectItem>
+                                            <SelectItem value="Venezuela">Venezuela</SelectItem>
+                                            <SelectItem value="España">España</SelectItem>
+                                        </>
+                                    )}
                                 </SelectContent>
                             </Select>
                         </div>
