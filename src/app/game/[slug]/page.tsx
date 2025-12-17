@@ -370,7 +370,7 @@ export default function GamePage({ params }: GamePageProps) {
       {/* Desktop Layout */}
       <main>
         <div className="bg-white">
-          <div className={`bg-black flex items-center justify-center relative overflow-hidden ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[800px]`}>
+          <div className={`bg-black flex items-center justify-center relative overflow-hidden ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[700px]`}>
             {isLoadingUserData && !showGameModeDialog ? (
               <div className="flex flex-col items-center justify-center text-white">
                 <Loader size="lg" color="white" type="dots" />
@@ -388,7 +388,7 @@ export default function GamePage({ params }: GamePageProps) {
                   <iframe
                     ref={iframeRef}
                     src={getGameUrl()}
-                    className={`w-full ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[800px] rounded-none lg:rounded`}
+                    className={`w-full ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[700px] rounded-none lg:rounded`}
                     title="Game"
                     allow="autoplay; fullscreen"
                     onLoad={handleIframeLoad}
