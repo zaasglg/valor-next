@@ -49,6 +49,8 @@ export default function DepositPage() {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
     const [showCashonrailsPayment, setShowCashonrailsPayment] = useState(false);
+    const [showCashonrailsPaymentCard, setShowCashonrailsPaymentCard] = useState(false);
+    const [cashonrailsPaymentCardURL, setCashonrailsPaymentCardURL] = useState("");
     const [cashonrailsPayment, setCashonrailsPayment] = useState<CashonrailsPayment>({});
 
     // Bonus states
@@ -477,10 +479,8 @@ export default function DepositPage() {
                             refreshBalance();
                             router.push('/detalization');
                         }else{
-                            console.log("result._links",result._links);
-                            console.log("result._links.url",result._links.url);
-                            window.open(result._links.url);
-                            router.push('/detalization');
+                            setCashonrailsPaymentCardURL(result._links.url);
+                            setShowCashonrailsPaymentCard(true);
                         }
                     }else{
                         setCashonrailsPayment(result);
@@ -1962,7 +1962,19 @@ export default function DepositPage() {
                                 </DialogContent>
                             </Dialog>
 
-
+                            <Dialog open={showCashonrailsPaymentCard} onOpenChange={setShowCashonrailsPaymentCard}>
+                                <DialogContent className="max-w-3xl p-0 max-h-[90vh] overflow-y-auto rounded-2xl">
+                                    <DialogHeader>
+                                        <DialogTitle className="sr-only">{t('deposit.safety_pay')}</DialogTitle>
+                                    </DialogHeader>
+                                    <div className={`${selectedMethod == "momo" ? "bg-[#FF5000]" : "bg-[#008751]"}  text-white px-6 py-6 rounded-2xl`}>
+                                        <h2 className="text-lg font-bold">${userCurrency} Payment</h2>
+                                    </div>
+                                    <div className="p-2 lg:p-6 h-[75vh]">
+                                        <iframe src={cashonrailsPaymentCardURL} width="100%" height="100%" />
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
 
                             <div className="flex gap-8 mt-8 items-center justify-center">
                                 <div>
