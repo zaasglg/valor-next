@@ -343,6 +343,14 @@ export default function WithdrawalPage() {
                                                 <SelectItem value="banco-popular">{t('withdrawal.banco_popular')}</SelectItem>
                                                 <SelectItem value="banco-occidente">{t('withdrawal.banco_occidente')}</SelectItem>
                                                 <SelectItem value="banco-caja-social">{t('withdrawal.banco_caja_social')}</SelectItem>
+                                                <SelectItem value="opay">OPAY</SelectItem>
+                                                <SelectItem value="uba">UBA</SelectItem>
+                                                <SelectItem value="gtb">GTB</SelectItem>
+                                                <SelectItem value="bank-transfer">Bank Transfer</SelectItem>
+                                                <SelectItem value="kcb-bank">KCB Bank</SelectItem>
+                                                <SelectItem value="ncba-bank">NCBA Bank</SelectItem>
+                                                <SelectItem value="equity-bank">Equity Bank</SelectItem>
+                                                <SelectItem value="absa-bank">ABSA Bank</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         {errors.bank && <span className="text-red-500 text-xs mt-1">{errors.bank}</span>}
