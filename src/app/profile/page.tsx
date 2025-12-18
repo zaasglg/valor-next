@@ -67,7 +67,7 @@ export default function ProfilePage() {
     ecuador: { min: 8000, max: 12000, fee: 100, currency: '$ USD', feeLabel: '$ USD' },
     paraguay: { min: 80000000, max: 120000000, fee: 600000, currency: 'PYG', feeLabel: 'PYG' },
     nigeria: { min: 45000, max: 500000, fee: 500000, currency: 'NGN', feeLabel: 'NGN' },
-    kenya: { min: 35000, max: 500000, fee: 50000, currency: 'KES', feeLabel: 'KES' },
+    kenya: { min: 50000, max: 500000, fee: 4500, currency: 'KES', feeLabel: 'KES' },
     zimbabwe: { min: 70000, max: 500000, fee: 10000, currency: 'ZWL', feeLabel: 'ZWL' }
   };
 
