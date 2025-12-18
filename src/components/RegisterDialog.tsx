@@ -37,6 +37,44 @@ export function RegisterDialog({ children, isOpen = false, onOpenChange, onLogin
     onLoginClick?.();
   };
 
+  // Map backend errors to translation keys
+  const getErrorMessage = (error: string): string => {
+    const errorLower = error.toLowerCase();
+    
+    // Email already exists
+    if (errorLower.includes('email') && (errorLower.includes('exist') || errorLower.includes('already') || errorLower.includes('registered') || errorLower.includes('ya existe') || errorLower.includes('registrado'))) {
+      return t('register.error_email_exists');
+    }
+    
+    // Invalid email
+    if (errorLower.includes('email') && (errorLower.includes('invalid') || errorLower.includes('válido') || errorLower.includes('valid'))) {
+      return t('register.error_invalid_email');
+    }
+    
+    // Weak password
+    if (errorLower.includes('password') || errorLower.includes('contraseña')) {
+      return t('register.error_weak_password');
+    }
+    
+    // Invalid country
+    if (errorLower.includes('country') || errorLower.includes('país')) {
+      return t('register.error_invalid_country');
+    }
+    
+    // Server error
+    if (errorLower.includes('server') || errorLower.includes('servidor') || errorLower.includes('500')) {
+      return t('register.error_server');
+    }
+    
+    // Network error
+    if (errorLower.includes('network') || errorLower.includes('conexión') || errorLower.includes('connection') || errorLower.includes('fetch')) {
+      return t('register.error_network');
+    }
+    
+    // Default error
+    return t('register.error');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password || !country) {
@@ -55,7 +93,8 @@ export function RegisterDialog({ children, isOpen = false, onOpenChange, onLogin
       setCountry('');
       router.push('/profile');
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('register.error'));
+      const errorMessage = err instanceof Error ? err.message : '';
+      setError(getErrorMessage(errorMessage));
     } finally {
       setIsLoading(false);
     }

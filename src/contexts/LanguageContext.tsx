@@ -155,6 +155,12 @@ const translations = {
     'register.have_account': '¿Ya tiene cuenta?',
     'register.login': 'Ingresar',
     'register.error': 'Error al registrarse',
+    'register.error_email_exists': 'Este correo electrónico ya está registrado',
+    'register.error_invalid_email': 'Por favor ingresa un correo electrónico válido',
+    'register.error_weak_password': 'La contraseña es demasiado débil. Usa al menos 6 caracteres',
+    'register.error_invalid_country': 'Por favor selecciona un país válido',
+    'register.error_server': 'Error del servidor. Por favor intenta más tarde',
+    'register.error_network': 'Error de conexión. Verifica tu internet',
     
     // Detalization page
     'detalization.deposits': 'depósitos',
@@ -505,6 +511,12 @@ const translations = {
     'register.have_account': 'Already have an account?',
     'register.login': 'Login',
     'register.error': 'Registration error',
+    'register.error_email_exists': 'This email is already registered',
+    'register.error_invalid_email': 'Please enter a valid email address',
+    'register.error_weak_password': 'Password is too weak. Use at least 6 characters',
+    'register.error_invalid_country': 'Please select a valid country',
+    'register.error_server': 'Server error. Please try again later',
+    'register.error_network': 'Connection error. Check your internet',
     
     // Detalization page
     'detalization.deposits': 'deposits',
@@ -855,6 +867,12 @@ const translations = {
     'register.have_account': 'Já tem uma conta?',
     'register.login': 'Entrar',
     'register.error': 'Erro ao registrar',
+    'register.error_email_exists': 'Este email já está registrado',
+    'register.error_invalid_email': 'Por favor insira um email válido',
+    'register.error_weak_password': 'A senha é muito fraca. Use pelo menos 6 caracteres',
+    'register.error_invalid_country': 'Por favor selecione um país válido',
+    'register.error_server': 'Erro do servidor. Tente novamente mais tarde',
+    'register.error_network': 'Erro de conexão. Verifique sua internet',
     
     // Detalization page
     'detalization.deposits': 'depósitos',
@@ -1205,6 +1223,12 @@ const translations = {
     'register.have_account': 'هل لديك حساب بالفعل؟',
     'register.login': 'تسجيل الدخول',
     'register.error': 'خطأ في التسجيل',
+    'register.error_email_exists': 'هذا البريد الإلكتروني مسجل بالفعل',
+    'register.error_invalid_email': 'يرجى إدخال بريد إلكتروني صالح',
+    'register.error_weak_password': 'كلمة المرور ضعيفة جداً. استخدم 6 أحرف على الأقل',
+    'register.error_invalid_country': 'يرجى اختيار بلد صالح',
+    'register.error_server': 'خطأ في الخادم. يرجى المحاولة لاحقاً',
+    'register.error_network': 'خطأ في الاتصال. تحقق من الإنترنت',
     
     // Detalization page
     'detalization.deposits': 'الإيداعات',
@@ -1555,6 +1579,12 @@ const translations = {
     'register.have_account': 'Vous avez déjà un compte?',
     'register.login': 'Se connecter',
     'register.error': 'Erreur d\'inscription',
+    'register.error_email_exists': 'Cet email est déjà enregistré',
+    'register.error_invalid_email': 'Veuillez entrer une adresse email valide',
+    'register.error_weak_password': 'Le mot de passe est trop faible. Utilisez au moins 6 caractères',
+    'register.error_invalid_country': 'Veuillez sélectionner un pays valide',
+    'register.error_server': 'Erreur du serveur. Veuillez réessayer plus tard',
+    'register.error_network': 'Erreur de connexion. Vérifiez votre internet',
     
     // Detalization page
     'detalization.deposits': 'dépôts',
