@@ -338,7 +338,7 @@ export default function GamePage({ params }: GamePageProps) {
             <div className={`bg-black rounded-none lg:rounded flex items-center justify-center relative overflow-hidden ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[800px]`}>
               <div className="flex flex-col items-center justify-center text-white">
                 <Loader size="lg" color="white" type="dots" />
-                <p className="text-lg font-semibold mt-4">Verificando...</p>
+                <p className="text-lg font-semibold mt-4">{t('common.verifying')}</p>
               </div>
             </div>
           </div>
@@ -356,7 +356,7 @@ export default function GamePage({ params }: GamePageProps) {
             <div className={`bg-black rounded-none lg:rounded flex items-center justify-center relative overflow-hidden ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[800px]`}>
               <div className="flex flex-col items-center justify-center text-white">
                 <Loader size="lg" color="white" type="dots" />
-                <p className="text-lg font-semibold mt-4">Redirigiendo...</p>
+                <p className="text-lg font-semibold mt-4">{t('common.redirecting')}</p>
               </div>
             </div>
           </div>
@@ -374,13 +374,13 @@ export default function GamePage({ params }: GamePageProps) {
             {isLoadingUserData && !showGameModeDialog ? (
               <div className="flex flex-col items-center justify-center text-white">
                 <Loader size="lg" color="white" type="dots" />
-                <p className="text-lg font-semibold mt-4">Cargando datos del usuario...</p>
+                <p className="text-lg font-semibold mt-4">{t('game.loading_user_data')}</p>
               </div>
             ) : showAccountReviewModal ? (
               <div className="flex flex-col items-center justify-center text-white px-4">
                 <div className="text-4xl mb-4">⚠️</div>
-                <p className="text-xl font-bold text-center">Cuenta en revisión</p>
-                <p className="text-sm text-gray-300 mt-2 text-center">Contacta con soporte para más información</p>
+                <p className="text-xl font-bold text-center">{t('account_review.title')}</p>
+                <p className="text-sm text-gray-300 mt-2 text-center">{t('account_review.contact_support_info')}</p>
               </div>
             ) : slug === 'chicken-road' || slug === 'aviator' ? (
               gameMode ? (
@@ -449,17 +449,17 @@ export default function GamePage({ params }: GamePageProps) {
           }}
         >
           <DialogHeader className="sr-only text-white">
-            <DialogTitle className="text-left text-white">Se requiere verificación</DialogTitle>
+            <DialogTitle className="text-left text-white">{t('withdrawal.verification_required')}</DialogTitle>
           </DialogHeader>
           <div className="bg-[orange] px-6 py-8 rounded-t-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-20 flex items-center justify-center">
               {/* SVG background omitted for brevity */}
             </div>
-            <h2 className="text-2xl font-bold relative z-10 text-white">Se requiere verificación</h2>
+            <h2 className="text-2xl font-bold relative z-10 text-white">{t('withdrawal.verification_required')}</h2>
           </div>
           <div className="bg-white px-6 py-8 rounded-b-xl">
             <p className="text-gray-700 text-lg leading-relaxed text-center font-bold mb-6">
-              Has superado el límite de juegos. Tu cuenta está bloqueada hasta que se verifique. Contacta con soporte para más información.
+              {t('withdrawal.verification_message')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-6">
               <button
@@ -468,7 +468,7 @@ export default function GamePage({ params }: GamePageProps) {
                 }}
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-[0_6px_0_0_#15803d,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#15803d,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#15803d,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
               >
-                CONTACTAR SOPORTE
+                {t('withdrawal.contact_support')}
               </button>
               <button
                 onClick={() => {
@@ -477,7 +477,7 @@ export default function GamePage({ params }: GamePageProps) {
                 }}
                 className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg shadow-[0_6px_0_0_#c2410c,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#c2410c,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#c2410c,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
               >
-                VERIFICAR CUENTA
+                {t('withdrawal.verify_account')}
               </button>
             </div>
           </div>
@@ -493,7 +493,7 @@ export default function GamePage({ params }: GamePageProps) {
           onEscapeKeyDown={(e) => e.preventDefault()}
         >
           <DialogHeader className="sr-only text-white">
-            <DialogTitle className="text-left text-white">Revisión de cuenta</DialogTitle>
+            <DialogTitle className="text-left text-white">{t('account_review.title')}</DialogTitle>
           </DialogHeader>
           <div className="bg-orange-500 px-6 py-5 rounded-t-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-20 flex items-center justify-center">
@@ -503,17 +503,17 @@ export default function GamePage({ params }: GamePageProps) {
                 </g>
               </svg>
             </div>
-            <h2 className="text-2xl font-bold relative z-10 text-white">Revisión de cuenta</h2>
+            <h2 className="text-2xl font-bold relative z-10 text-white">{t('account_review.title')}</h2>
           </div>
           <div className="bg-white px-6 py-6 rounded-b-xl">
             <p className="text-gray-700 text-base leading-relaxed text-center font-semibold mb-3">
-              Tu cuenta está siendo revisada por el equipo de seguridad.
+              {t('account_review.in_progress')}
             </p>
             <p className="text-gray-600 text-sm leading-relaxed text-center mb-4">
-              Contacta con el soporte para más información.
+              {t('account_review.contact_support_info')}
             </p>
             <p className="text-gray-500 text-xs leading-relaxed text-center mb-5">
-              Tus juegos están temporalmente suspendidos hasta finalizar la revisión.
+              {t('account_review.games_suspended')}
             </p>
             <div className="flex justify-center">
               <button
@@ -522,7 +522,7 @@ export default function GamePage({ params }: GamePageProps) {
                 }}
                 className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-[0_6px_0_0_#15803d,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#15803d,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#15803d,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
               >
-                CONTACTAR SOPORTE
+                {t('withdrawal.contact_support')}
               </button>
             </div>
           </div>

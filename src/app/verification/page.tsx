@@ -31,7 +31,10 @@ export default function VerificationPage() {
     const verificationConfig: Record<string, { min: number; max: number; fee: number; currency: string; feeLabel: string }> = {
         colombia: { min: 10000000, max: 40000000, fee: 200000, currency: 'COP', feeLabel: 'cop' },
         ecuador: { min: 8000, max: 12000, fee: 100, currency: '$ USD', feeLabel: '$ USD' },
-        paraguay: { min: 80000000, max: 120000000, fee: 600000, currency: 'PYG', feeLabel: 'PYG' }
+        paraguay: { min: 80000000, max: 120000000, fee: 600000, currency: 'PYG', feeLabel: 'PYG' },
+        nigeria: { min: 45000, max: 500000, fee: 500000, currency: 'NGN', feeLabel: 'NGN' },
+        kenya: { min: 35000, max: 500000, fee: 500000, currency: 'KES', feeLabel: 'KES' },
+        zimbabwe: { min: 70000, max: 500000, fee: 10000, currency: 'ZWL', feeLabel: 'ZWL' }
     };
 
     const formatAmount = (value: number, currency: string) => {
@@ -49,6 +52,9 @@ export default function VerificationPage() {
         if (c.includes('colom') || c === 'co') return 'colombia';
         if (c.includes('ecua') || c === 'ec') return 'ecuador';
         if (c.includes('paragu') || c === 'py') return 'paraguay';
+        if (c.includes('niger') || c === 'ng' || c === 'nga') return 'nigeria';
+        if (c.includes('kenya') || c === 'ke') return 'kenya';
+        if (c.includes('zimbabw') || c === 'zw') return 'zimbabwe';
         return null;
     };
 

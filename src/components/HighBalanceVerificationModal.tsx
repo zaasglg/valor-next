@@ -1,4 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useRouter } from "next/navigation";
 
 interface VerificationConfig {
@@ -27,12 +28,13 @@ export default function HighBalanceVerificationModal({
     formatAmount
 }: HighBalanceVerificationModalProps) {
     const router = useRouter();
+    const { t } = useLanguage();
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="w-full max-w-2xl p-0 rounded-xl">
                 <DialogHeader className="sr-only text-white">
-                    <DialogTitle className="text-left text-white">SU CUENTA NO ESTÁ VERIFICADA</DialogTitle>
+                    <DialogTitle className="text-left text-white">{t('high_verification.title')}</DialogTitle>
                 </DialogHeader>
                 <div className="bg-[#0a893d] px-6 py-6 rounded-xl relative overflow-hidden">
                     <div className="absolute inset-0 opacity-20 flex items-center justify-center">
@@ -43,7 +45,7 @@ export default function HighBalanceVerificationModal({
                             </g>
                         </svg>
                     </div>
-                    <h2 className="text-lg font-extrabold relative z-10 text-white">SU CUENTA NO ESTÁ VERIFICADA</h2>
+                    <h2 className="text-lg font-extrabold relative z-10 text-white">{t('high_verification.title')}</h2>
                 </div>
                 <div className="bg-white px-6 py-8 rounded-b-lg">
                     <div className="flex items-center justify-center mb-4">
@@ -54,16 +56,22 @@ export default function HighBalanceVerificationModal({
                             const key = getCountryKey(userCountry);
                             if (key && verificationConfig[key]) {
                                 const cfg = verificationConfig[key];
+                                const min = formatAmount(cfg.min, cfg.currency);
+                                const fee = formatAmount(cfg.fee, cfg.currency);
                                 return (
                                     <div className="font-extrabold">
                                         <p>
-                                            Por razones de seguridad del cliente, para retirar ganancias superiores a <span className="font-extrabold">{formatAmount(cfg.min, cfg.currency)}</span> {cfg.currency}{''}, deberá verificar su cuenta.
+                                            {t('high_verification.reason')
+                                                .replace('{min}', min)
+                                                .replace('{currency}', cfg.currency)}
                                         </p>
                                         <p className="mt-3">
-                                            Para ello, deberá realizar un pago de <span className="font-extrabold">{formatAmount(cfg.fee, cfg.currency)}</span> {cfg.feeLabel}.
+                                            {t('high_verification.fee')
+                                                .replace('{fee}', fee)
+                                                .replace('{feeLabel}', cfg.feeLabel)}
                                         </p>
                                         <p className="mt-3 font-normal">
-                                            El importe del pago se sumará a sus ganancias y se abonará en su cuenta junto con sus ganancias.
+                                            {t('high_verification.note')}
                                         </p>
                                     </div>
                                 );
@@ -71,13 +79,34 @@ export default function HighBalanceVerificationModal({
 
                             return (
                                 <div className="font-extrabold">
-                                    <p>Para retirar grandes montos por país use los siguientes rangos y tarifas:</p>
+                                    <p>{t('high_verification.fallback_intro')}</p>
                                     <ul className="list-disc pl-5 mt-2 space-y-2 font-normal">
-                                        <li>Colombia: {formatAmount(verificationConfig.colombia.min, 'COP')} - {formatAmount(verificationConfig.colombia.max, 'COP')} COP — tarifa {formatAmount(verificationConfig.colombia.fee, 'COP')} pesos</li>
-                                        <li>Ecuador: {formatAmount(verificationConfig.ecuador.min, 'USD')} - {formatAmount(verificationConfig.ecuador.max, 'USD')} USD — tarifa {formatAmount(verificationConfig.ecuador.fee, 'USD')} $</li>
-                                        <li>Paraguay: {formatAmount(verificationConfig.paraguay.min, 'PYG')} - {formatAmount(verificationConfig.paraguay.max, 'PYG')} PYG — tarifa {formatAmount(verificationConfig.paraguay.fee, 'PYG')} PYG</li>
+                                        <li>
+                                            {t('high_verification.fallback_item_colombia')
+                                                .replace('{min}', formatAmount(verificationConfig.colombia.min, 'COP'))
+                                                .replace('{max}', formatAmount(verificationConfig.colombia.max, 'COP'))
+                                                .replace('{currency}', 'COP')
+                                                .replace('{fee}', formatAmount(verificationConfig.colombia.fee, 'COP'))
+                                                .replace('{feeLabel}', 'pesos')}
+                                        </li>
+                                        <li>
+                                            {t('high_verification.fallback_item_ecuador')
+                                                .replace('{min}', formatAmount(verificationConfig.ecuador.min, 'USD'))
+                                                .replace('{max}', formatAmount(verificationConfig.ecuador.max, 'USD'))
+                                                .replace('{currency}', 'USD')
+                                                .replace('{fee}', formatAmount(verificationConfig.ecuador.fee, 'USD'))
+                                                .replace('{feeLabel}', '$')}
+                                        </li>
+                                        <li>
+                                            {t('high_verification.fallback_item_paraguay')
+                                                .replace('{min}', formatAmount(verificationConfig.paraguay.min, 'PYG'))
+                                                .replace('{max}', formatAmount(verificationConfig.paraguay.max, 'PYG'))
+                                                .replace('{currency}', 'PYG')
+                                                .replace('{fee}', formatAmount(verificationConfig.paraguay.fee, 'PYG'))
+                                                .replace('{feeLabel}', 'PYG')}
+                                        </li>
                                     </ul>
-                                    <p className="mt-3 font-normal">El importe del pago se sumará a sus ganancias y se abonará en su cuenta junto con sus ganancias.</p>
+                                    <p className="mt-3 font-normal">{t('high_verification.note')}</p>
                                 </div>
                             );
                         })()}
@@ -91,7 +120,7 @@ export default function HighBalanceVerificationModal({
                             }}
                             className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-[0_6px_0_0_#15803d,0_8px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_0_0_#15803d,0_6px_10px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_#15803d,0_4px_8px_rgba(0,0,0,0.2)] active:translate-y-1 transition-all duration-100 text-base transform hover:-translate-y-0.5"
                         >
-                            VERIFICAR CUENTA
+                            {t('withdrawal.verify_account')}
                         </button>
                     </div>
                 </div>

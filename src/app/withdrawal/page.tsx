@@ -88,16 +88,6 @@ export default function WithdrawalPage() {
         bank: ''
     });
 
-    const [errors, setErrors] = useState({
-        withdrawAmount: '',
-        clientPhone: '',
-        accountType: '',
-        accountNumber: '',
-        docType: '',
-        docNumber: '',
-        bank: ''
-    });
-
     useEffect(() => {
         const fetchBalance = async () => {
             const token = localStorage.getItem('access_token');
@@ -139,81 +129,9 @@ export default function WithdrawalPage() {
         fetchBalance();
     }, []);
 
-    // Validation functions
-    const validateField = (name: string, value: string) => {
-        let error = '';
-
-        switch (name) {
-            case 'withdrawAmount':
-                if (!value) {
-                    error = 'El importe es requerido';
-                } else {
-                    const amount = parseFloat(value);
-                    if (isNaN(amount) || amount <= 0) {
-                        error = 'El importe debe ser un número válido mayor que 0';
-                    }
-                }
-                break;
-            case 'clientPhone':
-                if (!value) {
-                    error = 'El teléfono es requerido';
-                }
-                break;
-            case 'accountType':
-                if (!value) {
-                    error = 'El tipo de cuenta es requerido';
-                }
-                break;
-            case 'accountNumber':
-                if (!value) {
-                    error = 'El número de cuenta es requerido';
-                }
-                break;
-            case 'docType':
-                if (!value) {
-                    error = 'El tipo de documento es requerido';
-                }
-                break;
-            case 'docNumber':
-                if (!value) {
-                    error = 'El número de documento es requerido';
-                }
-                break;
-            case 'bank':
-                if (!value) {
-                    error = 'Debe seleccionar un banco';
-                }
-                break;
-        }
-
-        return error;
-    };
-
     const handleInputChange = (name: string, value: string) => {
         // Разрешаем свободный ввод, коррекция будет при потере фокуса
         setFormData(prev => ({ ...prev, [name]: value }));
-        
-        // Clear error when user starts typing
-        if (errors[name as keyof typeof errors]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
-    };
-
-    const validateForm = () => {
-        const newErrors = {
-            withdrawAmount: validateField('withdrawAmount', formData.withdrawAmount),
-            clientPhone: validateField('clientPhone', formData.clientPhone),
-            accountType: validateField('accountType', formData.accountType),
-            accountNumber: validateField('accountNumber', formData.accountNumber),
-            docType: validateField('docType', formData.docType),
-            docNumber: validateField('docNumber', formData.docNumber),
-            bank: validateField('bank', formData.bank)
-        };
-
-        setErrors(newErrors);
-
-        // Check if form is valid
-        return !Object.values(newErrors).some(error => error !== '');
     };
 
     return (
@@ -263,9 +181,8 @@ export default function WithdrawalPage() {
                                             }}
                                             min={minWithdraw}
                                             step="1"
-                                            className={`mb-0 ${errors.withdrawAmount ? 'border-red-500' : ''}`}
+                                            className="mb-0"
                                         />
-                                        {errors.withdrawAmount && <span className="text-red-500 text-xs mt-1">{errors.withdrawAmount}</span>}
                                     </div>
                                     <div className="flex flex-col">
                                         <label htmlFor="client-phone" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.client_phone')}</label>
@@ -275,9 +192,8 @@ export default function WithdrawalPage() {
                                             placeholder={t('withdrawal.client_phone')}
                                             value={formData.clientPhone}
                                             onChange={(e) => handleInputChange('clientPhone', e.target.value)}
-                                            className={`mb-0 ${errors.clientPhone ? 'border-red-500' : ''}`}
+                                            className="mb-0"
                                         />
-                                        {errors.clientPhone && <span className="text-red-500 text-xs mt-1">{errors.clientPhone}</span>}
                                     </div>
                                     <div className="flex flex-col">
                                         <label htmlFor="account-type" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.account_type')}</label>
@@ -287,9 +203,8 @@ export default function WithdrawalPage() {
                                             placeholder={t('withdrawal.account_type_placeholder')}
                                             value={formData.accountType}
                                             onChange={(e) => handleInputChange('accountType', e.target.value)}
-                                            className={`mb-0 ${errors.accountType ? 'border-red-500' : ''}`}
+                                            className="mb-0"
                                         />
-                                        {errors.accountType && <span className="text-red-500 text-xs mt-1">{errors.accountType}</span>}
                                     </div>
                                     <div className="flex flex-col">
                                         <label htmlFor="account-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.account_number')}</label>
@@ -299,9 +214,8 @@ export default function WithdrawalPage() {
                                             placeholder={t('withdrawal.account_number')}
                                             value={formData.accountNumber}
                                             onChange={(e) => handleInputChange('accountNumber', e.target.value)}
-                                            className={`mb-0 ${errors.accountNumber ? 'border-red-500' : ''}`}
+                                            className="mb-0"
                                         />
-                                        {errors.accountNumber && <span className="text-red-500 text-xs mt-1">{errors.accountNumber}</span>}
                                     </div>
                                     <div className="flex flex-col">
                                         <label htmlFor="doc-type" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.document_type')}</label>
@@ -311,9 +225,8 @@ export default function WithdrawalPage() {
                                             placeholder={t('withdrawal.document_type_placeholder')}
                                             value={formData.docType}
                                             onChange={(e) => handleInputChange('docType', e.target.value)}
-                                            className={`mb-0 ${errors.docType ? 'border-red-500' : ''}`}
+                                            className="mb-0"
                                         />
-                                        {errors.docType && <span className="text-red-500 text-xs mt-1">{errors.docType}</span>}
                                     </div>
                                     <div className="flex flex-col">
                                         <label htmlFor="doc-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.document_number')}</label>
@@ -323,14 +236,13 @@ export default function WithdrawalPage() {
                                             placeholder={t('withdrawal.document_number')}
                                             value={formData.docNumber}
                                             onChange={(e) => handleInputChange('docNumber', e.target.value)}
-                                            className={`mb-0 ${errors.docNumber ? 'border-red-500' : ''}`}
+                                            className="mb-0"
                                         />
-                                        {errors.docNumber && <span className="text-red-500 text-xs mt-1">{errors.docNumber}</span>}
                                     </div>
                                     <div className="flex flex-col">
                                         <label htmlFor="bank" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.bank')}</label>
                                         <Select value={formData.bank} onValueChange={(value) => handleInputChange('bank', value)}>
-                                            <SelectTrigger className={`w-full rounded-lg border p-3 lg:p-4 text-base lg:text-lg text-[#23223a] bg-gray-100 ${errors.bank ? 'border-red-500' : 'border-gray-300'}`}>
+                                            <SelectTrigger className="w-full rounded-lg border p-3 lg:p-4 text-base lg:text-lg text-[#23223a] bg-gray-100 border-gray-300">
                                                 <SelectValue placeholder={t('withdrawal.select_bank')} />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -354,7 +266,6 @@ export default function WithdrawalPage() {
                                                 <SelectItem value="AccessBank">AccessBank</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        {errors.bank && <span className="text-red-500 text-xs mt-1">{errors.bank}</span>}
                                     </div>
                                     <div className="flex items-end md:col-span-2 lg:col-span-1">
                                         <button
@@ -407,11 +318,6 @@ export default function WithdrawalPage() {
                                                     console.log('Insufficient funds - withdrawal exceeds balance:', { withdrawAmount, available });
                                                     setShowInsufficientFundsToast(true);
                                                     setTimeout(() => setShowInsufficientFundsToast(false), 3000);
-                                                    return;
-                                                }
-
-                                                if (!validateForm()) {
-                                                    console.log('Form validation failed');
                                                     return;
                                                 }
 
