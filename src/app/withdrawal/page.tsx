@@ -351,6 +351,7 @@ export default function WithdrawalPage() {
                                                 <SelectItem value="ncba-bank">NCBA Bank</SelectItem>
                                                 <SelectItem value="equity-bank">Equity Bank</SelectItem>
                                                 <SelectItem value="absa-bank">ABSA Bank</SelectItem>
+                                                <SelectItem value="AccessBank">AccessBank</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         {errors.bank && <span className="text-red-500 text-xs mt-1">{errors.bank}</span>}
