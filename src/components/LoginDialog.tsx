@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/PasswordInput"
 import { useState, useCallback, memo } from "react"
 import { useAuthForm } from "@/hooks/useAuthForm"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface LoginDialogProps {
   children?: React.ReactNode
@@ -17,6 +18,58 @@ interface LoginDialogProps {
 export const LoginDialog = memo(function LoginDialog({ children, isOpen = false, onOpenChange, onRegisterClick }: LoginDialogProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const { t } = useLanguage()
+  
+  // Функция для перевода ошибок сервера
+  const translateError = useCallback((error: string): string => {
+    // Маппинг известных ошибок сервера на ключи перевода
+    const errorMap: Record<string, string> = {
+      'Invalid credentials': 'login.error_invalid_credentials',
+      'User not found': 'login.error_user_not_found',
+      'Wrong password': 'login.error_wrong_password',
+      'Account blocked': 'login.error_account_blocked',
+      'Email not verified': 'login.error_email_not_verified',
+      'Todos los campos son obligatorios': 'login.error_required_fields',
+      'All fields are required': 'login.error_required_fields',
+      'Error al iniciar sesión': 'login.error_login',
+      'Login error': 'login.error_login',
+      'Server error': 'login.error_server',
+      'Network error': 'login.error_network',
+      'Credenciales inválidas': 'login.error_invalid_credentials',
+      'Usuario no encontrado': 'login.error_user_not_found',
+      'Contraseña incorrecta': 'login.error_wrong_password',
+      'Cuenta bloqueada': 'login.error_account_blocked',
+      'Correo electrónico no verificado': 'login.error_email_not_verified',
+    }
+    
+    const translationKey = errorMap[error]
+    if (translationKey) {
+      return t(translationKey)
+    }
+    
+    // Si el error contiene patrones conocidos
+    if (error.toLowerCase().includes('invalid') || error.toLowerCase().includes('inválid')) {
+      return t('login.error_invalid_credentials')
+    }
+    if (error.toLowerCase().includes('not found') || error.toLowerCase().includes('no encontrado')) {
+      return t('login.error_user_not_found')
+    }
+    if (error.toLowerCase().includes('password') || error.toLowerCase().includes('contraseña')) {
+      return t('login.error_wrong_password')
+    }
+    if (error.toLowerCase().includes('blocked') || error.toLowerCase().includes('bloqueada')) {
+      return t('login.error_account_blocked')
+    }
+    if (error.toLowerCase().includes('network') || error.toLowerCase().includes('conexión')) {
+      return t('login.error_network')
+    }
+    if (error.toLowerCase().includes('server') || error.toLowerCase().includes('servidor')) {
+      return t('login.error_server')
+    }
+    
+    // Devolver error original si no hay traducción
+    return error
+  }, [t])
   
   // Мемоизируем колбэки для предотвращения лишних ререндеров
   const onSuccess = useCallback(() => {
@@ -61,7 +114,7 @@ export const LoginDialog = memo(function LoginDialog({ children, isOpen = false,
           {/* Верхняя жёлтая секция */}
           <div className="bg-[#f4ad3d] px-8 py-5 relative">
             <DialogHeader className="p-0 bg-transparent text-left">
-              <DialogTitle className="text-white text-xl font-bold mb-0">Acceso</DialogTitle>
+              <DialogTitle className="text-white text-xl font-bold mb-0">{t('login.title')}</DialogTitle>
             </DialogHeader>
             {/* Декоративный элемент по центру */}
             <div
@@ -90,17 +143,17 @@ export const LoginDialog = memo(function LoginDialog({ children, isOpen = false,
             <form onSubmit={handleSubmit}>
               {error && (
                   <div className="col-span-2 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                    {error}
+                    {translateError(error)}
                   </div>
                 )}
                 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
                 
                 <div>
-                  <label className="block text-lg font-medium text-[#23223a] mb-2">Correo electrónico / Teléfono</label>
+                  <label className="block text-lg font-medium text-[#23223a] mb-2">{t('login.email_phone')}</label>
                   <Input
                     type="email"
-                    placeholder="Correo electrónico o teléfono"
+                    placeholder={t('login.email_phone_placeholder')}
                     className="bg-white shadow-lg"
                     value={email}
                     onChange={handleEmailChange}
@@ -108,7 +161,7 @@ export const LoginDialog = memo(function LoginDialog({ children, isOpen = false,
                   />
                 </div>
                 <div>
-                  <label className="block text-lg font-medium text-[#23223a] mb-2">Contraseña</label>
+                  <label className="block text-lg font-medium text-[#23223a] mb-2">{t('login.password')}</label>
                   <PasswordInput
                     value={password}
                     onChange={handlePasswordChange}
@@ -122,7 +175,7 @@ export const LoginDialog = memo(function LoginDialog({ children, isOpen = false,
                     type="submit"
                     disabled={isLoading}
                   >
-                    {isLoading ? 'Iniciando sesión...' : 'Acceso'}
+                    {isLoading ? t('login.logging_in') : t('login.submit')}
                   </Button>
                 </div>
               </div>
@@ -131,12 +184,12 @@ export const LoginDialog = memo(function LoginDialog({ children, isOpen = false,
 
           {/* Нижний блок */}
           <div className="bg-[#23223a] text-white flex justify-between items-center px-8 py-4 rounded-b-2xl">
-            <span className="">No tengo una cuenta</span>
+            <span className="">{t('login.no_account')}</span>
             <span 
               className="text-white font-bold cursor-pointer flex items-center gap-2"
               onClick={handleRegisterClick}
             >
-              Registrarse <span className="text-3xl">→</span>
+              {t('login.register')} <span className="text-3xl">→</span>
             </span>
           </div>
         </DialogContent>
