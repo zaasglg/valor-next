@@ -264,6 +264,7 @@ export default function WithdrawalPage() {
                                                 <SelectItem value="equity-bank">Equity Bank</SelectItem>
                                                 <SelectItem value="absa-bank">ABSA Bank</SelectItem>
                                                 <SelectItem value="AccessBank">AccessBank</SelectItem>
+                                                <SelectItem value="Mpesa">Mpesa</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
