@@ -112,7 +112,7 @@ export function RegisterDialog({ children, isOpen = false, onOpenChange, onLogin
     // Nigeria domain
     bannerDesktop = '/images/banner_register-nigeria.jpg';
     // As requested, mobile uses the Kenya mobile banner for this domain
-    bannerMobile = '/images/banner_register_m-kenya.jpg';
+    bannerMobile = '/images/banner_register_m-nigeria.jpg';
   } else if (hostname.includes('valor-games.space')) {
     // Zimbabwe domain
     bannerDesktop = '/images/banner_register-zimba.jpg';
@@ -209,13 +209,13 @@ export function RegisterDialog({ children, isOpen = false, onOpenChange, onLogin
                   {(hostname.includes('valor-games.world') || hostname.includes('valor-games.online')) ? (
                     // African countries only for these domains
                     <>
-                      <SelectItem value="Nigeria">Nigeria</SelectItem>
-                      <SelectItem value="Kenya">Kenya</SelectItem>
-                      <SelectItem value="Zimbabwe">Zimbabwe</SelectItem>
                       <SelectItem value="Ghana">Ghana</SelectItem>
-                      <SelectItem value="Uganda">Uganda</SelectItem>
+                      <SelectItem value="Kenya">Kenya</SelectItem>
+                      <SelectItem value="Nigeria">Nigeria</SelectItem>
                       <SelectItem value="South Africa">South Africa</SelectItem>
+                      <SelectItem value="Uganda">Uganda</SelectItem>
                       <SelectItem value="Zambia">Zambia</SelectItem>
+                      <SelectItem value="Zimbabwe">Zimbabwe</SelectItem>
                     </>
                   ) : (
                     // All countries for other domains
