@@ -269,7 +269,7 @@ export default function ProfilePage() {
               {activeTab === "datos-personales" && (
                 <>
                   {/* Email Verification Alert */}
-                  {emailVerified === false && (
+                  {/* {emailVerified === false && (
                     <div className="w-full bg-white rounded-lg border border-gray-200 shadow-sm p-4 lg:p-6 mb-4">
                       <div className="text-left">
                         <p className="text-gray-700 text-base lg:text-sm mb-4 font-black">
@@ -283,7 +283,7 @@ export default function ProfilePage() {
                         </button>
                       </div>
                     </div>
-                  )}
+                  )} */}
 
                   <section className="w-full bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-xl p-4 lg:p-10 flex flex-col gap-4 lg:gap-8 border-0 lg:border border-[#ececf1]">
                     <h2 className="text-xl lg:text-xl font-black text-[#23223a] mb-2">
