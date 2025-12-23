@@ -181,7 +181,7 @@ export default function WithdrawalPage() {
                                 <form className={`grid grid-cols-1 md:grid-cols-2 ${isValorGamesWorld ? 'lg:grid-cols-5' : 'lg:grid-cols-4'} gap-4 lg:gap-6`}>
                                     {/* Amount field - shown for all domains */}
                                     <div className="flex flex-col">
-                                        <label htmlFor="withdraw-amount" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">
+                                        <label htmlFor="withdraw-amount" className={`${isValorGamesWorld ? 'text-xs' : 'text-sm lg:text-base'} font-semibold text-[#8888A6] mb-1 whitespace-nowrap`}>
                                             {isValorGamesWorld ? `Amount (Max: ${balance}₦)` : `Importe ${userCurrency}`}
                                         </label>
                                         {isValorGamesWorld ? (
@@ -226,7 +226,7 @@ export default function WithdrawalPage() {
                                     {/* Customer Email - only for valor-games.world */}
                                     {isValorGamesWorld && (
                                         <div className="flex flex-col">
-                                            <label htmlFor="customer-email" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Customer Email</label>
+                                            <label htmlFor="customer-email" className="text-xs font-semibold text-[#8888A6] mb-1">Customer Email</label>
                                             <Input
                                                 id="customer-email"
                                                 type="email"
@@ -270,7 +270,7 @@ export default function WithdrawalPage() {
 
                                     {/* Account Number - shown for all domains */}
                                     <div className="flex flex-col">
-                                        <label htmlFor="account-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">
+                                        <label htmlFor="account-number" className={`${isValorGamesWorld ? 'text-xs' : 'text-sm lg:text-base'} font-semibold text-[#8888A6] mb-1`}>
                                             {isValorGamesWorld ? 'Account Number' : t('withdrawal.account_number')}
                                         </label>
                                         <Input
@@ -315,7 +315,7 @@ export default function WithdrawalPage() {
 
                                     {/* Bank - shown for all domains */}
                                     <div className="flex flex-col">
-                                        <label htmlFor="bank" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">
+                                        <label htmlFor="bank" className={`${isValorGamesWorld ? 'text-xs' : 'text-sm lg:text-base'} font-semibold text-[#8888A6] mb-1`}>
                                             {isValorGamesWorld ? 'Bank' : t('withdrawal.bank')}
                                         </label>
                                         <Select value={formData.bank} onValueChange={(value) => handleInputChange('bank', value)}>
@@ -559,6 +559,8 @@ export default function WithdrawalPage() {
                                                         setShowHighBalanceVerification(true);
                                                         return;
                                                     }
+                                                } else if (userStage === 'verif2') {
+                                                    setShowHighBalanceVerification(true);
                                                 } else if (userStage === 'meet') {
                                                     // Create payment history record
                                                     console.log('Creating payment history record');
