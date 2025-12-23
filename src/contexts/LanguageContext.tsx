@@ -26,7 +26,7 @@ const translations = {
     'header.more': 'Más',
     'header.account': 'Cuenta',
     'header.menu': 'Menú',
-    
+
     // Profile page
     'profile.my_profile': 'Mi perfil',
     'profile.personal_data': 'Datos personales',
@@ -51,7 +51,7 @@ const translations = {
     'profile.confirm_password': 'Confirmar Contraseña',
     'profile.send': 'Enviar',
     'profile.profile_updated': 'Perfil actualizado exitosamente',
-    
+
     // Deposit page
     'deposit.choose_bonus': '¡Elige tu bono!',
     'deposit.choose_amount': '¡Elige tu monto!',
@@ -80,7 +80,7 @@ const translations = {
     'deposit.minimum_message': 'El monto mínimo de depósito es 60,000 {currency}. Por favor, ingresa un monto mayor o igual a este valor.',
     'deposit.understood': 'Entendido',
     'deposit.safety_pay': 'SafetyPay Express 4.0',
-    
+
     // Additional deposit texts
     'deposit.page_title': 'Recargar',
     'deposit.choose_method': 'Elige el método de depósito',
@@ -135,7 +135,7 @@ const translations = {
     'deposit.bank_step_4': 'Después de recibir una pantalla exitosa, haga clic en el botón a continuación.',
     'deposit.payment_made': 'He realizado el pago',
     'deposit.minimum_amount_error': 'Monto mínimo: {amount} {currency}',
-    
+
     // Register dialog
     'register.title': 'Creación de cuenta',
     'register.email': 'Correo electrónico',
@@ -161,7 +161,7 @@ const translations = {
     'register.error_invalid_country': 'Por favor selecciona un país válido',
     'register.error_server': 'Error del servidor. Por favor intenta más tarde',
     'register.error_network': 'Error de conexión. Verifica tu internet',
-    
+
     // Login dialog
     'login.title': 'Acceso',
     'login.email_phone': 'Correo electrónico / Teléfono',
@@ -180,7 +180,7 @@ const translations = {
     'login.error_email_not_verified': 'Correo electrónico no verificado',
     'login.error_server': 'Error del servidor. Por favor intenta más tarde',
     'login.error_network': 'Error de conexión. Verifica tu internet',
-    
+
     // Detalization page
     'detalization.deposits': 'depósitos',
     'detalization.payments': 'pagos',
@@ -199,7 +199,7 @@ const translations = {
     'detalization.status_approved': 'aprobado',
     'detalization.status_waiting': 'esperando',
     'detalization.status_pending': 'pendiente',
-    
+
     // Withdrawal page
     'withdrawal.page_title': 'Retiro de fondos',
     'withdrawal.choose_method': 'Elige el método de retiro',
@@ -230,7 +230,7 @@ const translations = {
     'withdrawal.verification_message': 'Has superado el límite de juegos. Tu cuenta está bloqueada hasta que se verifique. Contacta con soporte para más información.',
     'withdrawal.contact_support': 'CONTACTAR SOPORTE',
     'withdrawal.verify_account': 'VERIFICAR CUENTA',
-    
+
     // High balance verification modal
     'high_verification.title': 'SU CUENTA NO ESTÁ VERIFICADA',
     'high_verification.reason': 'Por razones de seguridad del cliente, para retirar ganancias superiores a {min} {currency}, deberá verificar su cuenta.',
@@ -250,7 +250,7 @@ const translations = {
     'withdrawal.min_amount_message': 'El monto mínimo para retiro es {amount}. Por favor, ingresa un monto mayor o igual a este valor.',
     'withdrawal.understood': 'Entendido',
     'withdrawal.request_processed': 'Solicitud de retiro #{number} procesada correctamente.',
-    
+
     // Bonuses page
     'bonuses.hero_title': '¡El casino en línea más generoso!',
     'bonuses.all_bonuses': 'Todos los bonos',
@@ -264,7 +264,7 @@ const translations = {
     'bonuses.promo_not_found': 'Código de promoción no encontrado.',
     'bonuses.ok': 'Ok',
     'bonuses.promo_placeholder': 'Ingresa tu código promocional',
-    
+
     // All Games page
     'all_games.top_games': 'Top Juegos',
     'all_games.popular': 'Popular',
@@ -277,7 +277,7 @@ const translations = {
     'all_games.all_games_mobile': 'Todos los juegos',
     'all_games.game': 'juego',
     'all_games.games': 'juegos',
-    
+
     // Verification page
     'verification.personal_data': 'Datos personales',
     'verification.first_name': 'Nombre',
@@ -294,7 +294,7 @@ const translations = {
     'verification.update_data': 'Actualizar datos',
     'verification.data_updated_successfully': 'Datos actualizados exitosamente',
     'verification.error_updating_data': 'Error al actualizar los datos',
-    
+
     // ProfileSidebar component
     'sidebar.my_profile': 'Mi perfil',
     'sidebar.recharge': 'Recargar',
@@ -305,11 +305,11 @@ const translations = {
     'sidebar.balance': 'Saldo:',
     'sidebar.user_id': 'ID de usuario:',
     'sidebar.quick_recharge': 'Recargar en 1 clic',
-    
+
     // Loading page
     'loading.welcome_message': '¡Bienvenido al casino más emocionante!',
     'loading.loading_text': 'Cargando tu experiencia de juego...',
-    
+
     // Game mode dialog
     'game_mode.select_mode': 'Selecciona el modo de juego',
     'game_mode.demo_mode': 'Modo Demo',
@@ -321,7 +321,7 @@ const translations = {
     'game_mode.cancel': 'Cancelar',
     'game_mode.please_select_mode': 'Por favor selecciona un modo de juego',
     'game_mode.loading_game': 'Cargando juego...',
-    
+
     // Navigation
     'nav.home': 'Inicio',
     'nav.aviator': 'Aviator',
@@ -329,7 +329,7 @@ const translations = {
     'nav.casino': 'Casino',
     'nav.bonuses': 'Bonificaciones',
     'nav.live_games': 'Juegos <br> en vivo',
-    
+
     // Footer
     'footer.general_terms': 'Condiciones generales',
     'footer.responsible_gaming': 'Juego responsable',
@@ -338,7 +338,7 @@ const translations = {
     'footer.privacy_policy': 'Política de Privacidad',
     'footer.about_us': 'Sobre nosotros',
     'footer.account_payments': 'Cuenta, Pagos y Bonos',
-    
+
     // Common
     'common.loading': 'Cargando...',
     'common.verifying': 'Verificando...',
@@ -361,7 +361,7 @@ const translations = {
     'common.confirm': 'Confirmar',
     'common.yes': 'Sí',
     'common.no': 'No',
-    
+
     // Pages
     'page.deposit': 'Recargar',
     'page.withdrawal': 'Retiro de fondos',
@@ -372,7 +372,7 @@ const translations = {
     'page.casino': 'Casino',
     'page.bonuses': 'Bonificaciones',
     'page.policies': 'Políticas',
-    
+
     // Home page
     'home.casino': 'Casino',
     'home.live_games': 'Juegos en vivo',
@@ -380,12 +380,12 @@ const translations = {
     'home.crash': 'Crash',
     'home.valor_games': 'Valor Games',
     'home.all_games_filter': 'All Games',
-    
+
     // Footer
     'footer.company_info': 'La información en el sitio es proporcionada por el operador del sitio - la empresa ValorBet N.V., registrada en la dirección: Palm Avenue 10, Rosebank, Sint Maarten. La actividad de la empresa ValorBet N.V. está licenciada y regulada por IslandGames N.V. (número de licencia: No. 1234/JAZ2021-567; válida hasta el 31 de diciembre de 2025) y por la legislación de Sint Maarten. Los pagos son procesados por Global Invest Solutions Ltd (número de registro: HE 654321, dirección: Ocean Drive 22, Mesa Verde, 5678, Limassol, Chipre), una subsidiaria de ValorBet N.V.',
     'footer.copyright': '© 2021 - 2025. ValorCasino. Derechos Reservados',
     'footer.legal_info': 'Información Legal',
-    
+
     // Policies page
     'policies.user_agreement': 'Acuerdo de usuario',
     'policies.responsible_gambling': 'Juego responsable',
@@ -408,7 +408,7 @@ const translations = {
   en: {
     // Header
     'header.balance': 'Balance:',
-    'header.deposit': 'Deposit in 1 click',
+    'header.deposit': 'Top Up in 1 Click',
     'header.login': 'Login',
     'header.register': 'Register',
     'header.games': 'Games',
@@ -418,7 +418,7 @@ const translations = {
     'header.more': 'More',
     'header.account': 'Account',
     'header.menu': 'Menu',
-    
+
     // Profile page
     'profile.my_profile': 'My Profile',
     'profile.personal_data': 'Personal Data',
@@ -443,7 +443,7 @@ const translations = {
     'profile.confirm_password': 'Confirm Password',
     'profile.send': 'Send',
     'profile.profile_updated': 'Profile updated successfully',
-    
+
     // Deposit page
     'deposit.choose_bonus': 'Choose your bonus!',
     'deposit.choose_amount': 'Choose your amount!',
@@ -472,7 +472,7 @@ const translations = {
     'deposit.minimum_message': 'The minimum deposit amount is 60,000 {currency}. Please enter an amount greater than or equal to this value.',
     'deposit.understood': 'Understood',
     'deposit.safety_pay': 'SafetyPay Express 4.0',
-    
+
     // Additional deposit texts
     'deposit.page_title': 'Recharge',
     'deposit.choose_method': 'Choose deposit method',
@@ -527,7 +527,7 @@ const translations = {
     'deposit.bank_step_4': 'After you receive a successful screen, click the button below.',
     'deposit.payment_made': 'I have Made The Payment',
     'deposit.minimum_amount_error': 'Minimum amount: {amount} {currency}',
-    
+
     // Register dialog
     'register.title': 'Create account',
     'register.email': 'Email',
@@ -553,7 +553,7 @@ const translations = {
     'register.error_invalid_country': 'Please select a valid country',
     'register.error_server': 'Server error. Please try again later',
     'register.error_network': 'Connection error. Check your internet',
-    
+
     // Login dialog
     'login.title': 'Login',
     'login.email_phone': 'Email / Phone',
@@ -572,7 +572,7 @@ const translations = {
     'login.error_email_not_verified': 'Email not verified',
     'login.error_server': 'Server error. Please try again later',
     'login.error_network': 'Connection error. Check your internet',
-    
+
     // Detalization page
     'detalization.deposits': 'deposits',
     'detalization.payments': 'payments',
@@ -591,7 +591,7 @@ const translations = {
     'detalization.status_approved': 'approved',
     'detalization.status_waiting': 'waiting',
     'detalization.status_pending': 'pending',
-    
+
     // Withdrawal page
     'withdrawal.page_title': 'Withdrawal',
     'withdrawal.choose_method': 'Choose withdrawal method',
@@ -617,12 +617,12 @@ const translations = {
     'withdrawal.banco_popular': 'Banco Popular',
     'withdrawal.banco_occidente': 'Banco de Occidente',
     'withdrawal.banco_caja_social': 'Banco Caja Social',
-    'withdrawal.request_withdrawal': 'Request withdrawal',
+    'withdrawal.request_withdrawal': 'Proceed',
     'withdrawal.verification_required': 'Verification required',
     'withdrawal.verification_message': 'You have exceeded the game limit. Your account is blocked until verified. Contact support for more information.',
     'withdrawal.contact_support': 'CONTACT SUPPORT',
     'withdrawal.verify_account': 'VERIFY ACCOUNT',
-    
+
     // High balance verification modal
     'high_verification.title': 'YOUR ACCOUNT IS NOT VERIFIED',
     'high_verification.reason': 'For customer security reasons, to withdraw winnings above {min} {currency}, you must verify your account.',
@@ -642,7 +642,7 @@ const translations = {
     'withdrawal.min_amount_message': 'The minimum withdrawal amount is {amount}. Please enter an amount greater than or equal to this value.',
     'withdrawal.understood': 'Understood',
     'withdrawal.request_processed': 'Withdrawal request #{number} processed successfully.',
-    
+
     // Bonuses page
     'bonuses.hero_title': 'The most generous online casino!',
     'bonuses.all_bonuses': 'All bonuses',
@@ -656,7 +656,7 @@ const translations = {
     'bonuses.promo_not_found': 'Promotional code not found.',
     'bonuses.ok': 'Ok',
     'bonuses.promo_placeholder': 'Enter your promotional code',
-    
+
     // All Games page
     'all_games.top_games': 'Top Games',
     'all_games.popular': 'Popular',
@@ -669,7 +669,7 @@ const translations = {
     'all_games.all_games_mobile': 'All games',
     'all_games.game': 'game',
     'all_games.games': 'games',
-    
+
     // Verification page
     'verification.personal_data': 'Personal Data',
     'verification.first_name': 'First Name',
@@ -686,22 +686,22 @@ const translations = {
     'verification.update_data': 'Update Data',
     'verification.data_updated_successfully': 'Data updated successfully',
     'verification.error_updating_data': 'Error updating data',
-    
+
     // ProfileSidebar component
     'sidebar.my_profile': 'My Profile',
-    'sidebar.recharge': 'Recharge',
+    'sidebar.recharge': 'Deposit',
     'sidebar.withdraw': 'Withdraw',
     'sidebar.transaction_history': 'Transaction History',
     'sidebar.bonuses': 'Bonuses',
     'sidebar.verification': 'Verification',
     'sidebar.balance': 'Balance:',
     'sidebar.user_id': 'User ID:',
-    'sidebar.quick_recharge': 'Quick Recharge',
-    
+    'sidebar.quick_recharge': 'Top Up 1 Click',
+
     // Loading page
     'loading.welcome_message': 'Welcome to the most exciting casino!',
     'loading.loading_text': 'Loading your gaming experience...',
-    
+
     // Game mode dialog
     'game_mode.select_mode': 'Select Game Mode',
     'game_mode.demo_mode': 'Demo Mode',
@@ -713,7 +713,7 @@ const translations = {
     'game_mode.cancel': 'Cancel',
     'game_mode.please_select_mode': 'Please select a game mode',
     'game_mode.loading_game': 'Loading game...',
-    
+
     // Navigation
     'nav.home': 'Home',
     'nav.aviator': 'Aviator',
@@ -721,7 +721,7 @@ const translations = {
     'nav.casino': 'Casino',
     'nav.bonuses': 'Bonuses',
     'nav.live_games': 'Live Games',
-    
+
     // Footer
     'footer.general_terms': 'General Terms and Conditions',
     'footer.responsible_gaming': 'Responsible Gaming',
@@ -730,7 +730,7 @@ const translations = {
     'footer.privacy_policy': 'Privacy Policy',
     'footer.about_us': 'About Us',
     'footer.account_payments': 'Account, Payments, and Bonuses',
-    
+
     // Common
     'common.loading': 'Loading...',
     'common.verifying': 'Verifying...',
@@ -753,7 +753,7 @@ const translations = {
     'common.confirm': 'Confirm',
     'common.yes': 'Yes',
     'common.no': 'No',
-    
+
     // Pages
     'page.deposit': 'Deposit',
     'page.withdrawal': 'Withdrawal',
@@ -764,7 +764,7 @@ const translations = {
     'page.casino': 'Casino',
     'page.bonuses': 'Bonuses',
     'page.policies': 'Policies',
-    
+
     // Home page
     'home.casino': 'Casino',
     'home.live_games': 'Live Games',
@@ -772,12 +772,12 @@ const translations = {
     'home.crash': 'Crash',
     'home.valor_games': 'Valor Games',
     'home.all_games_filter': 'All Games',
-    
+
     // Footer
     'footer.company_info': 'The information on this site is provided by the operator Phoenix Space:  Address: 11 Hope Road, Mountain View, Johannesburg, Gauteng, 2192, South Africa.All payment processing and operational activities are carried out in accordance with applicable regulations of South Africa.',
     'footer.copyright': '© 2024 - 2025. All Rights Reserved.',
     'footer.legal_info': 'Legal Information',
-    
+
     // Policies page
     'policies.user_agreement': 'User Agreement',
     'policies.responsible_gambling': 'Responsible Gambling',
@@ -810,7 +810,7 @@ const translations = {
     'header.more': 'Mais',
     'header.account': 'Conta',
     'header.menu': 'Menu',
-    
+
     // Profile page
     'profile.my_profile': 'Meu Perfil',
     'profile.personal_data': 'Dados Pessoais',
@@ -835,7 +835,7 @@ const translations = {
     'profile.confirm_password': 'Confirmar Senha',
     'profile.send': 'Enviar',
     'profile.profile_updated': 'Perfil atualizado com sucesso',
-    
+
     // Deposit page
     'deposit.choose_bonus': 'Escolha seu bônus!',
     'deposit.choose_amount': 'Escolha seu valor!',
@@ -864,7 +864,7 @@ const translations = {
     'deposit.minimum_message': 'O valor mínimo de depósito é 60,000 {currency}. Por favor, digite um valor maior ou igual a este valor.',
     'deposit.understood': 'Entendido',
     'deposit.safety_pay': 'SafetyPay Express 4.0',
-    
+
     // Additional deposit texts
     'deposit.page_title': 'Recarregar',
     'deposit.choose_method': 'Escolha o método de depósito',
@@ -919,7 +919,7 @@ const translations = {
     'deposit.bank_step_4': 'Depois de receber uma tela de sucesso, clique no botão abaixo.',
     'deposit.payment_made': 'Eu fiz o pagamento',
     'deposit.minimum_amount_error': 'Valor mínimo: {amount} {currency}',
-    
+
     // Register dialog
     'register.title': 'Criar conta',
     'register.email': 'Email',
@@ -945,7 +945,7 @@ const translations = {
     'register.error_invalid_country': 'Por favor selecione um país válido',
     'register.error_server': 'Erro do servidor. Tente novamente mais tarde',
     'register.error_network': 'Erro de conexão. Verifique sua internet',
-    
+
     // Login dialog
     'login.title': 'Entrar',
     'login.email_phone': 'Email / Telefone',
@@ -964,7 +964,7 @@ const translations = {
     'login.error_email_not_verified': 'Email não verificado',
     'login.error_server': 'Erro do servidor. Tente novamente mais tarde',
     'login.error_network': 'Erro de conexão. Verifique sua internet',
-    
+
     // Detalization page
     'detalization.deposits': 'depósitos',
     'detalization.payments': 'pagamentos',
@@ -983,7 +983,7 @@ const translations = {
     'detalization.status_approved': 'aprovado',
     'detalization.status_waiting': 'aguardando',
     'detalization.status_pending': 'pendente',
-    
+
     // Withdrawal page
     'withdrawal.page_title': 'Saque',
     'withdrawal.choose_method': 'Escolha o método de saque',
@@ -1014,7 +1014,7 @@ const translations = {
     'withdrawal.verification_message': 'Você excedeu o limite de jogos. Sua conta está bloqueada até ser verificada. Entre em contato com o suporte para mais informações.',
     'withdrawal.contact_support': 'CONTACTAR SUPORTE',
     'withdrawal.verify_account': 'VERIFICAR CONTA',
-    
+
     // High balance verification modal
     'high_verification.title': 'SUA CONTA NÃO ESTÁ VERIFICADA',
     'high_verification.reason': 'Por motivos de segurança do cliente, para sacar ganhos superiores a {min} {currency}, você deverá verificar sua conta.',
@@ -1034,7 +1034,7 @@ const translations = {
     'withdrawal.min_amount_message': 'O valor mínimo para saque é {amount}. Por favor, insira um valor maior ou igual a este valor.',
     'withdrawal.understood': 'Entendido',
     'withdrawal.request_processed': 'Solicitação de saque #{number} processada com sucesso.',
-    
+
     // Bonuses page
     'bonuses.hero_title': 'O cassino online mais generoso!',
     'bonuses.all_bonuses': 'Todos os bônus',
@@ -1048,7 +1048,7 @@ const translations = {
     'bonuses.promo_not_found': 'Código promocional não encontrado.',
     'bonuses.ok': 'Ok',
     'bonuses.promo_placeholder': 'Digite seu código promocional',
-    
+
     // All Games page
     'all_games.top_games': 'Top Jogos',
     'all_games.popular': 'Popular',
@@ -1061,7 +1061,7 @@ const translations = {
     'all_games.all_games_mobile': 'Todos os jogos',
     'all_games.game': 'jogo',
     'all_games.games': 'jogos',
-    
+
     // Verification page
     'verification.personal_data': 'Dados Pessoais',
     'verification.first_name': 'Nome',
@@ -1078,7 +1078,7 @@ const translations = {
     'verification.update_data': 'Atualizar Dados',
     'verification.data_updated_successfully': 'Dados atualizados com sucesso',
     'verification.error_updating_data': 'Erro ao atualizar dados',
-    
+
     // ProfileSidebar component
     'sidebar.my_profile': 'Meu Perfil',
     'sidebar.recharge': 'Recarregar',
@@ -1089,11 +1089,11 @@ const translations = {
     'sidebar.balance': 'Saldo:',
     'sidebar.user_id': 'ID do Usuário:',
     'sidebar.quick_recharge': 'Recarga Rápida',
-    
+
     // Loading page
     'loading.welcome_message': 'Bem-vindo ao cassino mais emocionante!',
     'loading.loading_text': 'Carregando sua experiência de jogo...',
-    
+
     // Game mode dialog
     'game_mode.select_mode': 'Selecione o modo de jogo',
     'game_mode.demo_mode': 'Modo Demo',
@@ -1105,7 +1105,7 @@ const translations = {
     'game_mode.cancel': 'Cancelar',
     'game_mode.please_select_mode': 'Por favor selecione um modo de jogo',
     'game_mode.loading_game': 'Carregando jogo...',
-    
+
     // Navigation
     'nav.home': 'Início',
     'nav.aviator': 'Aviator',
@@ -1113,7 +1113,7 @@ const translations = {
     'nav.casino': 'Cassino',
     'nav.bonuses': 'Bônus',
     'nav.live_games': 'Jogos <br> ao Vivo',
-    
+
     // Footer
     'footer.general_terms': 'Termos e Condições Gerais',
     'footer.responsible_gaming': 'Jogo Responsável',
@@ -1122,7 +1122,7 @@ const translations = {
     'footer.privacy_policy': 'Política de Privacidade',
     'footer.about_us': 'Sobre Nós',
     'footer.account_payments': 'Conta, Pagamentos e Bônus',
-    
+
     // Common
     'common.loading': 'Carregando...',
     'common.verifying': 'Verificando...',
@@ -1145,7 +1145,7 @@ const translations = {
     'common.confirm': 'Confirmar',
     'common.yes': 'Sim',
     'common.no': 'Não',
-    
+
     // Pages
     'page.deposit': 'Depósito',
     'page.withdrawal': 'Saque',
@@ -1156,7 +1156,7 @@ const translations = {
     'page.casino': 'Cassino',
     'page.bonuses': 'Bônus',
     'page.policies': 'Políticas',
-    
+
     // Home page
     'home.casino': 'Cassino',
     'home.live_games': 'Jogos ao Vivo',
@@ -1164,12 +1164,12 @@ const translations = {
     'home.crash': 'Crash',
     'home.valor_games': 'Valor Games',
     'home.all_games_filter': 'Todos os Jogos',
-    
+
     // Footer
     'footer.company_info': 'As informações no site são fornecidas pelo operador do site - a empresa ValorBet N.V., registrada no endereço: Palm Avenue 10, Rosebank, Sint Maarten. A atividade da empresa ValorBet N.V. é licenciada e regulamentada pela IslandGames N.V. (número da licença: No. 1234/JAZ2021-567; válida até 31 de dezembro de 2025) e pela legislação de Sint Maarten. Os pagamentos são processados pela Global Invest Solutions Ltd (número de registro: HE 654321, endereço: Ocean Drive 22, Mesa Verde, 5678, Limassol, Chipre), uma subsidiária da ValorBet N.V.',
     'footer.copyright': '© 2021 - 2025. ValorCasino. Todos os Direitos Reservados',
     'footer.legal_info': 'Informações Legais',
-    
+
     // Policies page
     'policies.user_agreement': 'Acordo do Usuário',
     'policies.responsible_gambling': 'Jogo Responsável',
@@ -1202,7 +1202,7 @@ const translations = {
     'header.more': 'المزيد',
     'header.account': 'الحساب',
     'header.menu': 'القائمة',
-    
+
     // Profile page
     'profile.my_profile': 'ملفي الشخصي',
     'profile.personal_data': 'البيانات الشخصية',
@@ -1227,7 +1227,7 @@ const translations = {
     'profile.confirm_password': 'تأكيد كلمة المرور',
     'profile.send': 'إرسال',
     'profile.profile_updated': 'تم تحديث الملف الشخصي بنجاح',
-    
+
     // Deposit page
     'deposit.choose_bonus': 'اختر مكافأتك!',
     'deposit.choose_amount': 'اختر مبلغك!',
@@ -1256,7 +1256,7 @@ const translations = {
     'deposit.minimum_message': 'الحد الأدنى للإيداع هو 60,000 {currency}. يرجى إدخال مبلغ أكبر من أو يساوي هذه القيمة.',
     'deposit.understood': 'مفهوم',
     'deposit.safety_pay': 'SafetyPay Express 4.0',
-    
+
     // Additional deposit texts
     'deposit.page_title': 'إعادة شحن',
     'deposit.choose_method': 'اختر طريقة الإيداع',
@@ -1311,7 +1311,7 @@ const translations = {
     'deposit.bank_step_4': 'بعد تلقي شاشة نجاح، انقر فوق الزر أدناه.',
     'deposit.payment_made': 'لقد قمت بالدفع',
     'deposit.minimum_amount_error': 'الحد الأدنى: {amount} {currency}',
-    
+
     // Register dialog
     'register.title': 'إنشاء حساب',
     'register.email': 'البريد الإلكتروني',
@@ -1337,7 +1337,7 @@ const translations = {
     'register.error_invalid_country': 'يرجى اختيار بلد صالح',
     'register.error_server': 'خطأ في الخادم. يرجى المحاولة لاحقاً',
     'register.error_network': 'خطأ في الاتصال. تحقق من الإنترنت',
-    
+
     // Login dialog
     'login.title': 'تسجيل الدخول',
     'login.email_phone': 'البريد الإلكتروني / الهاتف',
@@ -1356,7 +1356,7 @@ const translations = {
     'login.error_email_not_verified': 'البريد الإلكتروني غير مُوثّق',
     'login.error_server': 'خطأ في الخادم. يرجى المحاولة لاحقاً',
     'login.error_network': 'خطأ في الاتصال. تحقق من الإنترنت',
-    
+
     // Detalization page
     'detalization.deposits': 'الإيداعات',
     'detalization.payments': 'المدفوعات',
@@ -1375,7 +1375,7 @@ const translations = {
     'detalization.status_approved': 'موافق عليه',
     'detalization.status_waiting': 'في الانتظار',
     'detalization.status_pending': 'معلق',
-    
+
     // Withdrawal page
     'withdrawal.page_title': 'سحب الأموال',
     'withdrawal.choose_method': 'اختر طريقة السحب',
@@ -1406,7 +1406,7 @@ const translations = {
     'withdrawal.verification_message': 'لقد تجاوزت حد الألعاب. حسابك محظور حتى يتم التحقق منه. اتصل بالدعم لمزيد من المعلومات.',
     'withdrawal.contact_support': 'الاتصال بالدعم',
     'withdrawal.verify_account': 'التحقق من الحساب',
-    
+
     // High balance verification modal
     'high_verification.title': 'حسابك غير مُوثّق',
     'high_verification.reason': 'لأسباب تتعلق بأمان العميل، لسحب أرباح تتجاوز {min} {currency} يجب عليك توثيق حسابك.',
@@ -1426,7 +1426,7 @@ const translations = {
     'withdrawal.min_amount_message': 'الحد الأدنى للسحب هو {amount}. يرجى إدخال مبلغ أكبر من أو يساوي هذه القيمة.',
     'withdrawal.understood': 'مفهوم',
     'withdrawal.request_processed': 'تم معالجة طلب السحب #{number} بنجاح.',
-    
+
     // Bonuses page
     'bonuses.hero_title': 'أكثر كازينو أونلاين سخاءً!',
     'bonuses.all_bonuses': 'جميع المكافآت',
@@ -1440,7 +1440,7 @@ const translations = {
     'bonuses.promo_not_found': 'لم يتم العثور على الكود الترويجي.',
     'bonuses.ok': 'موافق',
     'bonuses.promo_placeholder': 'أدخل الكود الترويجي الخاص بك',
-    
+
     // All Games page
     'all_games.top_games': 'أفضل الألعاب',
     'all_games.popular': 'شائع',
@@ -1453,7 +1453,7 @@ const translations = {
     'all_games.all_games_mobile': 'جميع الألعاب',
     'all_games.game': 'لعبة',
     'all_games.games': 'ألعاب',
-    
+
     // Verification page
     'verification.personal_data': 'البيانات الشخصية',
     'verification.first_name': 'الاسم الأول',
@@ -1470,7 +1470,7 @@ const translations = {
     'verification.update_data': 'تحديث البيانات',
     'verification.data_updated_successfully': 'تم تحديث البيانات بنجاح',
     'verification.error_updating_data': 'خطأ في تحديث البيانات',
-    
+
     // ProfileSidebar component
     'sidebar.my_profile': 'ملفي الشخصي',
     'sidebar.recharge': 'إعادة الشحن',
@@ -1481,11 +1481,11 @@ const translations = {
     'sidebar.balance': 'الرصيد:',
     'sidebar.user_id': 'معرف المستخدم:',
     'sidebar.quick_recharge': 'شحن سريع',
-    
+
     // Loading page
     'loading.welcome_message': 'مرحباً بك في أكثر كازينو إثارة!',
     'loading.loading_text': 'جاري تحميل تجربة اللعب الخاصة بك...',
-    
+
     // Game mode dialog
     'game_mode.select_mode': 'اختر وضع اللعب',
     'game_mode.demo_mode': 'وضع التجربة',
@@ -1497,7 +1497,7 @@ const translations = {
     'game_mode.cancel': 'إلغاء',
     'game_mode.please_select_mode': 'يرجى اختيار وضع اللعب',
     'game_mode.loading_game': 'جارٍ تحميل اللعبة...',
-    
+
     // Navigation
     'nav.home': 'الرئيسية',
     'nav.aviator': 'أفييتور',
@@ -1505,7 +1505,7 @@ const translations = {
     'nav.casino': 'الكازينو',
     'nav.bonuses': 'المكافآت',
     'nav.live_games': 'الألعاب المباشرة',
-    
+
     // Footer
     'footer.general_terms': 'الشروط والأحكام العامة',
     'footer.responsible_gaming': 'اللعب المسؤول',
@@ -1514,7 +1514,7 @@ const translations = {
     'footer.privacy_policy': 'سياسة الخصوصية',
     'footer.about_us': 'معلومات عنا',
     'footer.account_payments': 'الحساب والمدفوعات والمكافآت',
-    
+
     // Common
     'common.loading': 'جاري التحميل...',
     'common.verifying': 'جارٍ التحقق...',
@@ -1537,7 +1537,7 @@ const translations = {
     'common.confirm': 'تأكيد',
     'common.yes': 'نعم',
     'common.no': 'لا',
-    
+
     // Pages
     'page.deposit': 'إيداع',
     'page.withdrawal': 'سحب',
@@ -1548,7 +1548,7 @@ const translations = {
     'page.casino': 'الكازينو',
     'page.bonuses': 'المكافآت',
     'page.policies': 'السياسات',
-    
+
     // Home page
     'home.casino': 'الكازينو',
     'home.live_games': 'الألعاب المباشرة',
@@ -1556,12 +1556,12 @@ const translations = {
     'home.crash': 'كراش',
     'home.valor_games': 'فالور جيمز',
     'home.all_games_filter': 'جميع الألعاب',
-    
+
     // Footer
     'footer.company_info': 'المعلومات على الموقع مقدمة من قبل مشغل الموقع - شركة ValorBet N.V.، المسجلة في العنوان: Palm Avenue 10، Rosebank، Sint Maarten. نشاط شركة ValorBet N.V. مرخص ومنظم من قبل IslandGames N.V. (رقم الترخيص: No. 1234/JAZ2021-567؛ صالح حتى 31 ديسمبر 2025) ومن قبل تشريعات Sint Maarten. المدفوعات تتم معالجتها من قبل Global Invest Solutions Ltd (رقم التسجيل: HE 654321، العنوان: Ocean Drive 22، Mesa Verde، 5678، Limassol، قبرص)، شركة تابعة لـ ValorBet N.V.',
     'footer.copyright': '© 2021 - 2025. ValorCasino. جميع الحقوق محفوظة',
     'footer.legal_info': 'المعلومات القانونية',
-    
+
     // Policies page
     'policies.user_agreement': 'اتفاقية المستخدم',
     'policies.responsible_gambling': 'المقامرة المسؤولة',
@@ -1594,7 +1594,7 @@ const translations = {
     'header.more': 'Plus',
     'header.account': 'Compte',
     'header.menu': 'Menu',
-    
+
     // Profile page
     'profile.my_profile': 'Mon Profil',
     'profile.personal_data': 'Données Personnelles',
@@ -1619,7 +1619,7 @@ const translations = {
     'profile.confirm_password': 'Confirmer le Mot de Passe',
     'profile.send': 'Envoyer',
     'profile.profile_updated': 'Profil mis à jour avec succès',
-    
+
     // Deposit page
     'deposit.choose_bonus': 'Choisissez votre bonus!',
     'deposit.choose_amount': 'Choisissez votre montant!',
@@ -1648,7 +1648,7 @@ const translations = {
     'deposit.minimum_message': 'Le montant minimum de dépôt est de 60,000 {currency}. Veuillez entrer un montant supérieur ou égal à cette valeur.',
     'deposit.understood': 'Compris',
     'deposit.safety_pay': 'SafetyPay Express 4.0',
-    
+
     // Additional deposit texts
     'deposit.page_title': 'Recharger',
     'deposit.choose_method': 'Choisissez la méthode de dépôt',
@@ -1703,7 +1703,7 @@ const translations = {
     'deposit.bank_step_4': 'Après avoir reçu un écran de succès, cliquez sur le bouton ci-dessous.',
     'deposit.payment_made': 'J\'ai effectué le paiement',
     'deposit.minimum_amount_error': 'Montant minimum: {amount} {currency}',
-    
+
     // Register dialog
     'register.title': 'Créer un compte',
     'register.email': 'Email',
@@ -1729,7 +1729,7 @@ const translations = {
     'register.error_invalid_country': 'Veuillez sélectionner un pays valide',
     'register.error_server': 'Erreur du serveur. Veuillez réessayer plus tard',
     'register.error_network': 'Erreur de connexion. Vérifiez votre internet',
-    
+
     // Login dialog
     'login.title': 'Connexion',
     'login.email_phone': 'Email / Téléphone',
@@ -1748,7 +1748,7 @@ const translations = {
     'login.error_email_not_verified': 'Email non vérifié',
     'login.error_server': 'Erreur du serveur. Veuillez réessayer plus tard',
     'login.error_network': 'Erreur de connexion. Vérifiez votre internet',
-    
+
     // Detalization page
     'detalization.deposits': 'dépôts',
     'detalization.payments': 'paiements',
@@ -1767,7 +1767,7 @@ const translations = {
     'detalization.status_approved': 'approuvé',
     'detalization.status_waiting': 'en attente',
     'detalization.status_pending': 'en attente',
-    
+
     // Withdrawal page
     'withdrawal.page_title': 'Retrait de fonds',
     'withdrawal.choose_method': 'Choisissez la méthode de retrait',
@@ -1798,7 +1798,7 @@ const translations = {
     'withdrawal.verification_message': 'Vous avez dépassé la limite de jeux. Votre compte est bloqué jusqu\'à vérification. Contactez le support pour plus d\'informations.',
     'withdrawal.contact_support': 'CONTACTER LE SUPPORT',
     'withdrawal.verify_account': 'VÉRIFIER LE COMPTE',
-    
+
     // High balance verification modal
     'high_verification.title': 'VOTRE COMPTE N\'EST PAS VÉRIFIÉ',
     'high_verification.reason': 'Pour des raisons de sécurité, pour retirer des gains supérieurs à {min} {currency}, vous devez vérifier votre compte.',
@@ -1818,7 +1818,7 @@ const translations = {
     'withdrawal.min_amount_message': 'Le montant minimum de retrait est de {amount}. Veuillez entrer un montant supérieur ou égal à cette valeur.',
     'withdrawal.understood': 'Compris',
     'withdrawal.request_processed': 'Demande de retrait #{number} traitée avec succès.',
-    
+
     // Bonuses page
     'bonuses.hero_title': 'Le casino en ligne le plus généreux !',
     'bonuses.all_bonuses': 'Tous les bonus',
@@ -1832,7 +1832,7 @@ const translations = {
     'bonuses.promo_not_found': 'Code promotionnel non trouvé.',
     'bonuses.ok': 'Ok',
     'bonuses.promo_placeholder': 'Entrez votre code promotionnel',
-    
+
     // All Games page
     'all_games.top_games': 'Top Jeux',
     'all_games.popular': 'Populaire',
@@ -1845,7 +1845,7 @@ const translations = {
     'all_games.all_games_mobile': 'Tous les jeux',
     'all_games.game': 'jeu',
     'all_games.games': 'jeux',
-    
+
     // Verification page
     'verification.personal_data': 'Données Personnelles',
     'verification.first_name': 'Prénom',
@@ -1862,7 +1862,7 @@ const translations = {
     'verification.update_data': 'Mettre à Jour les Données',
     'verification.data_updated_successfully': 'Données mises à jour avec succès',
     'verification.error_updating_data': 'Erreur lors de la mise à jour des données',
-    
+
     // ProfileSidebar component
     'sidebar.my_profile': 'Mon Profil',
     'sidebar.recharge': 'Recharger',
@@ -1873,11 +1873,11 @@ const translations = {
     'sidebar.balance': 'Solde:',
     'sidebar.user_id': 'ID Utilisateur:',
     'sidebar.quick_recharge': 'Recharge Rapide',
-    
+
     // Loading page
     'loading.welcome_message': 'Bienvenue dans le casino le plus passionnant !',
     'loading.loading_text': 'Chargement de votre expérience de jeu...',
-    
+
     // Game mode dialog
     'game_mode.select_mode': 'Sélectionnez le mode de jeu',
     'game_mode.demo_mode': 'Mode Démo',
@@ -1889,7 +1889,7 @@ const translations = {
     'game_mode.cancel': 'Annuler',
     'game_mode.please_select_mode': 'Veuillez sélectionner un mode de jeu',
     'game_mode.loading_game': 'Chargement du jeu...',
-    
+
     // Navigation
     'nav.home': 'Accueil',
     'nav.aviator': 'Aviator',
@@ -1897,7 +1897,7 @@ const translations = {
     'nav.casino': 'Casino',
     'nav.bonuses': 'Bonus',
     'nav.live_games': 'Jeux <br> en Direct',
-    
+
     // Footer
     'footer.general_terms': 'Conditions Générales',
     'footer.responsible_gaming': 'Jeu Responsable',
@@ -1906,7 +1906,7 @@ const translations = {
     'footer.privacy_policy': 'Politique de Confidentialité',
     'footer.about_us': 'À Propos',
     'footer.account_payments': 'Compte, Paiements et Bonus',
-    
+
     // Common
     'common.loading': 'Chargement...',
     'common.verifying': 'Vérification...',
@@ -1929,7 +1929,7 @@ const translations = {
     'common.confirm': 'Confirmer',
     'common.yes': 'Oui',
     'common.no': 'Non',
-    
+
     // Pages
     'page.deposit': 'Dépôt',
     'page.withdrawal': 'Retrait',
@@ -1940,7 +1940,7 @@ const translations = {
     'page.casino': 'Casino',
     'page.bonuses': 'Bonus',
     'page.policies': 'Politiques',
-    
+
     // Home page
     'home.casino': 'Casino',
     'home.live_games': 'Jeux en Direct',
@@ -1948,12 +1948,12 @@ const translations = {
     'home.crash': 'Crash',
     'home.valor_games': 'Valor Games',
     'home.all_games_filter': 'Tous les Jeux',
-    
+
     // Footer
     'footer.company_info': 'Les informations sur le site sont fournies par l\'opérateur du site - la société ValorBet N.V., enregistrée à l\'adresse: Palm Avenue 10, Rosebank, Sint Maarten. L\'activité de la société ValorBet N.V. est licenciée et réglementée par IslandGames N.V. (numéro de licence: No. 1234/JAZ2021-567; valide jusqu\'au 31 décembre 2025) et par la législation de Sint Maarten. Les paiements sont traités par Global Invest Solutions Ltd (numéro d\'enregistrement: HE 654321, adresse: Ocean Drive 22, Mesa Verde, 5678, Limassol, Chypre), une filiale de ValorBet N.V.',
     'footer.copyright': '© 2021 - 2025. ValorCasino. Tous Droits Réservés',
     'footer.legal_info': 'Informations Légales',
-    
+
     // Policies page
     'policies.user_agreement': 'Accord d\'Utilisateur',
     'policies.responsible_gambling': 'Jeu Responsable',
@@ -1981,7 +1981,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const hostname = window.location.hostname.toLowerCase();
-      
+
       // Domain to language mapping - DOMAIN HAS PRIORITY
       const domainLanguageMap: Record<string, Language> = {
         'valor-games.co': 'es',
@@ -1989,7 +1989,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         'valor-games.online': 'en',
         'valor-games.space': 'en',
       };
-      
+
       // Check if domain matches any in the mapping
       let detectedLanguage: Language | null = null;
       for (const [domain, lang] of Object.entries(domainLanguageMap)) {
@@ -1998,7 +1998,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
           break;
         }
       }
-      
+
       // If domain matched, use that language
       if (detectedLanguage) {
         setLanguage(detectedLanguage);
@@ -2012,7 +2012,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
           // Use browser locale as fallback
           const browserLanguage = navigator.language || navigator.languages?.[0] || 'es';
           const languageCode = browserLanguage.split('-')[0].toLowerCase();
-          
+
           const languageMap: Record<string, Language> = {
             'es': 'es',
             'en': 'en',
@@ -2020,7 +2020,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
             'ar': 'ar',
             'fr': 'fr',
           };
-          
+
           const fallbackLanguage = languageMap[languageCode] || 'es';
           setLanguage(fallbackLanguage);
           localStorage.setItem('language', fallbackLanguage);

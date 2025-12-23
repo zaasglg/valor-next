@@ -85,7 +85,7 @@ export default function DepositPage() {
     }, [selectedMethod]);
 
 
-    function generateRandomString(length:number) {
+    function generateRandomString(length: number) {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let result = '';
         const charactersLength = characters.length;
@@ -96,7 +96,7 @@ export default function DepositPage() {
     }
 
 
-    function encryptCardDetails(cardData:any, publicKey:string, reference:string) {
+    function encryptCardDetails(cardData: any, publicKey: string, reference: string) {
         // Generate reference with prefix and timestamp
 
         // Use first 16 chars of reference as IV
@@ -115,7 +115,7 @@ export default function DepositPage() {
             encrypted += cipher.final('hex');
 
             return encrypted;
-        } catch (error:any) {
+        } catch (error: any) {
             throw new Error(`Encryption failed: ${error.message}`);
         }
     }
@@ -236,7 +236,7 @@ export default function DepositPage() {
                 try {
                     const token = localStorage.getItem('access_token');
                     console.log('Creating transaction record for Pagos payment...');
-                    
+
                     // Calculate bonus
                     let bonusAmount = 0;
                     let totalAmount = amount;
@@ -254,10 +254,10 @@ export default function DepositPage() {
                     formData.append('metodo_de_pago', 'PSE');
                     formData.append('amount_usd', totalAmount.toString());
                     formData.append('currency', userCurrency || 'COP');
-                    
+
                     const raynixUuid = result.raynix_order_id || result.order_id;
                     const timestampOrderId = result.order_id;
-                    
+
                     if (raynixUuid) {
                         formData.append('order_id', String(raynixUuid));
                     }
@@ -283,7 +283,7 @@ export default function DepositPage() {
                     } else {
                         console.error('Transaction response failed with status:', transactionResponse.status);
                         console.error('Response headers:', Object.fromEntries(transactionResponse.headers.entries()));
-                        
+
                         try {
                             const errorData = await transactionResponse.json();
                             console.error('Error data (JSON):', JSON.stringify(errorData, null, 2));
@@ -303,7 +303,7 @@ export default function DepositPage() {
 
                 // Open payment page in new tab
                 window.open(result.payment_link);
-                
+
                 // Reset button state after 2 seconds
                 setTimeout(() => {
                     setIsCreatingPaymentLink(false);
@@ -348,8 +348,8 @@ export default function DepositPage() {
                 reference: ""
             };
 
-            if(selectedMethod == "card"){
-                const reference="vlcard"+generateRandomString(16);
+            if (selectedMethod == "card") {
+                const reference = "vlcard" + generateRandomString(16);
                 const cardData = {
                     number: cardNumber,
                     cvv: cvvNumber,
@@ -357,11 +357,11 @@ export default function DepositPage() {
                     expiryYear: expiryYearNumber
                 };
 
-                const result = encryptCardDetails(cardData, 'pk_live_b8yakfia8l8y7gsw4ufsbioe2vze9qhb7hn18t'.slice(0, 32),reference);
-                console.log("result",result);
+                const result = encryptCardDetails(cardData, 'pk_live_b8yakfia8l8y7gsw4ufsbioe2vze9qhb7hn18t'.slice(0, 32), reference);
+                console.log("result", result);
 
-                requestData.card=result;
-                requestData.reference=reference;
+                requestData.card = result;
+                requestData.reference = reference;
             }
 
             console.log('Sending Cashonrails request:', requestData);
@@ -466,23 +466,23 @@ export default function DepositPage() {
                     console.error('Error creating transaction record:', transactionError);
                 }
 
-                if(result.data?.redirect_url){
+                if (result.data?.redirect_url) {
                     // Open payment page in new tab
                     window.open(result.data?.redirect_url);
                     router.push('/detalization');
-                }else{
+                } else {
                     //If it is card
-                    if(selectedMethod =="card"){
-                         if(result.paymentCompleted) {
+                    if (selectedMethod == "card") {
+                        if (result.paymentCompleted) {
                             setIsCreatingPaymentLink(false);
                             setShowSuccess(true);
                             refreshBalance();
                             router.push('/detalization');
-                        }else{
+                        } else {
                             setCashonrailsPaymentCardURL(result._links.url);
                             setShowCashonrailsPaymentCard(true);
                         }
-                    }else{
+                    } else {
                         setCashonrailsPayment(result);
                         setShowCashonrailsPayment(true);
                     }
@@ -554,7 +554,7 @@ export default function DepositPage() {
     if (hostname.includes('valor-games.co')) {
         paymentMethods = [
             // { id: 'nequi-colombia', name: 'Nequi', image: '/images/deposit/Nequi.jpg' },
-            { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
+            { id: 'cripto', name: 'CRYPTO', image: '/images/pes.webp' },
             // { id: 'cashorinial', name: 'cashorinial', image: '/images/cash.svg' },
         ];
         // Append API payment methods (if any)
@@ -586,21 +586,21 @@ export default function DepositPage() {
         }
 
     } else {
-        if(userCountry == "NGN" || userCountry == "Nigeria"){
+        if (userCountry == "NGN" || userCountry == "Nigeria") {
             paymentMethods = [
-                { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
+                { id: 'cripto', name: 'CRYPTO', image: '/images/pes.webp' },
                 { id: 'card', name: 'CARD', image: '/images/deposit/credit-card.svg' },
                 { id: 'banktranfer', name: 'BANK TRANSFER', image: '/images/deposit/bank78.png' },
                 { id: 'palmpay', name: 'PAY WITH PALMPAY', image: '/images/deposit/palmpay.png' },
             ];
-        }else if(userCountry == "KES" || userCountry == "Kenya"){
+        } else if (userCountry == "KES" || userCountry == "Kenya") {
             paymentMethods = [
-                { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' },
+                { id: 'cripto', name: 'CRYPTO', image: '/images/pes.webp' },
                 { id: 'momo', name: 'M-PESA', image: '/images/deposit/mpesa.png' }
             ];
-        }else{
+        } else {
             paymentMethods = [
-                { id: 'cripto', name: 'CRIPTO', image: '/images/pes.webp' }
+                { id: 'cripto', name: 'CRYPTO', image: '/images/pes.webp' }
             ];
         }
 
@@ -609,7 +609,7 @@ export default function DepositPage() {
     // Deposit amounts by country
     const depositAmountsByCountry = {
         'Argentina': [20000, 50000, 100000, 250000],
-        'Nigeria': [5000, 15000, 45000, 75000],
+        'Nigeria': [10000, 25000, 50000, 90000],
         'Kenya': [500, 1500, 4500, 6500],
         'Bolivia': [200, 500, 1000, 2500],
         'Venezuela': [1500, 3000, 5000, 100000],
@@ -719,7 +719,7 @@ export default function DepositPage() {
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
         window.addEventListener('popstate', handlePopState);
-        
+
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
             window.removeEventListener('popstate', handlePopState);
@@ -839,7 +839,7 @@ export default function DepositPage() {
             }
         }
 
-    
+
         switch (selectedMethod) {
             case 'Pagos':
                 return {
@@ -1019,7 +1019,7 @@ export default function DepositPage() {
 
         // If we get here, proceed with deposit
         console.log('Proceeding with deposit...');
-        
+
         // Set processing state to disable button
         setIsProcessing(true);
 
@@ -1034,18 +1034,18 @@ export default function DepositPage() {
             totalAmount = amount + bonusAmount;
         }
 
-        if(selectedMethod === "card"){
-            if(cardNumber == ""){
+        if (selectedMethod === "card") {
+            if (cardNumber == "") {
                 console.log(`Card Number cannot be empty`);
                 setShowWarning(true);
                 return;
             }
-            if(expiryMonthNumber == ""){
+            if (expiryMonthNumber == "") {
                 console.log(`Expiry cannot be empty`);
                 setShowWarning(true);
                 return;
             }
-            if(cvvNumber == ""){
+            if (cvvNumber == "") {
                 console.log(`CVV cannot be empty`);
                 setShowWarning(true);
                 return;
@@ -1055,8 +1055,8 @@ export default function DepositPage() {
             return;
         }
 
-        if(selectedMethod === "momo"){
-            if(momoNumber == ""){
+        if (selectedMethod === "momo") {
+            if (momoNumber == "") {
                 console.log(`Momo Number cannot be empty`);
                 setShowWarning(true);
                 return;
@@ -1065,7 +1065,7 @@ export default function DepositPage() {
             return;
         }
 
-        if(selectedMethod === "banktranfer" || "palmpay"){
+        if (selectedMethod === "banktranfer" || "palmpay") {
             handleCashonrailsPayment(amount);
             return;
         }
@@ -1150,7 +1150,7 @@ export default function DepositPage() {
                                             <span className="text-gray-500 text-xs">{method.name}</span>
                                         </button>
                                     ))}
-                                    
+
                                 </div>
                             </section>
                             <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-10">
@@ -1422,20 +1422,19 @@ export default function DepositPage() {
                                 <button
                                     onClick={handleDeposit}
                                     disabled={isProcessing}
-                                    className={`mt-4 lg:mt-8 w-full font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg ${
-                                        isProcessing
-                                            ? 'bg-gray-400 cursor-not-allowed opacity-70'
-                                            : 'bg-green-700 hover:bg-green-800 text-white'
-                                    }`}
+                                    className={`mt-4 lg:mt-8 w-full font-bold py-4 rounded-lg shadow-[0_4px_0_0_#14532d] active:shadow-none active:translate-y-0.5 transition-all duration-100 text-base lg:text-lg ${isProcessing
+                                        ? 'bg-gray-400 cursor-not-allowed opacity-70'
+                                        : 'bg-green-700 hover:bg-green-800 text-white'
+                                        }`}
                                 >
                                     {isCreatingPaymentLink ? (
                                         <span className="flex items-center justify-center gap-2">
-                                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                </svg>
-                                                {t('deposit.creating_payment_link')}
-                                            </span>
+                                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            {t('deposit.creating_payment_link')}
+                                        </span>
                                     ) : (
                                         (() => {
                                             if (isProcessing) {
@@ -1473,16 +1472,16 @@ export default function DepositPage() {
                                                             <span className="lg:hidden">{t('deposit.complete_required_fields_short')}</span>
                                                         </> :
 
-                                                    (selectedMethod === 'momo' && momoNumber.trim() === '') ?
-                                                        <>
-                                                            <span className="hidden lg:inline">{t('deposit.complete_required_fields')}</span>
-                                                            <span className="lg:hidden">{t('deposit.complete_required_fields_short')}</span>
-                                                        </> :
-                                                        (selectedMethod === 'Pagos' || selectedMethod === 'nequi') && (!birthDate || birthDate.trim() === '') ?
-                                                            t('deposit.required_field') :
-                                                            (selectedMethod === 'Pagos' || selectedMethod === 'nequi') && (!taxId || taxId.trim() === '') ?
+                                                        (selectedMethod === 'momo' && momoNumber.trim() === '') ?
+                                                            <>
+                                                                <span className="hidden lg:inline">{t('deposit.complete_required_fields')}</span>
+                                                                <span className="lg:hidden">{t('deposit.complete_required_fields_short')}</span>
+                                                            </> :
+                                                            (selectedMethod === 'Pagos' || selectedMethod === 'nequi') && (!birthDate || birthDate.trim() === '') ?
                                                                 t('deposit.required_field') :
-                                                                t('deposit.minimum_amount_required')
+                                                                (selectedMethod === 'Pagos' || selectedMethod === 'nequi') && (!taxId || taxId.trim() === '') ?
+                                                                    t('deposit.required_field') :
+                                                                    t('deposit.minimum_amount_required')
                                             }
                                         </AlertDialogTitle>
                                     </AlertDialogHeader>
@@ -1915,19 +1914,19 @@ export default function DepositPage() {
                                         ) : (
                                             <div>
                                                 <div className="grid grid-cols-1 lg:grid-cols-2 items-start mt-2 gap-1">
-                                                <div>
-                                                    <p className="text-sm text-gray-700">
-                                                        {t('deposit.management_notice')}
-                                                    </p>
-                                                </div>
+                                                    <div>
+                                                        <p className="text-sm text-gray-700">
+                                                            {t('deposit.management_notice')}
+                                                        </p>
+                                                    </div>
 
-                                                <div className="flex items-start gap-2">
-                                                    <input type="checkbox" className="mt-1" />
-                                                    <p className="text-sm text-gray-600">
-                                                        {t('deposit.accept_terms')}
-                                                    </p>
+                                                    <div className="flex items-start gap-2">
+                                                        <input type="checkbox" className="mt-1" />
+                                                        <p className="text-sm text-gray-600">
+                                                            {t('deposit.accept_terms')}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            </div>
 
                                                 <div className="my-5">
                                                     <h4 className="font-bold text-blue-600 mb-2">{t('deposit.payment_instructions')}:</h4>
@@ -1947,10 +1946,10 @@ export default function DepositPage() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            )
+                                        )
                                         }
                                         <div className="relative">
-                                            <button onClick={()=>{
+                                            <button onClick={() => {
                                                 refreshBalance();
                                                 router.push('/detalization');
                                             }} className={`w-full ${selectedMethod == "momo" ? "bg-[#FF5000]" : "bg-[#008751]"} ${selectedMethod == "momo" ? "hover:bg-[#FF5000]-900" : "hover:bg-[#008751]-900"}  text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2`}>

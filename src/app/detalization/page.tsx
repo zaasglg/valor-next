@@ -167,21 +167,19 @@ export default function DetalizationPage() {
                 <div className="flex mb-4 lg:mb-6 bg-gray-200 rounded-lg p-1 w-full lg:w-auto">
                   <button
                     onClick={() => setActiveTab("deposits")}
-                    className={`flex-1 lg:flex-none px-4 lg:px-8 py-2 rounded-md text-sm lg:text-lg font-bold focus:outline-none transition-all ${
-                      activeTab === "deposits"
-                        ? "bg-white border-b-4 border-[#ffb32c] text-[#23223a]"
-                        : "text-[#23223a] hover:bg-gray-100"
-                    }`}
+                    className={`flex-1 lg:flex-none px-4 lg:px-8 py-2 rounded-md text-sm lg:text-lg font-bold focus:outline-none transition-all ${activeTab === "deposits"
+                      ? "bg-white border-b-4 border-[#ffb32c] text-[#23223a]"
+                      : "text-[#23223a] hover:bg-gray-100"
+                      }`}
                   >
                     {t('detalization.deposits')}
                   </button>
                   <button
                     onClick={() => setActiveTab("payments")}
-                    className={`flex-1 lg:flex-none px-4 lg:px-8 py-2 rounded-md ml-2 text-sm lg:text-base focus:outline-none transition-all ${
-                      activeTab === "payments"
-                        ? "bg-white border-b-4 border-[#ffb32c] text-[#23223a] font-bold"
-                        : "text-[#23223a] hover:bg-gray-100"
-                    }`}
+                    className={`flex-1 lg:flex-none px-4 lg:px-8 py-2 rounded-md ml-2 text-sm lg:text-base focus:outline-none transition-all ${activeTab === "payments"
+                      ? "bg-white border-b-4 border-[#ffb32c] text-[#23223a] font-bold"
+                      : "text-[#23223a] hover:bg-gray-100"
+                      }`}
                   >
                     {t('detalization.payments')}
                   </button>
@@ -193,26 +191,26 @@ export default function DetalizationPage() {
                   {(activeTab === "deposits"
                     ? transactions.length > 0
                     : payments.length > 0) && (
-                    <thead>
-                      <tr className="bg-[#ffb32c] text-white text-left">
-                        <th className="py-2 lg:py-4 px-2 lg:px-6 rounded-tl-none lg:rounded-tl-2xl text-xs lg:text-base">
-                          {t('detalization.date_time')}
-                        </th>
-                        <th className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-base">
-                          {t('detalization.transaction')}
-                        </th>
-                        <th className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-base">
-                          {t('detalization.amount')}
-                        </th>
-                        <th className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-base hidden md:table-cell">
-                          {t('detalization.payment_method')}
-                        </th>
-                        <th className="py-2 lg:py-4 px-2 lg:px-6 rounded-tr-none lg:rounded-tr-2xl text-xs lg:text-base">
-                          {t('detalization.status')}
-                        </th>
-                      </tr>
-                    </thead>
-                  )}
+                      <thead>
+                        <tr className="bg-[#ffb32c] text-white text-left">
+                          <th className="py-2 lg:py-4 px-2 lg:px-6 rounded-tl-none lg:rounded-tl-2xl text-xs lg:text-base">
+                            {t('detalization.date_time')}
+                          </th>
+                          <th className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-base">
+                            {t('detalization.transaction')}
+                          </th>
+                          <th className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-base">
+                            {t('detalization.amount')}
+                          </th>
+                          <th className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-base hidden md:table-cell">
+                            {t('detalization.payment_method')}
+                          </th>
+                          <th className="py-2 lg:py-4 px-2 lg:px-6 rounded-tr-none lg:rounded-tr-2xl text-xs lg:text-base">
+                            {t('detalization.status')}
+                          </th>
+                        </tr>
+                      </thead>
+                    )}
                   <tbody className="text-[#23223a] text-sm lg:text-base font-medium">
                     {(
                       activeTab === "deposits"
@@ -265,10 +263,10 @@ export default function DetalizationPage() {
                             <button
                               className="bg-[#FDA700] hover:bg-[#E6A029] text-white font-semibold px-6 py-2 rounded-lg shadow-[0_2px_0_0_#B97A16] active:shadow-[0_1px_0_0_#B97A16] active:translate-y-0.5 transition-all"
                               onClick={() =>
-                                (window.location.href =
-                                  activeTab === "deposits"
-                                    ? "/deposit"
-                                    : "/withdrawal")
+                              (window.location.href =
+                                activeTab === "deposits"
+                                  ? "/deposit"
+                                  : "/withdrawal")
                               }
                             >
                               {activeTab === "deposits"
@@ -295,8 +293,8 @@ export default function DetalizationPage() {
                             </td>
                             <td className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-sm">
                               {activeTab === "deposits" &&
-                              "currency" in item &&
-                              item.currency
+                                "currency" in item &&
+                                item.currency
                                 ? `${item.transacciones_monto} ${item.currency}`
                                 : `$${item.transacciones_monto}`}
                             </td>
@@ -305,21 +303,20 @@ export default function DetalizationPage() {
                             </td>
                             <td className="py-2 lg:py-4 px-2 lg:px-6">
                               <span
-                                className={`px-2 lg:px-3 py-1 rounded-full text-xs lg:text-sm ${
-                                  item.estado === "completado" || item.estado === "aprobado"
-                                    ? "bg-green-100 text-green-800"
-                                    : item.estado === "esperando"
+                                className={`px-2 lg:px-3 py-1 rounded-full text-xs lg:text-sm ${item.estado === "completado" || item.estado === "aprobado"
+                                  ? "bg-green-100 text-green-800"
+                                  : item.estado === "esperando"
                                     ? "bg-yellow-100 text-yellow-800"
                                     : item.estado === "pendiente"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : "bg-red-100 text-red-800"
-                                }`}
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : "bg-red-100 text-red-800"
+                                  }`}
                               >
                                 {item.estado === "completado" ? t('detalization.status_completed') :
-                                 item.estado === "aprobado" ? t('detalization.status_approved') :
-                                 item.estado === "esperando" ? t('detalization.status_waiting') :
-                                 item.estado === "pendiente" ? t('detalization.status_pending') :
-                                 item.estado}
+                                  item.estado === "aprobado" ? t('detalization.status_approved') :
+                                    item.estado === "esperando" ? t('detalization.status_waiting') :
+                                      item.estado === "pendiente" ? t('detalization.status_pending') :
+                                        item.estado}
                               </span>
                             </td>
                           </tr>

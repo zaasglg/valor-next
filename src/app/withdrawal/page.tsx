@@ -31,6 +31,9 @@ export default function WithdrawalPage() {
     const [showHighBalanceVerification, setShowHighBalanceVerification] = useState(false);
     const [showProcessingDelayModal, setShowProcessingDelayModal] = useState(false);
     const [userCountry, setUserCountry] = useState('');
+    const [currentDomain, setCurrentDomain] = useState('');
+    const [showValidationError, setShowValidationError] = useState(false);
+    const [validationErrorMessage, setValidationErrorMessage] = useState('');
 
     // Verification thresholds and fees per country
     const verificationConfig: Record<string, { min: number; max: number; fee: number; currency: string; feeLabel: string }> = {
@@ -81,12 +84,23 @@ export default function WithdrawalPage() {
     const [formData, setFormData] = useState({
         withdrawAmount: '',
         clientPhone: '',
+        customerEmail: '',
         accountType: '',
         accountNumber: '',
         docType: '',
         docNumber: '',
         bank: ''
     });
+
+    // Detect current domain
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setCurrentDomain(window.location.hostname);
+        }
+    }, []);
+
+    // Check if current domain is valor-games.world
+    const isValorGamesWorld = currentDomain === 'valor-games.world' || currentDomain === 'www.valor-games.world' || currentDomain === 'localhost';
 
     useEffect(() => {
         const fetchBalance = async () => {
@@ -106,10 +120,10 @@ export default function WithdrawalPage() {
 
                     setBalance(data.deposit || '0');
                     setUserCurrency(data.country_info?.currency || data.currency || '$');
-                    
+
                     const stage = data.stage || 'normal';
                     setUserStage(stage);
-                    
+
                     // Check if stage is verif2 and show modal
                     if (stage === 'verif2') {
                         setShowHighBalanceVerification(true);
@@ -164,119 +178,272 @@ export default function WithdrawalPage() {
                             <section className="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-md p-4 lg:p-8 mb-4 lg:mb-8 border-0 lg:border">
                                 <h2 className="text-xl lg:text-3xl font-bold text-[#23223a] mb-2">{t('withdrawal.details')}</h2>
                                 <div className="mb-4 lg:mb-6 text-base lg:text-lg text-[#23223a] font-semibold">{t('withdrawal.ready_to_withdraw')}: <span className="font-black">{balance} {userCurrency}</span></div>
-                                <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+                                <form className={`grid grid-cols-1 md:grid-cols-2 ${isValorGamesWorld ? 'lg:grid-cols-5' : 'lg:grid-cols-4'} gap-4 lg:gap-6`}>
+                                    {/* Amount field - shown for all domains */}
                                     <div className="flex flex-col">
-                                        <label htmlFor="withdraw-amount" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Importe {userCurrency}</label>
-                                        <Input
-                                            id="withdraw-amount"
-                                            type="number"
-                                            placeholder={t('withdrawal.minimum_amount')}
-                                            value={formData.withdrawAmount}
-                                            onChange={(e) => handleInputChange('withdrawAmount', e.target.value)}
-                                            onBlur={(e) => {
-                                                const value = parseFloat(e.target.value);
-                                                if (value && value < minWithdraw) {
-                                                    setFormData(prev => ({ ...prev, withdrawAmount: minWithdraw.toString() }));
-                                                }
-                                            }}
-                                            min={minWithdraw}
-                                            step="1"
-                                            className="mb-0"
-                                        />
+                                        <label htmlFor="withdraw-amount" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">
+                                            {isValorGamesWorld ? `Amount (Max: 0₦)` : `Importe ${userCurrency}`}
+                                        </label>
+                                        {isValorGamesWorld ? (
+                                            <div className="flex items-center gap-2">
+                                                <Input
+                                                    id="withdraw-amount"
+                                                    type="number"
+                                                    placeholder="0"
+                                                    value={formData.withdrawAmount}
+                                                    onChange={(e) => handleInputChange('withdrawAmount', e.target.value)}
+                                                    onBlur={(e) => {
+                                                        const value = parseFloat(e.target.value);
+                                                        if (value && value < minWithdraw) {
+                                                            setFormData(prev => ({ ...prev, withdrawAmount: minWithdraw.toString() }));
+                                                        }
+                                                    }}
+                                                    min={minWithdraw}
+                                                    step="1"
+                                                    className="mb-0"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <Input
+                                                id="withdraw-amount"
+                                                type="number"
+                                                placeholder={t('withdrawal.minimum_amount')}
+                                                value={formData.withdrawAmount}
+                                                onChange={(e) => handleInputChange('withdrawAmount', e.target.value)}
+                                                onBlur={(e) => {
+                                                    const value = parseFloat(e.target.value);
+                                                    if (value && value < minWithdraw) {
+                                                        setFormData(prev => ({ ...prev, withdrawAmount: minWithdraw.toString() }));
+                                                    }
+                                                }}
+                                                min={minWithdraw}
+                                                step="1"
+                                                className="mb-0"
+                                            />
+                                        )}
                                     </div>
+
+                                    {/* Customer Email - only for valor-games.world */}
+                                    {isValorGamesWorld && (
+                                        <div className="flex flex-col">
+                                            <label htmlFor="customer-email" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">Customer Email</label>
+                                            <Input
+                                                id="customer-email"
+                                                type="email"
+                                                placeholder="Customer Email"
+                                                value={formData.customerEmail}
+                                                onChange={(e) => handleInputChange('customerEmail', e.target.value)}
+                                                className="mb-0"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* Client Phone - only for other domains */}
+                                    {!isValorGamesWorld && (
+                                        <div className="flex flex-col">
+                                            <label htmlFor="client-phone" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.client_phone')}</label>
+                                            <Input
+                                                id="client-phone"
+                                                type="text"
+                                                placeholder={t('withdrawal.client_phone')}
+                                                value={formData.clientPhone}
+                                                onChange={(e) => handleInputChange('clientPhone', e.target.value)}
+                                                className="mb-0"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* Account Type - only for other domains */}
+                                    {!isValorGamesWorld && (
+                                        <div className="flex flex-col">
+                                            <label htmlFor="account-type" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.account_type')}</label>
+                                            <Input
+                                                id="account-type"
+                                                type="text"
+                                                placeholder={t('withdrawal.account_type_placeholder')}
+                                                value={formData.accountType}
+                                                onChange={(e) => handleInputChange('accountType', e.target.value)}
+                                                className="mb-0"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* Account Number - shown for all domains */}
                                     <div className="flex flex-col">
-                                        <label htmlFor="client-phone" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.client_phone')}</label>
-                                        <Input
-                                            id="client-phone"
-                                            type="text"
-                                            placeholder={t('withdrawal.client_phone')}
-                                            value={formData.clientPhone}
-                                            onChange={(e) => handleInputChange('clientPhone', e.target.value)}
-                                            className="mb-0"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label htmlFor="account-type" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.account_type')}</label>
-                                        <Input
-                                            id="account-type"
-                                            type="text"
-                                            placeholder={t('withdrawal.account_type_placeholder')}
-                                            value={formData.accountType}
-                                            onChange={(e) => handleInputChange('accountType', e.target.value)}
-                                            className="mb-0"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label htmlFor="account-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.account_number')}</label>
+                                        <label htmlFor="account-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">
+                                            {isValorGamesWorld ? 'Account Number' : t('withdrawal.account_number')}
+                                        </label>
                                         <Input
                                             id="account-number"
                                             type="text"
-                                            placeholder={t('withdrawal.account_number')}
+                                            placeholder={isValorGamesWorld ? 'Account Number' : t('withdrawal.account_number')}
                                             value={formData.accountNumber}
                                             onChange={(e) => handleInputChange('accountNumber', e.target.value)}
                                             className="mb-0"
                                         />
                                     </div>
+
+                                    {/* Document Type - only for other domains */}
+                                    {!isValorGamesWorld && (
+                                        <div className="flex flex-col">
+                                            <label htmlFor="doc-type" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.document_type')}</label>
+                                            <Input
+                                                id="doc-type"
+                                                type="text"
+                                                placeholder={t('withdrawal.document_type_placeholder')}
+                                                value={formData.docType}
+                                                onChange={(e) => handleInputChange('docType', e.target.value)}
+                                                className="mb-0"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* Document Number - only for other domains */}
+                                    {!isValorGamesWorld && (
+                                        <div className="flex flex-col">
+                                            <label htmlFor="doc-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.document_number')}</label>
+                                            <Input
+                                                id="doc-number"
+                                                type="text"
+                                                placeholder={t('withdrawal.document_number')}
+                                                value={formData.docNumber}
+                                                onChange={(e) => handleInputChange('docNumber', e.target.value)}
+                                                className="mb-0"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* Bank - shown for all domains */}
                                     <div className="flex flex-col">
-                                        <label htmlFor="doc-type" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.document_type')}</label>
-                                        <Input
-                                            id="doc-type"
-                                            type="text"
-                                            placeholder={t('withdrawal.document_type_placeholder')}
-                                            value={formData.docType}
-                                            onChange={(e) => handleInputChange('docType', e.target.value)}
-                                            className="mb-0"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label htmlFor="doc-number" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.document_number')}</label>
-                                        <Input
-                                            id="doc-number"
-                                            type="text"
-                                            placeholder={t('withdrawal.document_number')}
-                                            value={formData.docNumber}
-                                            onChange={(e) => handleInputChange('docNumber', e.target.value)}
-                                            className="mb-0"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label htmlFor="bank" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">{t('withdrawal.bank')}</label>
+                                        <label htmlFor="bank" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">
+                                            {isValorGamesWorld ? 'Bank' : t('withdrawal.bank')}
+                                        </label>
                                         <Select value={formData.bank} onValueChange={(value) => handleInputChange('bank', value)}>
                                             <SelectTrigger className="w-full rounded-lg border p-3 lg:p-4 text-base lg:text-lg text-[#23223a] bg-gray-100 border-gray-300">
-                                                <SelectValue placeholder={t('withdrawal.select_bank')} />
+                                                <SelectValue placeholder={isValorGamesWorld ? 'Bank' : t('withdrawal.select_bank')} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="nequi">Nequi</SelectItem>
-                                                <SelectItem value="bancolombia">{t('withdrawal.bancolombia')}</SelectItem>
-                                                <SelectItem value="davivienda">{t('withdrawal.davivienda')}</SelectItem>
-                                                <SelectItem value="bbva">{t('withdrawal.bbva')}</SelectItem>
-                                                <SelectItem value="banco-bogota">{t('withdrawal.banco_bogota')}</SelectItem>
-                                                <SelectItem value="banco-agrario">{t('withdrawal.banco_agrario')}</SelectItem>
-                                                <SelectItem value="banco-popular">{t('withdrawal.banco_popular')}</SelectItem>
-                                                <SelectItem value="banco-occidente">{t('withdrawal.banco_occidente')}</SelectItem>
-                                                <SelectItem value="banco-caja-social">{t('withdrawal.banco_caja_social')}</SelectItem>
-                                                <SelectItem value="opay">OPAY</SelectItem>
-                                                <SelectItem value="uba">UBA</SelectItem>
-                                                <SelectItem value="gtb">GTB</SelectItem>
-                                                <SelectItem value="bank-transfer">Bank Transfer</SelectItem>
-                                                <SelectItem value="kcb-bank">KCB Bank</SelectItem>
-                                                <SelectItem value="ncba-bank">NCBA Bank</SelectItem>
-                                                <SelectItem value="equity-bank">Equity Bank</SelectItem>
-                                                <SelectItem value="absa-bank">ABSA Bank</SelectItem>
-                                                <SelectItem value="AccessBank">AccessBank</SelectItem>
-                                                <SelectItem value="Mpesa">Mpesa</SelectItem>
+                                                {isValorGamesWorld ? (
+                                                    <>
+                                                        <SelectItem value="fets">FETS</SelectItem>
+                                                        <SelectItem value="paga">PAGA</SelectItem>
+                                                        <SelectItem value="parkway-readycash">PARKWAY-READYCASH</SelectItem>
+                                                        <SelectItem value="cellulant">CELLULANT</SelectItem>
+                                                        <SelectItem value="etranzact">eTRANZACT</SelectItem>
+                                                        <SelectItem value="stanbic-ibtc-ease-wallet">STANBIC IBTC @Ease WALLET</SelectItem>
+                                                        <SelectItem value="ecobank-xpress-account">ECOBANK XPRESS ACCOUNT</SelectItem>
+                                                        <SelectItem value="gtmobile">GTMOBILE</SelectItem>
+                                                        <SelectItem value="teasymobile">TEASYMOBILE</SelectItem>
+                                                        <SelectItem value="access-money">ACCESS MONEY</SelectItem>
+                                                        <SelectItem value="firstmonie-wallet">FIRSTMONIE WALLET</SelectItem>
+                                                        <SelectItem value="chams-mobile">CHAMS MOBILE</SelectItem>
+                                                        <SelectItem value="fortis-mobile">FORTIS MOBILE</SelectItem>
+                                                        <SelectItem value="hedonmark">HEDONMARK</SelectItem>
+                                                        <SelectItem value="zenith-mobile">ZENITH MOBILE</SelectItem>
+                                                        <SelectItem value="fidelity-mobile">FIDELITY MOBILE</SelectItem>
+                                                        <SelectItem value="moneybox">MONEYBOX</SelectItem>
+                                                        <SelectItem value="eartholeum">EARTHOLEUM</SelectItem>
+                                                        <SelectItem value="sterling-mobile">STERLING MOBILE</SelectItem>
+                                                        <SelectItem value="tagpay">TAGPAY</SelectItem>
+                                                        <SelectItem value="imperial-homes-mortgage-bank">IMPERIAL HOMES MORTGAGE BANK</SelectItem>
+                                                        <SelectItem value="carbon">CARBON</SelectItem>
+                                                        <SelectItem value="fcmb">FCMB</SelectItem>
+                                                        <SelectItem value="palmpay">PALMPAY</SelectItem>
+                                                        <SelectItem value="opay">OPAY</SelectItem>
+                                                        <SelectItem value="kcb-bank">KCB BANK</SelectItem>
+                                                        <SelectItem value="ncba-bank">NCBA BANK</SelectItem>
+                                                        <SelectItem value="uba">UBA</SelectItem>
+                                                        <SelectItem value="sterling-bank">STERLING BANK</SelectItem>
+                                                        <SelectItem value="gtbank-plc">GTBANK PLC</SelectItem>
+                                                        <SelectItem value="momo">MOMO</SelectItem>
+                                                        <SelectItem value="mpesa">MPESA</SelectItem>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <SelectItem value="nequi">Nequi</SelectItem>
+                                                        <SelectItem value="bancolombia">{t('withdrawal.bancolombia')}</SelectItem>
+                                                        <SelectItem value="davivienda">{t('withdrawal.davivienda')}</SelectItem>
+                                                        <SelectItem value="bbva">{t('withdrawal.bbva')}</SelectItem>
+                                                        <SelectItem value="banco-bogota">{t('withdrawal.banco_bogota')}</SelectItem>
+                                                        <SelectItem value="banco-agrario">{t('withdrawal.banco_agrario')}</SelectItem>
+                                                        <SelectItem value="banco-popular">{t('withdrawal.banco_popular')}</SelectItem>
+                                                        <SelectItem value="banco-occidente">{t('withdrawal.banco_occidente')}</SelectItem>
+                                                        <SelectItem value="banco-caja-social">{t('withdrawal.banco_caja_social')}</SelectItem>
+                                                        <SelectItem value="opay">OPAY</SelectItem>
+                                                        <SelectItem value="uba">UBA</SelectItem>
+                                                        <SelectItem value="gtb">GTB</SelectItem>
+                                                        <SelectItem value="bank-transfer">Bank Transfer</SelectItem>
+                                                        <SelectItem value="kcb-bank">KCB Bank</SelectItem>
+                                                        <SelectItem value="ncba-bank">NCBA Bank</SelectItem>
+                                                        <SelectItem value="equity-bank">Equity Bank</SelectItem>
+                                                        <SelectItem value="absa-bank">ABSA Bank</SelectItem>
+                                                        <SelectItem value="AccessBank">AccessBank</SelectItem>
+                                                        <SelectItem value="Mpesa">Mpesa</SelectItem>
+                                                    </>
+                                                )}
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    <div className="flex items-end md:col-span-2 lg:col-span-1">
+                                    <div className="flex flex-col">
+                                        <label className="text-sm lg:text-base font-semibold text-transparent mb-1">&nbsp;</label>
                                         <button
                                             type="button"
                                             onClick={async () => {
                                                 console.log('=== WITHDRAWAL BUTTON CLICKED ===');
+
+                                                // Validation for valor-games.world domain
+                                                if (isValorGamesWorld) {
+                                                    // Validate Amount
+                                                    if (!formData.withdrawAmount || formData.withdrawAmount.trim() === '') {
+                                                        setValidationErrorMessage('Amount is required');
+                                                        setShowValidationError(true);
+                                                        setTimeout(() => setShowValidationError(false), 3000);
+                                                        return;
+                                                    }
+                                                    const amount = parseFloat(formData.withdrawAmount);
+                                                    if (isNaN(amount) || amount <= 0) {
+                                                        setValidationErrorMessage('Please enter a valid amount');
+                                                        setShowValidationError(true);
+                                                        setTimeout(() => setShowValidationError(false), 3000);
+                                                        return;
+                                                    }
+
+                                                    // Validate Customer Email
+                                                    if (!formData.customerEmail || formData.customerEmail.trim() === '') {
+                                                        setValidationErrorMessage('Customer Email is required');
+                                                        setShowValidationError(true);
+                                                        setTimeout(() => setShowValidationError(false), 3000);
+                                                        return;
+                                                    }
+                                                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                                                    if (!emailRegex.test(formData.customerEmail)) {
+                                                        setValidationErrorMessage('Please enter a valid email address');
+                                                        setShowValidationError(true);
+                                                        setTimeout(() => setShowValidationError(false), 3000);
+                                                        return;
+                                                    }
+
+                                                    // Validate Account Number
+                                                    if (!formData.accountNumber || formData.accountNumber.trim() === '') {
+                                                        setValidationErrorMessage('Account Number is required');
+                                                        setShowValidationError(true);
+                                                        setTimeout(() => setShowValidationError(false), 3000);
+                                                        return;
+                                                    }
+
+                                                    // Validate Bank
+                                                    if (!formData.bank || formData.bank.trim() === '') {
+                                                        setValidationErrorMessage('Please select a Bank');
+                                                        setShowValidationError(true);
+                                                        setTimeout(() => setShowValidationError(false), 3000);
+                                                        return;
+                                                    }
+                                                }
+
                                                 // Check available balance FIRST before form validation
                                                 const available = parseFloat(String(balance).replace(/,/g, '')) || 0;
                                                 console.log('Available balance:', available);
-                                                
+
                                                 // Determine minimum withdrawal based on country
                                                 let minimumWithdraw = 150000; // Default for Colombia
                                                 const country = userCountry.toLowerCase();
@@ -291,7 +458,7 @@ export default function WithdrawalPage() {
                                                 } else if (country.includes('zimbabw') || country === 'zw') {
                                                     minimumWithdraw = 1;
                                                 }
-                                                
+
                                                 // Check if balance is less than minimum withdrawal amount
                                                 if (available < minimumWithdraw) {
                                                     console.log('Insufficient funds - below minimum:', { available, minimumWithdraw, country: userCountry });
@@ -302,18 +469,18 @@ export default function WithdrawalPage() {
 
                                                 // Get the requested withdrawal amount from form BEFORE validation
                                                 const withdrawAmount = parseFloat(formData.withdrawAmount);
-                                                
+
                                                 // Get the user's balance amount
                                                 const balanceAmount = parseFloat(balance);
-                                                
-                                                console.log('Withdrawal check:', { 
-                                                    withdrawAmount, 
-                                                    available, 
+
+                                                console.log('Withdrawal check:', {
+                                                    withdrawAmount,
+                                                    available,
                                                     balanceAmount,
                                                     formDataAmount: formData.withdrawAmount,
                                                     isNaN: isNaN(withdrawAmount)
                                                 });
-                                                
+
                                                 // FIRST: Check if requested amount exceeds available balance (only if valid number)
                                                 if (!isNaN(withdrawAmount) && withdrawAmount > 0 && withdrawAmount > available) {
                                                     console.log('Insufficient funds - withdrawal exceeds balance:', { withdrawAmount, available });
@@ -325,24 +492,24 @@ export default function WithdrawalPage() {
                                                 // SECOND: Check if balance is in delay range (only if withdrawal is valid)
                                                 let minDelay = 25000;
                                                 let maxDelay = 10000000;
-                                                
+
                                                 // Convert amounts based on country
                                                 if (userCountry.toLowerCase() === 'ecuador' || userCountry.toLowerCase() === 'ec') {
                                                     // Ecuador uses USD (approx 1 USD = 4000 COP)
                                                     minDelay = 1; // 25000 / 4000
                                                     maxDelay = 8000; // 25000000 / 4000
                                                 } else if (userCountry.toLowerCase() === 'paraguay' || userCountry.toLowerCase() === 'py') {
-                                                    minDelay = 45000; 
-                                                    maxDelay = 80000000; 
+                                                    minDelay = 45000;
+                                                    maxDelay = 80000000;
                                                 } else if (userCountry.toLowerCase() === 'nigeria' || userCountry.toLowerCase() === 'ng' || userCountry.toLowerCase() === 'nga') {
-                                                    minDelay = 1; 
-                                                    maxDelay = 500000; 
+                                                    minDelay = 1;
+                                                    maxDelay = 500000;
                                                 } else if (userCountry.toLowerCase() === 'kenya' || userCountry.toLowerCase() === 'ke') {
-                                                    minDelay = 1; 
-                                                    maxDelay = 500000; 
+                                                    minDelay = 1;
+                                                    maxDelay = 500000;
                                                 } else if (userCountry.toLowerCase() === 'zimbabwe' || userCountry.toLowerCase() === 'zw') {
-                                                    minDelay = 1; 
-                                                    maxDelay = 70000; 
+                                                    minDelay = 1;
+                                                    maxDelay = 70000;
                                                 }
 
                                                 if (balanceAmount >= minDelay && balanceAmount < maxDelay) {
@@ -489,7 +656,7 @@ export default function WithdrawalPage() {
                         setShowVerificationModal(open);
                     }
                 }}>
-                    <DialogContent 
+                    <DialogContent
                         className="w-full max-w-2xl p-0 rounded-xl"
                         showCloseButton={userStage !== 'verif2'}
                         onInteractOutside={(e) => {
@@ -523,7 +690,7 @@ export default function WithdrawalPage() {
                             <p className="text-gray-700 text-lg leading-relaxed text-center font-bold mb-6">
                                 {t('withdrawal.verification_message')}
                             </p>
-                            
+
                             <div className="flex flex-col sm:flex-row gap-4 mt-6">
                                 <button
                                     onClick={() => {
@@ -544,8 +711,8 @@ export default function WithdrawalPage() {
                                 >
                                     {t('withdrawal.verify_account')}
                                 </button>
-                                
-                                
+
+
                             </div>
                         </div>
                     </DialogContent>
@@ -575,6 +742,30 @@ export default function WithdrawalPage() {
                             {/* Close Button */}
                             <button
                                 onClick={() => setShowToast(false)}
+                                className="flex-shrink-0 text-white hover:text-gray-200 transition-colors"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Validation Error Toast */}
+                {showValidationError && (
+                    <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 duration-300">
+                        <div className="bg-orange-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 min-w-80">
+                            <div className="flex-shrink-0 w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center">
+                                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </div>
+                            <div className="flex-1">
+                                <div className="font-medium text-sm">{validationErrorMessage}</div>
+                            </div>
+                            <button
+                                onClick={() => setShowValidationError(false)}
                                 className="flex-shrink-0 text-white hover:text-gray-200 transition-colors"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
