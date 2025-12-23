@@ -182,7 +182,7 @@ export default function WithdrawalPage() {
                                     {/* Amount field - shown for all domains */}
                                     <div className="flex flex-col">
                                         <label htmlFor="withdraw-amount" className="text-sm lg:text-base font-semibold text-[#8888A6] mb-1">
-                                            {isValorGamesWorld ? `Amount (Max: 0₦)` : `Importe ${userCurrency}`}
+                                            {isValorGamesWorld ? `Amount (Max: ${balance}₦)` : `Importe ${userCurrency}`}
                                         </label>
                                         {isValorGamesWorld ? (
                                             <div className="flex items-center gap-2">

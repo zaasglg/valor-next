@@ -690,7 +690,7 @@ const translations = {
     // ProfileSidebar component
     'sidebar.my_profile': 'My Profile',
     'sidebar.recharge': 'Deposit',
-    'sidebar.withdraw': 'Withdraw',
+    'sidebar.withdraw': 'Withdrawal',
     'sidebar.transaction_history': 'Transaction History',
     'sidebar.bonuses': 'Bonuses',
     'sidebar.verification': 'Verification',
