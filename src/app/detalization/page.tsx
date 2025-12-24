@@ -156,7 +156,7 @@ export default function DetalizationPage() {
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="mb-4 lg:mb-8">
                   <h1 className="text-xl lg:text-3xl font-black text-[#23223a] leading-tight">
-                    Historial de transacciones:
+                    {t('detalization.transaction_history')}
                     <br />
                     <span className="text-[#ffb32c]">
                       {activeTab === "deposits" ? t('detalization.deposits') : t('detalization.payments')}

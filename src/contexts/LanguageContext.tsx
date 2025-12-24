@@ -183,6 +183,7 @@ const translations = {
 
     // Detalization page
     'detalization.deposits': 'depósitos',
+    'detalization.transaction_history': 'Historial de transacciones:',
     'detalization.payments': 'pagos',
     'detalization.date_time': 'Fecha y Hora',
     'detalization.transaction': 'Transacción',
@@ -575,6 +576,7 @@ const translations = {
 
     // Detalization page
     'detalization.deposits': 'deposits',
+    'detalization.transaction_history': 'Transaction History:',
     'detalization.payments': 'payments',
     'detalization.date_time': 'Date and Time',
     'detalization.transaction': 'Transaction',
@@ -967,6 +969,7 @@ const translations = {
 
     // Detalization page
     'detalization.deposits': 'depósitos',
+    'detalization.transaction_history': 'Histórico de transações:',
     'detalization.payments': 'pagamentos',
     'detalization.date_time': 'Data e Hora',
     'detalization.transaction': 'Transação',
@@ -1359,6 +1362,7 @@ const translations = {
 
     // Detalization page
     'detalization.deposits': 'الإيداعات',
+    'detalization.transaction_history': 'تاريخ المعاملات:',
     'detalization.payments': 'المدفوعات',
     'detalization.date_time': 'التاريخ والوقت',
     'detalization.transaction': 'المعاملة',
@@ -1751,6 +1755,7 @@ const translations = {
 
     // Detalization page
     'detalization.deposits': 'dépôts',
+    'detalization.transaction_history': 'Historique des transactions:',
     'detalization.payments': 'paiements',
     'detalization.date_time': 'Date et Heure',
     'detalization.transaction': 'Transaction',
