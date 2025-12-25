@@ -37,6 +37,7 @@ interface PaymentHistory {
   numero_documento: string;
   banco: string;
   order_id?: string;
+  currency?: string;
 }
 
 export default function DetalizationPage() {
@@ -292,11 +293,16 @@ export default function DetalizationPage() {
                               {item.transaccion_number || ('order_id' in item ? item.order_id : '') || '-'}
                             </td>
                             <td className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-sm">
-                              {activeTab === "deposits" &&
-                                "currency" in item &&
-                                item.currency
-                                ? `${item.transacciones_monto} ${item.currency}`
-                                : `$${item.transacciones_monto}`}
+                              {(() => {
+                                const itemCurrency = 'currency' in item && item.currency ? item.currency : null;
+                                const countryKey = getCountryKey(userCountry);
+                                const defaultCurrency = countryKey ? verificationConfig[countryKey]?.currency : '$';
+                                const currency = itemCurrency || defaultCurrency || '$';
+
+                                return currency.includes('$') || currency === 'USD'
+                                  ? `$${item.transacciones_monto}`
+                                  : `${item.transacciones_monto} ${currency}`;
+                              })()}
                             </td>
                             <td className="py-2 lg:py-4 px-2 lg:px-6 text-xs lg:text-sm hidden md:table-cell">
                               {item.metodo_de_pago}
