@@ -1065,7 +1065,7 @@ export default function DepositPage() {
             return;
         }
 
-        if (selectedMethod === "banktranfer" || "palmpay") {
+        if (selectedMethod === "banktranfer" || selectedMethod === "palmpay") {
             handleCashonrailsPayment(amount);
             return;
         }
