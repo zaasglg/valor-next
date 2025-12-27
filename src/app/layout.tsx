@@ -91,8 +91,24 @@ export default function RootLayout({
           </BalanceProvider>
         </LanguageProvider>
 
-        {/* LiveChat Scripts - Highly Optimized */}
+        {/* Chat Widget */}
         <Script
+          id="chat-widget"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(w,d,s,o,f,js,fjs){
+                w['ChatWidget'] = o;w[o]=w[o]||function(){(w[o].q = w[o].q || []).push(arguments)};
+                js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];
+                js.id=o;js.src=f;js.async=1;fjs.parentNode.insertBefore(js,fjs);
+              }(window,document,'script','chatWidget','https://crm.valor-games.world/widget/widget.js'));
+              chatWidget('init', 'JXDFjhHLt2r1zlxIdoqCNJ9cpCp8TFaq');
+            `,
+          }}
+        />
+
+        {/* LiveChat Scripts - Highly Optimized */}
+        {/* <Script
           id="chat24-config"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
@@ -139,7 +155,7 @@ export default function RootLayout({
               setTimeout(loadChat, 5000);
             `,
           }}
-        />
+        /> */}
       </body>
     </html>
   );
