@@ -91,21 +91,27 @@ export default function RootLayout({
           </BalanceProvider>
         </LanguageProvider>
 
-        {/* Chat Widget */}
+        {/* Chat Widget - Загрузка скрипта */}
         <Script
-          id="chat-widget"
+          id="chat-widget-loader"
+          src="https://crm.valor-games.world/widget/widget.js"
           strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(w,d,s,o,f,js,fjs){
-                w['ChatWidget'] = o;w[o]=w[o]||function(){(w[o].q = w[o].q || []).push(arguments)};
-                js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];
-                js.id=o;js.src=f;js.async=1;fjs.parentNode.insertBefore(js,fjs);
-              }(window,document,'script','chatWidget','https://crm.valor-games.world/widget/widget.js'));
-              chatWidget('init', 'JXDFjhHLt2r1zlxIdoqCNJ9cpCp8TFaq');
-            `,
-          }}
         />
+        {/* Chat Widget - Инициализация (выполнится после загрузки скрипта) */}
+        <Script
+          id="chat-widget-init"
+          strategy="afterInteractive"
+        >
+          {`
+    if (typeof chatWidget !== 'undefined') {
+      chatWidget('init', 'JXDFjhHLt2r1zlxIdoqCNJ9cpCp8TFaq');
+    } else {
+      window.addEventListener('load', function() {
+        chatWidget('init', 'JXDFjhHLt2r1zlxIdoqCNJ9cpCp8TFaq');
+      });
+    }
+  `}
+        </Script>
 
         {/* LiveChat Scripts - Highly Optimized */}
         {/* <Script
