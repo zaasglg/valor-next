@@ -97,7 +97,7 @@ export default function RootLayout({
   src="https://crm.valor-games.world/widget/widget.js"
   strategy="lazyOnload"
   onLoad={() => {
-    // @ts-ignore - chatWidget добавляется внешним скриптом
+    // @ts-expect-error
     if (window.chatWidget) window.chatWidget('init', 'JXDFjhHLt2r1zlxIdoqCNJ9cpCp8TFaq');
   }}
 />
