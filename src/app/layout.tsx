@@ -92,15 +92,15 @@ export default function RootLayout({
         </LanguageProvider>
 
 
-<Script
-  id="chat-widget-loader"
-  src="https://crm.valor-games.world/widget/widget.js"
-  strategy="lazyOnload"
-  onLoad={() => {
-    // @ts-expect-error
-    if (window.chatWidget) window.chatWidget('init', 'JXDFjhHLt2r1zlxIdoqCNJ9cpCp8TFaq');
-  }}
-/>
+      <Script
+        id="chat-widget-loader"
+        src="https://crm.valor-games.world/widget/widget.js"
+        strategy="lazyOnload"
+        onLoad={() => {
+          (window as any).chatWidget?.('init', 'JXDFjhHLt2r1zlxIdoqCNJ9cpCp8TFaq');
+        }}
+      />
+
 
 
 
