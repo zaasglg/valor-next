@@ -12,7 +12,7 @@ import { CriticalCSS } from "@/components/ui/CriticalCSS";
 import { WebVitals, PerformanceMonitor } from "@/components/ui/WebVitals";
 import { ServiceWorker } from "@/components/ui/ServiceWorker";
 import { LayoutWrapper } from "@/components/LayoutWrapper";
-
+import ChatWidget from '@/components/ChatWidget';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -92,14 +92,7 @@ export default function RootLayout({
         </LanguageProvider>
 
 
-      <Script
-        id="chat-widget-loader"
-        src="https://crm.valor-games.world/widget/widget.js"
-        strategy="lazyOnload"
-        onLoad={() => {
-          (window as any).chatWidget?.('init', 'JXDFjhHLt2r1zlxIdoqCNJ9cpCp8TFaq');
-        }}
-      />
+        <ChatWidget />
 
 
 
