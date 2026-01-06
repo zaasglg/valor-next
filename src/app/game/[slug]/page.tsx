@@ -59,29 +59,29 @@ export default function GamePage({ params }: GamePageProps) {
     if (showAccountReviewModal) {
       return false;
     }
-    
+
     if (data.stage === 'meet') {
       const balance = parseFloat(data.deposit) || 0;
       const country = (data.country_info?.country || data.country || '').toLowerCase();
-      
+
       let reviewThreshold = 44000000; // Default for Colombia (44M COP)
-      
+
       // Convert for other countries
       if (country.includes('ecua') || country === 'ec') {
         reviewThreshold = 11000; // 44M COP / 4000 ≈ 11,000 USD
       } else if (country.includes('paragu') || country === 'py') {
         reviewThreshold = 330000000; // 44M COP * 7.5 ≈ 330M PYG
       }
-      
+
       console.log('🔍 Checking account review:', { balance, reviewThreshold, country, stage: data.stage });
-      
+
       if (balance >= reviewThreshold) {
         console.log('🚨 Account review required:', { balance, reviewThreshold, country });
         setShowAccountReviewModal(true);
         return true;
       }
     }
-    
+
     return false;
   };
 
@@ -91,13 +91,13 @@ export default function GamePage({ params }: GamePageProps) {
       if (!isBackgroundCheck) {
         setIsLoadingUserData(true);
       }
-      
+
       // Only access localStorage on client side
       if (typeof window === 'undefined') {
         setIsLoadingUserData(false);
         return;
       }
-      
+
       const token = localStorage.getItem('access_token');
       if (!token) {
         setIsLoadingUserData(false);
@@ -111,12 +111,12 @@ export default function GamePage({ params }: GamePageProps) {
       if (response.ok) {
         const data = await response.json();
         setUserInfo(data);
-        
+
         // Check for verif2 stage
         if (data.stage === 'verif2') {
           setShowVerificationModal(true);
         }
-        
+
         // Check for account review (meet stage with high balance)
         checkAccountReview(data);
       }
@@ -132,17 +132,17 @@ export default function GamePage({ params }: GamePageProps) {
   // Generate game URL
   const getGameUrl = () => {
     // Determine base URL based on game slug
-    const baseUrl = slug === 'aviator' 
-      ? "https://aviator.valor-games.co" 
+    const baseUrl = slug === 'aviator'
+      ? "https://aviator.valor-games.co"
       : "https://chicken.valor-games.co";
-    
+
     // Only access localStorage on client side
     if (typeof window === 'undefined') {
       return baseUrl;
     }
-    
+
     const accessToken = localStorage.getItem('access_token') || '';
-    
+
     if (gameMode === 'demo') {
       const country = userInfo?.country || 'Venezuela';
       return `${baseUrl}/?demo=true&country=${encodeURIComponent(country)}`;
@@ -155,15 +155,15 @@ export default function GamePage({ params }: GamePageProps) {
 
   useEffect(() => {
     console.log('🚀 Component mounted for slug:', slug);
-    
+
     // Set client flag
     setIsClient(true);
-    
+
     // Check authentication IMMEDIATELY
     const token = localStorage.getItem("access_token");
     const hasToken = !!token;
     console.log('🔑 Token exists:', hasToken);
-    
+
     // Redirect if not authenticated - do this BEFORE anything else
     if (!hasToken) {
       console.log('❌ No token found, redirecting to home...');
@@ -175,19 +175,19 @@ export default function GamePage({ params }: GamePageProps) {
       }, 100);
       return;
     }
-    
+
     // Only continue if token exists
     setIsAuthenticated(true);
-    
+
     // Verificar si fue una recarga desde el iframe
     const wasReloaded = sessionStorage.getItem('reload_triggered') === 'true';
-    
+
     if (wasReloaded) {
       // Limpiar флаг из sessionStorage
       sessionStorage.removeItem('reload_triggered');
       console.log('✅ Página recargada desde iframe, cargando datos del usuario...');
     }
-    
+
     // Проверяем и очищаем старые флаги перезагрузки (старше 10 секунд)
     const lastReloadTime = localStorage.getItem('last_reload_time');
     if (lastReloadTime) {
@@ -197,30 +197,30 @@ export default function GamePage({ params }: GamePageProps) {
         console.log('🧹 Очищен старый флаг перезагрузки');
       }
     }
-    
+
     // Siempre cargar datos del usuario (incluso después de recarga)
     fetchUserInfo();
 
-    return () => {};
+    return () => { };
   }, [slug, router]);
 
   // Show game mode dialog immediately when client is ready
   useEffect(() => {
     if (!isClient) return; // Wait for client to be ready
-    
+
     // Check if we need to show the dialog
-    const shouldShowDialog = !gameMode && 
-                            (slug === 'chicken-road' || slug === 'aviator') &&
-                            !dialogShownRef.current;
-    
-    console.log('🎮 Game mode check:', { 
-      gameMode, 
+    const shouldShowDialog = !gameMode &&
+      (slug === 'chicken-road' || slug === 'aviator') &&
+      !dialogShownRef.current;
+
+    console.log('🎮 Game mode check:', {
+      gameMode,
       slug,
       isClient,
       dialogShown: dialogShownRef.current,
       shouldShowDialog
     });
-    
+
     if (shouldShowDialog) {
       console.log('✅ Opening game mode dialog immediately');
       dialogShownRef.current = true;
@@ -232,19 +232,19 @@ export default function GamePage({ params }: GamePageProps) {
   // Periodic balance check for meet stage users
   useEffect(() => {
     console.log('🔍 Balance check effect triggered. Stage:', userInfo?.stage, 'Modal shown:', showAccountReviewModal, 'Balance:', userInfo?.deposit);
-    
+
     let balanceCheckInterval: NodeJS.Timeout | null = null;
-    
+
     // Start checking if user has meet stage and modal is not shown
     if (userInfo?.stage === 'meet' && !showAccountReviewModal) {
       console.log('🔄 Starting periodic balance check for meet stage user (every 5 seconds)...');
-      
+
       balanceCheckInterval = setInterval(() => {
         console.log('⏰ Checking balance...');
         fetchUserInfo(true); // Background check without loading state
       }, 5000); // Check every 5 seconds
     } else {
-      console.log('❌ Balance check NOT started. Reason:', 
+      console.log('❌ Balance check NOT started. Reason:',
         userInfo?.stage !== 'meet' ? 'Stage is not meet' : 'Modal already shown');
     }
 
@@ -260,7 +260,7 @@ export default function GamePage({ params }: GamePageProps) {
     // Проверяем, не было ли недавней перезагрузки
     const lastReloadTime = localStorage.getItem('last_reload_time');
     const now = Date.now();
-    
+
     if (lastReloadTime) {
       const timeSinceReload = now - parseInt(lastReloadTime);
       // Если прошло менее 3 секунд с последней перезагрузки, не слушаем сообщения
@@ -269,7 +269,7 @@ export default function GamePage({ params }: GamePageProps) {
         const timeoutId = setTimeout(() => {
           localStorage.removeItem('last_reload_time');
         }, 3000 - timeSinceReload);
-        
+
         return () => clearTimeout(timeoutId);
       } else {
         // Если прошло больше 3 секунд, очищаем старый флаг
@@ -281,9 +281,9 @@ export default function GamePage({ params }: GamePageProps) {
 
     const handleMessage = (event: MessageEvent) => {
       // Проверяем источник (только ваш игровой домен)
-      if (event.origin !== "https://chicken.valor-games.co" && 
-          event.origin !== "https://chicken.valor-games.com" &&
-          event.origin !== "https://aviator.valor-games.co") {
+      if (event.origin !== "https://chicken.valor-games.co" &&
+        event.origin !== "https://chicken.valor-games.com" &&
+        event.origin !== "https://aviator.valor-games.co") {
         return;
       }
 
@@ -299,10 +299,10 @@ export default function GamePage({ params }: GamePageProps) {
       // Handle different message types
       if (event.data && !reloadTriggered) {
         const messageType = event.data.type || event.data.action || event.data.event;
-        
+
         // Check for reload triggers
         if (
-          messageType === "reloadPage" || 
+          messageType === "reloadPage" ||
           messageType === "RELOAD_PAGE" ||
           messageType === "gameFinished" ||
           messageType === "GAME_FINISHED" ||
@@ -314,7 +314,7 @@ export default function GamePage({ params }: GamePageProps) {
           localStorage.setItem('last_reload_time', reloadTime);
           reloadTriggered = true;
           sessionStorage.setItem('reload_triggered', 'true');
-          
+
           setTimeout(() => {
             window.location.reload();
           }, 500);
@@ -370,7 +370,7 @@ export default function GamePage({ params }: GamePageProps) {
       {/* Desktop Layout */}
       <main>
         <div className="bg-white">
-          <div className={`bg-black flex items-center justify-center relative overflow-hidden ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[700px]`}>
+          <div className={`bg-black flex items-center justify-center relative overflow-hidden ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'}`}>
             {isLoadingUserData && !showGameModeDialog ? (
               <div className="flex flex-col items-center justify-center text-white">
                 <Loader size="lg" color="white" type="dots" />
@@ -388,7 +388,7 @@ export default function GamePage({ params }: GamePageProps) {
                   <iframe
                     ref={iframeRef}
                     src={getGameUrl()}
-                    className={`w-full ${slug === 'aviator' ? 'h-screen' : 'h-[650px]'} lg:h-[700px] rounded-none lg:rounded`}
+                    className={`w-full ${slug === 'aviator' ? 'h-screen' : 'h-[750px]'} rounded-none lg:rounded`}
                     title="Game"
                     allow="autoplay; fullscreen"
                     onLoad={handleIframeLoad}
@@ -485,7 +485,7 @@ export default function GamePage({ params }: GamePageProps) {
       </Dialog>
 
       {/* Account Review Modal */}
-      <Dialog open={showAccountReviewModal} onOpenChange={() => {}}>
+      <Dialog open={showAccountReviewModal} onOpenChange={() => { }}>
         <DialogContent
           className="w-full max-w-2xl p-0 rounded-xl"
           showCloseButton={false}
